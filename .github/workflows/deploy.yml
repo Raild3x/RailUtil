@@ -1,0 +1,29 @@
+name: lint
+
+on:
+  [push]
+
+jobs:
+  lint:
+    name: "Selene lint"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Install Aftman
+        uses: ok-nick/setup-aftman@v0.4.2
+      - name: Run Selene
+        run: selene src
+  build_docs:
+    name: Build docs
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: npm i -g moonwave@latest
+      - name: Build
+        run: |
+          moonwave build
