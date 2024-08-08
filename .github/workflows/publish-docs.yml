@@ -1,20 +1,20 @@
+name: Docs
+
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
-      - main
+    - main
 
 jobs:
-  publish_docs:
-    name: Publish docs
-    if: github.ref == 'refs/heads/main'
+  build:
+    name: Build and deploy docs
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
-          node-version: 20
-      - run: npm i -g moonwave@1.0.1
+          node-version: 18
+      - run: npm i -g moonwave@latest
       - name: Publish
         run: |
           git remote set-url origin https://git:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git

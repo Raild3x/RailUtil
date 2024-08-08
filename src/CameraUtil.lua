@@ -15,13 +15,13 @@ end
 --// Requires //--
 local RailUtil = script.Parent
 local Fusion = require(RailUtil.Parent.Fusion)
+local FusionUtil = require(RailUtil.FusionUtil)
 
 --// Types //--
 type State<T> = Fusion.StateObject<T>
 type CanBeState<T> = Fusion.CanBeState<T>
 type Computed<T> = Fusion.Computed<T>
 type Value<T> = Fusion.Value<T>
-type Use = Fusion.Use
 
 --// Constants //--
 local CurrentCamera = workspace.CurrentCamera
@@ -66,8 +66,8 @@ CameraUtil.ViewportSize = Value(CurrentCamera.ViewportSize) :: State<Vector2>
 	@within CameraUtil
 	A Computed containing the current camera's ViewportSize.Y.
 ]=]
-CameraUtil.ViewportSizeY = Computed(function(use)
-	return use(CameraUtil.ViewportSize).Y
+CameraUtil.ViewportSizeY = Computed(function()
+	return FusionUtil.use(CameraUtil.ViewportSize).Y
 end) :: Computed<number>
 
 

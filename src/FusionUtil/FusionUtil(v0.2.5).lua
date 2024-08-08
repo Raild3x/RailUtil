@@ -13,20 +13,18 @@
 ]=]
 
 --// Requires //--
-local Util = script.Parent
-local Dependencies = Util.Dependencies
+local RailUtil = script.Parent.Parent
 
-local MathUtil = require(Util.MathUtil) ---@module RailUtil.MathUtil
+local MathUtil = require(RailUtil.MathUtil)
 
-local Janitor = require(Dependencies._Janitor)
-local Promise = require(Dependencies._Promise)
-local Fusion = require(Dependencies._Fusion)
+local Janitor = require(RailUtil.Parent.Janitor)
+local Promise = require(RailUtil.Parent.Promise)
+local Fusion = require(RailUtil.Parent.Fusion)
 
 local peek = Fusion.peek
 local Value = Fusion.Value
 local Observer = Fusion.Observer
 local Computed = Fusion.Computed
-
 
 --// Types //--
 type State<T> = Fusion.StateObject<T>
