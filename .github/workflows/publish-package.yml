@@ -1,0 +1,35 @@
+name: release wally package
+
+on:
+    pull_request:
+      types: [closed]
+      branches:
+        - main
+  
+jobs:
+    publish_package:
+        name: "Publish Wally Package"
+        runs-on: ubuntu-latest
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v4
+        - name: Install Aftman
+          uses: ok-nick/setup-aftman@v0.4.2
+        - name: Publish release to Wally
+          shell: bash
+          env:
+            WALLY_AUTH: ${{ secrets.WALLY_AUTH }}
+          run: |
+            mkdir -p ~/.wally
+            echo "$WALLY_AUTH" > ~/.wally/auth.toml
+            cd src
+            rm -rf Packages
+            wally publish
+            cd ..
+        - name: Wally install
+          run: |
+            cd src
+            rm wally.toml
+            mv wally_bundle.toml wally.toml
+            wally install
+            cd ..
