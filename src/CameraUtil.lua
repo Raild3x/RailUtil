@@ -48,23 +48,23 @@ local CameraUtil = {}
 CameraUtil.Instance = CurrentCamera :: Camera
 
 --[=[
-	@prop State<CFrame> CameraCFrame
+	@prop CameraCFrame State<CFrame>
 	@within CameraUtil
-	A State containing the current camera's CFrame.
+	A Fusion State containing the current camera's CFrame.
 ]=]
 CameraUtil.CameraCFrame = Value(CurrentCamera.CFrame) :: State<CFrame>
 
 --[=[
-	@prop State<Vector2> ViewportSize
+	@prop ViewportSize State<Vector2>
 	@within CameraUtil
-	A State containing the current camera's ViewportSize.
+	A Fusion State containing the current camera's ViewportSize.
 ]=]
 CameraUtil.ViewportSize = Value(CurrentCamera.ViewportSize) :: State<Vector2>
 
 --[=[
-	@prop State<number> ViewportSizeY
+	@prop ViewportSizeY State<number>
 	@within CameraUtil
-	A Computed containing the current camera's ViewportSize.Y.
+	A Fusion Computed containing the current camera's ViewportSize.Y.
 ]=]
 CameraUtil.ViewportSizeY = Computed(function()
 	return FusionUtil.use(CameraUtil.ViewportSize).Y

@@ -21,13 +21,13 @@ local Types = require(RailUtil.RailUtilTypes)
 type Promise<T> = Types.Promise
 
 --[=[
-	@type AnimPlayInfo {
-		FadeInTime: number?,
-		Weight: number?,
-		Speed: number?,
-		FadeOutTime: number?,
-	}
 	@within InstanceUtil
+	@interface AnimPlayInfo 
+	.FadeInTime number?
+	.Weight number?,
+	.Speed number?,
+	.FadeOutTime number?,
+	
 	A table of info for generating tweens for playing animations.
 ]=]
 type AnimPlayInfo = {
@@ -116,7 +116,7 @@ end
     @param ClassName	-- The class name or names the descendant must match or inherit.
     @return {Instance?} -- Table with valid descendants of passed ClassName.
 ]=]
-function InstanceUtil.getDescendantsWhichIsA(Parent: Instance, ClassName: string | { string }): { Instance }
+function InstanceUtil.getDescendantsWhichAre(Parent: Instance, ClassName: string | { string }): { Instance }
 	local ClassNames: {string} = if typeof(ClassName) == "table" then ClassName else { ClassName }
 	local validDescendants = {}
 	for _, desc in Parent:GetDescendants() do
@@ -278,9 +278,10 @@ function InstanceUtil.safeDestroy(instance: Instance): (boolean, string)
 end
 
 --[=[
-    Ensures the getting and creation of an Animator in the given Parent.
-    @param Parent       -- The Parent to search for an Animator in.
-    @return Animator    -- The Animator found or created.
+	@private
+	Ensures the getting and creation of an Animator in the given Parent.
+	@param Parent       -- The Parent to search for an Animator in.
+	@return Animator    -- The Animator found or created.
 ]=]
 function InstanceUtil.ensureAnimator(Parent: Instance): Animator
 	local AnimatorParent = Parent:FindFirstChildOfClass("AnimationController")
@@ -306,11 +307,12 @@ function InstanceUtil.ensureAnimator(Parent: Instance): Animator
 end
 
 --[=[
-    Loads an animation asynchronously. Originally made to be used with models being displayed in
-    ViewportFrames with Fusion.
-    @param SourceAnimator   -- Animator to load the animation into.
-    @param AnimationToLoad  -- The animation to load.
-    @return Promise<AnimationTrack>
+	@private
+	Loads an animation asynchronously. Originally made to be used with models being displayed in
+	ViewportFrames with Fusion.
+	@param SourceAnimator   -- Animator to load the animation into.
+	@param AnimationToLoad  -- The animation to load.
+	@return Promise<AnimationTrack>
 ]=]
 function InstanceUtil.loadAnimAsync(SourceAnimator: Animator, AnimationToLoad: Animation): Promise<AnimationTrack>
 	local function AttemptLoad()
@@ -404,8 +406,9 @@ function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: Viewport
 	end
 
 --[=[
-    Iterates through descendants of Model and unanchor necessary parts to play animations correctly.
-    @param model -- Model to check and set .Anchor property to.
+	@ignore
+	Iterates through descendants of Model and unanchor necessary parts to play animations correctly.
+	@param model -- Model to check and set .Anchor property to.
 ]=]
 function InstanceUtil.guaranteeAnchoringToAnimate(model: Model | Actor)
 	local Descendants: { BasePart } = InstanceUtil.getDescendantsWhichIsA(model, "BasePart") :: any
