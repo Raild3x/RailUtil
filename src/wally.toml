@@ -1,15 +1,14 @@
 [package]
 name = "raild3x/railutil"
-description = "A collection of utilities functions for Roblox Luau."
+description = "A collection of utility functions for Roblox Luau."
 authors = ["Logan Hunt (Raildex)"]
-version = "1.0.2"
+version = "1.0.3"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
-include = ["lib", "default.project.json", "LICENSE"]
 
 [dependencies]
-Promise = "evaera/promise@4.0.0"
-Janitor = "howmanysmall/janitor@1.16.0"
-Signal = "lucasmzreal/fastsignal@10.2.1"
-fusion = "elttob/fusion@0.2.0"
+Promise = "evaera/promise@^4.0.0"
+Janitor = "howmanysmall/janitor@^1.16.0"
+Signal = "lucasmzreal/fastsignal@^10.2.1"
+Fusion = "elttob/fusion@0.2.0"

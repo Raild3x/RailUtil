@@ -3,7 +3,7 @@
 -- Feb 8, 2023
 --[=[
 	@class DrawUtil
-	@deprecated This class is currently unsupported.
+	@unreleased
 
 	DrawUtil is a collection of functions that allow you to draw things in the world.
 
@@ -139,7 +139,7 @@ end
 
 --[=[
 	Clears a vector from the world.
-	@param name The name of the vector to clear.
+	@param name string -- The name of the vector to clear.
 ]=]
 function DrawUtil.clearVector(name: string)
 	clearItemFromFolder("Arrows", name)
@@ -183,7 +183,7 @@ end
 
 --[=[
 	Clears a point from the world.
-	@param name The name of the point to clear.
+	@param name string -- The name of the point to clear.
 ]=]
 function DrawUtil.clearPoint(name: string)
 	clearItemFromFolder("Points", name)
@@ -221,7 +221,7 @@ end
 
 --[=[
 	Clears a line from the world.
-	@param name The name of the line to clear.
+	@param name string -- The name of the line to clear.
 ]=]
 function DrawUtil.clearLine(name: string)
 	clearItemFromFolder("Lines", name)

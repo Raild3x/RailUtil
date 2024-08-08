@@ -1,1 +1,7 @@
 gitSourceBranch = "main"
+
+[[classOrder]]
+classes = ["RailUtil"]
+
+[[classOrder]]
+classes = ["--------"]
