@@ -1,0 +1,4 @@
+[tools]
+wally = "UpliftGames/wally@0.3.2"
+rojo = "quenty/rojo@7.4.1-quenty-npm-canary.3"
+selene = "Kampfkarren/selene@0.25.0"
