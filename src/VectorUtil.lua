@@ -60,7 +60,7 @@ end
 	Rounds a Vectors length to the nearest multiple of the given number.
 ]=]
 function VectorUtil.roundLength<T>(vector: T & Vector, increment: number): T
-	return VectorUtil.normalize(vector) * MathUtil.round(vector.Magnitude, increment)
+	return VectorUtil.normalize(vector) * MathUtil.round(vector.Magnitude, increment) :: any
 end
 
 
@@ -157,28 +157,28 @@ end
 --[=[
 	Returns the absolute value of the Vector
 ]=]
-function VectorUtil.abs<T>(Vector: T & Vector): Vector
+function VectorUtil.abs<T>(Vector: T & Vector): T
 	if typeof(Vector) == "Vector3" then
-		return Vector3.new(math.abs(Vector.X), math.abs(Vector.Y), math.abs(Vector.Z))
+		return Vector3.new(math.abs(Vector.X), math.abs(Vector.Y), math.abs(Vector.Z)) :: any
 	end
-	return Vector2.new(math.abs(Vector.X), math.abs(Vector.Y))
+	return Vector2.new(math.abs(Vector.X), math.abs(Vector.Y)) :: any
 end
 
 --[=[
 	Returns a Vector where each component is the sign of the original Vector.
 ]=]
-function VectorUtil.sign<T>(Vector: T & Vector): Vector
+function VectorUtil.sign<T>(Vector: T & Vector): T
 	if typeof(Vector) == "Vector3" then
-		return Vector3.new(math.sign(Vector.X), math.sign(Vector.Y), math.sign(Vector.Z))
+		return Vector3.new(math.sign(Vector.X), math.sign(Vector.Y), math.sign(Vector.Z)) :: any
 	end
-	return Vector2.new(math.sign(Vector.X), math.sign(Vector.Y))
+	return Vector2.new(math.sign(Vector.X), math.sign(Vector.Y)) :: any
 end
 
 --[=[
 	Safely Normalizes a Vector.
 ]=]
-function VectorUtil.normalize<T>(Vector: T & Vector): Vector
-	return if Vector.Magnitude == 0 then Vector else Vector.Unit
+function VectorUtil.normalize<T>(Vector: T & Vector): T
+	return (if Vector.Magnitude == 0 then Vector else Vector.Unit) :: any
 end
 
 --[=[
