@@ -2,12 +2,12 @@
 -- Authors: Logan Hunt [Raildex], Marcus Mendonça [Mophyr];
 -- March 23, 2023
 --[=[
-    @class FusionUtil
+	@class FusionUtil
 
-    A collection of utility functions for Fusion.
+	A collection of utility functions for Fusion.
 
-    DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
-    fusion is loaded in multiple VMs for some unknown reason.
+	DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
+	fusion is loaded in multiple VMs for some unknown reason.
 
 	This was originally written for an unreleased version of Fusion and should no longer be directly used.
 ]=]
@@ -21,7 +21,6 @@ local MathUtil = require(Util.MathUtil) ---@module RailUtil.MathUtil
 local Janitor = require(Dependencies._Janitor)
 local Promise = require(Dependencies._Promise)
 local Fusion = require(Dependencies._Fusion)
-local PubTypes ---@module PubTypes
 
 local peek = Fusion.peek
 local Value = Fusion.Value
@@ -30,11 +29,11 @@ local Computed = Fusion.Computed
 
 
 --// Types //--
-type State<T> = PubTypes.StateObject<T>
-type CanBeState<T> = PubTypes.CanBeState<T>
-type Computed<T> = PubTypes.Computed<T>
-type Value<T> = PubTypes.Value<T>
-type Use = PubTypes.Use
+type State<T> = Fusion.StateObject<T>
+type CanBeState<T> = Fusion.CanBeState<T>
+type Computed<T> = Fusion.Computed<T>
+type Value<T> = Fusion.Value<T>
+type Use = Fusion.Use
 
 type Props = { [any]: any }
 

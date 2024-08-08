@@ -2,12 +2,12 @@
 -- Authors: Logan Hunt [Raildex], Marcus Mendonça [Mophyr];
 -- March 23, 2023
 --[=[
-    @class FusionUtil
+	@class FusionUtil
 
-    A collection of utility functions for Fusion.
+	A collection of utility functions for Fusion.
 
-    DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
-    fusion is loaded in multiple VMs for some unknown reason.
+	DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
+	fusion is loaded in multiple VMs for some unknown reason.
 
 	:::warning
 	This module is not yet ready for use.

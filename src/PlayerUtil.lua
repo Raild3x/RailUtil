@@ -303,8 +303,8 @@ end
 --[=[
 	Takes a function that will be run for a specified player when they leave.
 
-	@param func 		-- The function to be run when the player disconnects.
-	@return Connection  -- A connection that can be Disconnected or Destroyed to stop method's activities.
+	@param fn -- The function to be run when the player disconnects.
+	@return Connection -- A connection that can be Disconnected or Destroyed to stop method's activities.
 ]=]
 function PlayerUtil.onPlayerRemoving<T...>(player: Player, fn: (T...) -> (), ...: T...): Connection
 	assertFunction(fn)

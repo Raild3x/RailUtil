@@ -12,10 +12,10 @@
 local TweenService = game:GetService("TweenService")
 
 --// Requires //--
-local Util = script.Parent
-local TableUtil = require(Util.TblUtil)
-local Promise = require(Util.Parent.Promise)
-local Types = require(Util.RailUtilTypes)
+local RailUtil = script.Parent
+local TableUtil = require(RailUtil.TblUtil)
+local Promise = require(RailUtil.Parent.Promise)
+local Types = require(RailUtil.RailUtilTypes)
 
 --// Types //--
 type Promise<T> = Types.Promise
@@ -345,9 +345,9 @@ function InstanceUtil.weld(part1: BasePart, part2: BasePart): WeldConstraint
 end
 
 --[=[
-    Weld each individual part to the Model [Model] .PrimaryPart;
-    @param model		-- The Model to weld the parts of.
-    @param primaryPart  -- The Part to weld the parts to. Defaults to [Model].PrimaryPart
+	Weld each individual part to the Model [Model] .PrimaryPart;
+	@param model		-- The Model to weld the parts of.
+	@param primaryPart  -- The Part to weld the parts to. Defaults to [Model].PrimaryPart
 	@return {WeldConstraint} -- The WeldConstraints created.
 ]=]
 function InstanceUtil.weldAssembly(model: Model, primaryPart: BasePart?): { WeldConstraint }
@@ -390,6 +390,7 @@ function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: Viewport
 	end
 	local vpfSize = vpf.AbsoluteSize
 	camera = camera or vpf.CurrentCamera
+	assert(camera, "ViewportFrame must have a CurrentCamera to get the fit distance.")
 
 	-- clamped b/c we only want to scale the xfov2 if width < height
 	-- otherwise if width > height then xfov2 == yfov2
@@ -494,7 +495,7 @@ function InstanceUtil.promiseChild(parent: Instance, childName: string, timeout:
 		prom = prom:timeout(
 			timeout,
 			("Timed out after %s seconds waiting for child %s in parent %s\n%s"):format(
-				timeout,
+				timeout :: any,
 				childName,
 				parent:GetFullName(),
 				stack

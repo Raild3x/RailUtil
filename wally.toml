@@ -1,10 +1,12 @@
 [package]
-name = "raildex/railutil"
+name = "raild3x/railutil"
 version = "1.0.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+include = ["lib", "default.project.json", "LICENSE"]
 
 [dependencies]
-promise = "evaera/promise@4.0.0"
-janitor = "howmanysmall/janitor@1.16.0"
+Promise = "evaera/promise@4.0.0"
+Janitor = "howmanysmall/janitor@1.16.0"
 Signal = "lucasmzreal/fastsignal@10.2.1"
+fusion = "elttob/fusion@0.2.0"
