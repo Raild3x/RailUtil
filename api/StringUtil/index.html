@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v2.3.1">
+<title data-rh="true">StringUtil | RailUtil</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Raild3x.github.io/RailUtil/api/StringUtil"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="StringUtil | RailUtil"><meta data-rh="true" name="description" content="Utility library of useful string functions."><meta data-rh="true" property="og:description" content="Utility library of useful string functions."><link data-rh="true" rel="canonical" href="https://Raild3x.github.io/RailUtil/api/StringUtil"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/StringUtil" hreflang="en"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/StringUtil" hreflang="x-default"><link rel="stylesheet" href="/RailUtil/assets/css/styles.19a5646f.css">
+<link rel="preload" href="/RailUtil/assets/js/runtime~main.8cb5d6cc.js" as="script">
+<link rel="preload" href="/RailUtil/assets/js/main.59b29744.js" as="script">
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
+<div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/RailUtil/"><b class="navbar__title text--truncate">RailUtil</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/RailUtil/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Raild3x/RailUtil" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="searchBox_ZlJk"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input type="search" id="search_input_react" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/CameraUtil">​Camera​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/DebugUtil">​Debug​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/DrawUtil">​Draw​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/FusionUtil">​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/InstanceUtil">​Instance​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/MathUtil">​Math​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/PlayerUtil">​Player​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/RailUtil">​Rail​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/SignalUtil">​Signal​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" href="/RailUtil/api/StringUtil">​String​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/TableUtil">​Table​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/VectorUtil">​Vector​Util</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">String</span><span style="display:inline-block">Util</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>Utility library of useful string functions.</p>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="types">Types<a href="#types" class="hash-link" aria-label="Direct link to Types" title="Direct link to Types">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="StrokeData"><code style="text-decoration:none">StrokeData</code><a href="#StrokeData" class="hash-link" aria-label="Direct link to StrokeData" title="Direct link to StrokeData">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L19"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code class="purple_ieR2">interface</code> <code>StrokeData<!-- --> <!-- -->{</code><div class="inset_uKQm"><div><code>Color<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3?<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The color of the stroke.</p>
+</span></span></div><div><code>Joins<!-- -->: </code><code class="purple_ieR2">(</code><code class="blue_P4bS">&quot;miter&quot;</code><code class="op_lSLc"> | </code><code class="blue_P4bS">&quot;round&quot;</code><code class="op_lSLc"> | </code><code class="blue_P4bS">&quot;bevel&quot;</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><code class="op_lSLc"> | </code><code class="blue_P4bS">Enum.LineJoinMode?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The type of joins the stroke has.</p>
+</span></span></div><div><code>Thickness<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The thickness</p>
+</span></span></div><div><code>Transparency<!-- -->: </code><code class="blue_P4bS">number?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The transparency of the stroke.</p>
+</span></span></div></div><code>}</code></div><div></div><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="color"><code style="text-decoration:none">color</code><a href="#color" class="hash-link" aria-label="Direct link to color" title="Direct link to color">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L45"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">color</code><code>(</code><div class="inset_uKQm"><div><code>text<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The text to apply the color to.</p>
+</span></span></div><div><code>color<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The color to apply to the text.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">string</code><span class="inlineDescription_G7Er">-- <span>
+<p>The new string with the color applied.</p>
+</span></span></div><div>
+<p>Returns a string with the given color applied to it.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="stroke"><code style="text-decoration:none">stroke</code><a href="#stroke" class="hash-link" aria-label="Direct link to stroke" title="Direct link to stroke">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L55"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">stroke</code><code>(</code><div class="inset_uKQm"><div><code>text<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The text to apply the stroke to.</p>
+</span></span></div><div><code>data<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RailUtil/api/StringUtil#StrokeData">StrokeData</a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The stroke data to apply to the text.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">string</code><span class="inlineDescription_G7Er">-- <span>
+<p>The new string with the stroke applied.</p>
+</span></span></div><div>
+<p>Returns a string with the given stroke applied to it.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="rich"><code style="text-decoration:none">rich</code><a href="#rich" class="hash-link" aria-label="Direct link to rich" title="Direct link to rich">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L72"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">rich</code><code>(</code><div class="inset_uKQm"><div><code>text<!-- -->: </code><code class="blue_P4bS">string</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The text to apply the options to.</p>
+</span></span></div><div><code>options<!-- -->: </code><code class="purple_ieR2">{</code><div class="inset_uKQm"><code>Color<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Color3" target="_blank" rel="noopener noreferrer">Color3?<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Stroke<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="/RailUtil/api/StringUtil#StrokeData">StrokeData?</a></code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Bold<!-- -->: </code><code class="blue_P4bS">boolean?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Italic<!-- -->: </code><code class="blue_P4bS">boolean?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Underline<!-- -->: </code><code class="blue_P4bS">boolean?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"></div><code class="purple_ieR2">}</code><span class="inlineDescription_G7Er">-- <span>
+<p>The options to apply to the text.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">string</code><span class="inlineDescription_G7Er">-- <span>
+<p>The new string with the options applied.</p>
+</span></span></div><div>
+<p>Returns a string with the given options applied to it.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="formatAssetId"><code style="text-decoration:none">formatAssetId</code><a href="#formatAssetId" class="hash-link" aria-label="Direct link to formatAssetId" title="Direct link to formatAssetId">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L113"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">formatAssetId</code><code>(</code><div class="inset_uKQm"><div><code>id<!-- -->: </code><code class="blue_P4bS">string</code><code class="op_lSLc"> | </code><code class="blue_P4bS">number</code><span class="inlineDescription_G7Er">-- <span>
+<p>The asset id to format.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">string</code><span class="inlineDescription_G7Er">-- <span>
+<p>The formatted asset id.</p>
+</span></span></div><div>
+<p>Ensures a given number or string is formatted as an asset id.</p>
+<pre class="language-lua"><code class="language-lua">StringUtil<span class="token punctuation">.</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token number">123456</span><span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://123456"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token string">"123456"</span><span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://123456"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token string">"rbxassetid://123456"</span><span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://123456"</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="formatNumberWithCommas"><code style="text-decoration:none">formatNumberWithCommas</code><a href="#formatNumberWithCommas" class="hash-link" aria-label="Direct link to formatNumberWithCommas" title="Direct link to formatNumberWithCommas">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L127"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">formatNumberWithCommas</code><code>(</code><code>num<!-- -->: </code><code class="blue_P4bS">number</code><code class="op_lSLc"> | </code><code class="blue_P4bS">string</code><code>) → </code><code class="blue_P4bS">string</code></div><div>
+<p>Formats a number with commas.</p>
+<pre class="language-lua"><code class="language-lua">StringUtil<span class="token punctuation">.</span><span class="token function">formatNumberWithCommas</span><span class="token punctuation">(</span><span class="token string">"12"</span><span class="token punctuation">)</span> <span class="token comment">-- "12"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatNumberWithCommas</span><span class="token punctuation">(</span><span class="token number">1234</span><span class="token punctuation">)</span> <span class="token comment">-- "1,234"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatNumberWithCommas</span><span class="token punctuation">(</span><span class="token number">123456</span><span class="token punctuation">)</span> <span class="token comment">-- "123,456"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatNumberWithCommas</span><span class="token punctuation">(</span><span class="token string">"1234567"</span><span class="token punctuation">)</span> <span class="token comment">-- "1,234,567"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatNumberWithCommas</span><span class="token punctuation">(</span><span class="token number">12345.6789</span><span class="token punctuation">)</span> <span class="token comment">-- "12,345.6789"</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="truncateNumberWithSuffix"><code style="text-decoration:none">truncateNumberWithSuffix</code><a href="#truncateNumberWithSuffix" class="hash-link" aria-label="Direct link to truncateNumberWithSuffix" title="Direct link to truncateNumberWithSuffix">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L161"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">truncateNumberWithSuffix</code><code>(</code><div class="inset_uKQm"><div><code>num<!-- -->: </code><code class="blue_P4bS">number</code><code class="op_lSLc"> | </code><code class="blue_P4bS">string</code><code>,</code></div><div><code>config<!-- -->: </code><code class="purple_ieR2">{</code><div class="inset_uKQm"><code>MaxDecimals<!-- -->: </code><code class="blue_P4bS">number?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>ShowZeroes<!-- -->: </code><code class="blue_P4bS">boolean?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>AddSpace<!-- -->: </code><code class="blue_P4bS">boolean?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"></div><code class="purple_ieR2">}</code><code class="blue_P4bS">?</code></div></div><code>) → </code><code class="blue_P4bS">string</code></div><div>
+<p>
+  Truncates a number to its nearest factor of 1000 and replaces the chopped off numbers
+  with an appropriate suffix to enable easier reading.
+</p>
+<ul>
+  <li>MaxDecimals: The maximum number of decimals to show. [Default: 1]</li>
+  <li>ShowZeroes: Whether to always show zeroes after the decimal point.</li>
+  <li>AddSpace: Whether to add a space between the number and the suffix</li>
+</ul>
+<pre class="language-lua"><code class="language-lua">StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">1.234</span><span class="token punctuation">)</span> <span class="token comment">-- 1.2</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">)</span> <span class="token comment">-- 123</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>MaxDecimals <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">,</span> ShowZeroes <span class="token operator">=</span> <span class="token keyword">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token comment">-- 123.00</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">1234</span><span class="token punctuation">)</span> <span class="token comment">-- 1.2K</span>
+
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">123456</span><span class="token punctuation">)</span> <span class="token comment">-- 123.5K</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">123456</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>MaxDecimals <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token comment">-- 123.4K</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token string">"123456"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>MaxDecimals <span class="token operator">=</span> <span class="token number">2</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token comment">-- 123.45K</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">123456</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>MaxDecimals <span class="token operator">=</span> <span class="token number">3</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token comment">-- 123.456K</span>
+
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">123456789</span><span class="token punctuation">)</span> <span class="token comment">-- 123.4M</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">truncateNumberWithSuffix</span><span class="token punctuation">(</span><span class="token number">1234567890</span><span class="token punctuation">)</span> <span class="token comment">-- 1.2B</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="formatTime"><code style="text-decoration:none">formatTime</code><a href="#formatTime" class="hash-link" aria-label="Direct link to formatTime" title="Direct link to formatTime">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/StringUtil.lua#L250"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>StringUtil<!-- -->.</code><code class="green_DgR4">formatTime</code><code>(</code><div class="inset_uKQm"><div><code>inputTime<!-- -->: </code><code class="blue_P4bS">number</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The time to format.</p>
+</span></span></div><div><code>inputTimeType<!-- -->: </code><code class="blue_P4bS">string?</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The type of time that is being given to format. (d, h, m, s, ds, cs, ms)</p>
+</span></span></div><div><code>outputStringFormat<!-- -->: </code><code class="blue_P4bS">string?</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The format of the output string. Must separated by colons, if you put a number before the timetype it will make sure the number has atleast that length, adding zeroes before it as needed. By default it will be (2h:2m:2s)</p>
+</span></span></div><div><code>config<!-- -->: </code><code class="purple_ieR2">{</code><div class="inset_uKQm"><code>HideParentZeroValues<!-- -->: </code><code class="blue_P4bS">boolean?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"><code>Delimeter<!-- -->: </code><code class="blue_P4bS">string?</code><code class="purple_ieR2">,</code></div><div class="inset_uKQm"></div><code class="purple_ieR2">}</code><code class="blue_P4bS">?</code></div></div><code>) → </code><code class="blue_P4bS">string</code><span class="inlineDescription_G7Er">-- <span>
+<p>The formatted time string.</p>
+</span></span></div><div>
+<p>Takes a number, a string defining the type of time given, and an output format and formats it to a pleasing structure ideal for displaying time.</p>
+<p>Examples:</p>
+<pre class="language-lua"><code class="language-lua">StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">3600</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"2h:2m:2s"</span><span class="token punctuation">)</span> <span class="token comment">-- "01:00:00"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">125</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"2h:2m:2s"</span><span class="token punctuation">)</span> <span class="token comment">-- "00:02:05"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">125</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"1h:1m:1s"</span><span class="token punctuation">)</span> <span class="token comment">-- "0:2:5"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">125</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"h:m:s"</span><span class="token punctuation">)</span> <span class="token comment">-- "0:2:5"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">125</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"2h:2m:2s"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>HideParentZeroValues <span class="token operator">=</span> <span class="token keyword">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token comment">-- "02:05"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">125</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"h:m:s:ds"</span><span class="token punctuation">)</span> <span class="token comment">-- "0:2:5:0"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">125</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"h:m:s:ds"</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>HideParentZeroValues <span class="token operator">=</span> <span class="token keyword">true</span><span class="token punctuation">}</span><span class="token punctuation">)</span> <span class="token comment">-- "2:5:0"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">3725</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">,</span> <span class="token string">"h:s"</span><span class="token punctuation">)</span> <span class="token comment">-- "1:125"</span>
+StringUtil<span class="token punctuation">.</span><span class="token function">formatTime</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">,</span> <span class="token string">"ms"</span><span class="token punctuation">,</span> <span class="token string">"s"</span><span class="token punctuation">)</span> <span class="token comment">-- "1"</span>
+</code></pre>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;color&quot;,
+            &quot;desc&quot;: &quot;Returns a string with the given color applied to it.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;text&quot;,
+                    &quot;desc&quot;: &quot;The text to apply the color to.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;color&quot;,
+                    &quot;desc&quot;: &quot;The color to apply to the text.&quot;,
+                    &quot;lua_type&quot;: &quot;Color3&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The new string with the color applied.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 45,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;stroke&quot;,
+            &quot;desc&quot;: &quot;Returns a string with the given stroke applied to it.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;text&quot;,
+                    &quot;desc&quot;: &quot;The text to apply the stroke to.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;data&quot;,
+                    &quot;desc&quot;: &quot;The stroke data to apply to the text.&quot;,
+                    &quot;lua_type&quot;: &quot;StrokeData&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The new string with the stroke applied.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 55,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;rich&quot;,
+            &quot;desc&quot;: &quot;Returns a string with the given options applied to it.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;text&quot;,
+                    &quot;desc&quot;: &quot;The text to apply the options to.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;options&quot;,
+                    &quot;desc&quot;: &quot;The options to apply to the text.&quot;,
+                    &quot;lua_type&quot;: &quot;{\r\n\t\tColor: Color3?,\r\n\t\tStroke: StrokeData?,\r\n\t\tBold: boolean?,\r\n\t\tItalic: boolean?,\r\n\t\tUnderline: boolean?,\r\n\t}\r\n&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The new string with the options applied.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 72,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;formatAssetId&quot;,
+            &quot;desc&quot;: &quot;Ensures a given number or string is formatted as an asset id.\n```lua\nStringUtil.formatAssetId(123456) -- \&quot;rbxassetid://123456\&quot;\nStringUtil.formatAssetId(\&quot;123456\&quot;) -- \&quot;rbxassetid://123456\&quot;\nStringUtil.formatAssetId(\&quot;rbxassetid://123456\&quot;) -- \&quot;rbxassetid://123456\&quot;\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;id&quot;,
+                    &quot;desc&quot;: &quot;The asset id to format.&quot;,
+                    &quot;lua_type&quot;: &quot;string | number&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The formatted asset id.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 113,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;formatNumberWithCommas&quot;,
+            &quot;desc&quot;: &quot;Formats a number with commas.\n```lua\nStringUtil.formatNumberWithCommas(\&quot;12\&quot;) -- \&quot;12\&quot;\nStringUtil.formatNumberWithCommas(1234) -- \&quot;1,234\&quot;\nStringUtil.formatNumberWithCommas(123456) -- \&quot;123,456\&quot;\nStringUtil.formatNumberWithCommas(\&quot;1234567\&quot;) -- \&quot;1,234,567\&quot;\nStringUtil.formatNumberWithCommas(12345.6789) -- \&quot;12,345.6789\&quot;\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;num&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number | string&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;string\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 127,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;truncateNumberWithSuffix&quot;,
+            &quot;desc&quot;: &quot;Truncates a number to its nearest factor of 1000 and replaces the chopped off numbers\nwith an appropriate suffix to enable easier reading.\n\n- MaxDecimals: The maximum number of decimals to show. [Default: 1]\n- ShowZeroes: Whether to always show zeroes after the decimal point.\n- AddSpace: Whether to add a space between the number and the suffix\n\n```lua\nStringUtil.truncateNumberWithSuffix(1.234) -- 1.2\nStringUtil.truncateNumberWithSuffix(123) -- 123\nStringUtil.truncateNumberWithSuffix(123, {MaxDecimals = 2, ShowZeroes = true}) -- 123.00\nStringUtil.truncateNumberWithSuffix(1234) -- 1.2K\n\nStringUtil.truncateNumberWithSuffix(123456) -- 123.5K\nStringUtil.truncateNumberWithSuffix(123456, {MaxDecimals = 1}) -- 123.4K\nStringUtil.truncateNumberWithSuffix(\&quot;123456\&quot;, {MaxDecimals = 2}) -- 123.45K\nStringUtil.truncateNumberWithSuffix(123456, {MaxDecimals = 3}) -- 123.456K\n\nStringUtil.truncateNumberWithSuffix(123456789) -- 123.4M\nStringUtil.truncateNumberWithSuffix(1234567890) -- 1.2B\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;num&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;number | string&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;config&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;{\r\n\t\tMaxDecimals: number?,\r\n\t\tShowZeroes: boolean?,\r\n\t\tAddSpace: boolean?,\r\n\t}?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;string\r\n&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 161,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;formatTime&quot;,
+            &quot;desc&quot;: &quot;Takes a number, a string defining the type of time given, and an output format and formats it to a pleasing structure ideal for displaying time.\n\n\nExamples:\n```lua\nStringUtil.formatTime(3600, \&quot;s\&quot;, \&quot;2h:2m:2s\&quot;) -- \&quot;01:00:00\&quot;\nStringUtil.formatTime(125, \&quot;s\&quot;, \&quot;2h:2m:2s\&quot;) -- \&quot;00:02:05\&quot;\nStringUtil.formatTime(125, \&quot;s\&quot;, \&quot;1h:1m:1s\&quot;) -- \&quot;0:2:5\&quot;\nStringUtil.formatTime(125, \&quot;s\&quot;, \&quot;h:m:s\&quot;) -- \&quot;0:2:5\&quot;\nStringUtil.formatTime(125, \&quot;s\&quot;, \&quot;2h:2m:2s\&quot;, {HideParentZeroValues = true}) -- \&quot;02:05\&quot;\nStringUtil.formatTime(125, \&quot;s\&quot;, \&quot;h:m:s:ds\&quot;) -- \&quot;0:2:5:0\&quot;\nStringUtil.formatTime(125, \&quot;s\&quot;, \&quot;h:m:s:ds\&quot;, {HideParentZeroValues = true}) -- \&quot;2:5:0\&quot;\nStringUtil.formatTime(3725, \&quot;s\&quot;, \&quot;h:s\&quot;) -- \&quot;1:125\&quot;\nStringUtil.formatTime(1000, \&quot;ms\&quot;, \&quot;s\&quot;) -- \&quot;1\&quot;\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;inputTime&quot;,
+                    &quot;desc&quot;: &quot;The time to format.&quot;,
+                    &quot;lua_type&quot;: &quot;number&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;inputTimeType&quot;,
+                    &quot;desc&quot;: &quot;The type of time that is being given to format. (d, h, m, s, ds, cs, ms)&quot;,
+                    &quot;lua_type&quot;: &quot;string?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;outputStringFormat&quot;,
+                    &quot;desc&quot;: &quot;The format of the output string. Must separated by colons, if you put a number before the timetype it will make sure the number has atleast that length, adding zeroes before it as needed. By default it will be (2h:2m:2s)&quot;,
+                    &quot;lua_type&quot;: &quot;string?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;config&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;{\r\n\tHideParentZeroValues: boolean?,\r\n\tDelimeter: string?,\r\n}?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The formatted time string.&quot;,
+                    &quot;lua_type&quot;: &quot;string&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 250,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [],
+    &quot;types&quot;: [
+        {
+            &quot;name&quot;: &quot;StrokeData&quot;,
+            &quot;desc&quot;: &quot;&quot;,
+            &quot;fields&quot;: [
+                {
+                    &quot;name&quot;: &quot;Color&quot;,
+                    &quot;lua_type&quot;: &quot;Color3?&quot;,
+                    &quot;desc&quot;: &quot;The color of the stroke.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Joins&quot;,
+                    &quot;lua_type&quot;: &quot;(\&quot;miter\&quot; | \&quot;round\&quot; | \&quot;bevel\&quot;)? | Enum.LineJoinMode?&quot;,
+                    &quot;desc&quot;: &quot;The type of joins the stroke has.&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Thickness&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;The thickness&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;Transparency&quot;,
+                    &quot;lua_type&quot;: &quot;number?&quot;,
+                    &quot;desc&quot;: &quot;The transparency of the stroke.&quot;
+                }
+            ],
+            &quot;source&quot;: {
+                &quot;line&quot;: 19,
+                &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+            }
+        }
+    ],
+    &quot;name&quot;: &quot;StringUtil&quot;,
+    &quot;desc&quot;: &quot;Utility library of useful string functions.&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 9,
+        &quot;path&quot;: &quot;src/StringUtil.lua&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#StrokeData" class="table-of-contents__link toc-highlight">StrokeData</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#color" class="table-of-contents__link toc-highlight">.color</a></li><li><a href="#formatAssetId" class="table-of-contents__link toc-highlight">.formatAssetId</a></li><li><a href="#formatNumberWithCommas" class="table-of-contents__link toc-highlight">.formatNumberWithCommas</a></li><li><a href="#formatTime" class="table-of-contents__link toc-highlight">.formatTime</a></li><li><a href="#rich" class="table-of-contents__link toc-highlight">.rich</a></li><li><a href="#stroke" class="table-of-contents__link toc-highlight">.stroke</a></li><li><a href="#truncateNumberWithSuffix" class="table-of-contents__link toc-highlight">.truncateNumberWithSuffix</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Raild3x. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/RailUtil/assets/js/runtime~main.8cb5d6cc.js"></script>
+<script src="/RailUtil/assets/js/main.59b29744.js"></script>
+</body>
+</html>
