@@ -25,7 +25,7 @@ local TableUtil = require(Util.TblUtil)
 local Types = require(Util.RailUtilTypes)
 
 --// Types //--
-type Janitor = Types.Janitor
+type Janitor = Janitor.Janitor
 type Promise<T> = Types.Promise
 
 type Connection = {
