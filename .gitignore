@@ -1,2 +1,11 @@
 build
 sourcemap.json
+
+# Ignore everything in the src directory
+src/*
+# Except the RailUtil directory
+!src/RailUtil/
+# Ensure that all files in RailUtil are tracked
+!src/RailUtil/**
+# Ignore the wally.lock file specifically within RailUtil
+src/RailUtil/wally.lock

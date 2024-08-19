@@ -16,7 +16,6 @@
 
 --// Requires //--
 local RailUtil = script.Parent.Parent
-local Janitor = require(RailUtil.Parent.Janitor)
 local Promise = require(RailUtil.Parent.Promise)
 local Fusion = require(RailUtil.Parent.Fusion)
 
@@ -41,11 +40,11 @@ local function isValue(v: any): boolean
 	return isState(v) and v.set --v.kind == "Value"
 end
 
-local function use<T>(initialValue: CanBeState<T>): T
+local function use<T>(initialValue: CanBeState<T> | any): T
 	if isState(initialValue) then
-		return initialValue:get()
+		return initialValue:get() :: T
 	else
-		return initialValue
+		return initialValue :: T
 	end
 end
 
@@ -126,7 +125,7 @@ function FusionUtil.formatAssetId(id: CanBeState<string | number>, default: (str
 		end
 		return assetId or ""
 	end
-	return if isState(id) then Computed(Tranform) else Tranform(use)
+	return if isState(id) then Computed(Tranform :: any) else Tranform(use)
 end
 
 
@@ -162,7 +161,7 @@ function FusionUtil.ratio<T>(
 			if typeof(mutator) == "function" then
 				return (mutator :: any)(ratio)
 			else
-				return mutator * ratio
+				return (mutator :: any) * ratio
 			end
 		end
 		return ratio

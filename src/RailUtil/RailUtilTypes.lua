@@ -111,6 +111,8 @@ export type Promise = {
 
 	finallyCall: <P...>(self: Promise, callback: (P...) -> ...any, P...) -> Promise,
 
+	finallyReturn: (self: Promise, ...any) -> Promise,
+
 	await: (
 		self: Promise
 	) -> (

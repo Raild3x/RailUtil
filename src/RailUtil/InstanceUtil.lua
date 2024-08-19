@@ -378,6 +378,7 @@ end
 
 --[=[
 	Gets the distance from the camera to the model that would fit the model in the viewport frame.
+	This method is not finished and may not return perfect values.
 	@param model        -- The Model to get the distance for.
 	@param vpf          -- The ViewportFrame to fit the model into.
 	@param camera       -- The Camera to use. Defaults to the ViewportFrame's CurrentCamera.
@@ -403,7 +404,7 @@ function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: Viewport
 	local radius = modelSize.Magnitude / 2
 
 	return radius / math.sin(xfov2)
-	end
+end
 
 --[=[
 	@ignore
@@ -411,7 +412,7 @@ function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: Viewport
 	@param model -- Model to check and set .Anchor property to.
 ]=]
 function InstanceUtil.guaranteeAnchoringToAnimate(model: Model | Actor)
-	local Descendants: { BasePart } = InstanceUtil.getDescendantsWhichIsA(model, "BasePart") :: any
+	local Descendants: { BasePart } = InstanceUtil.getDescendantsWhichAre(model, "BasePart") :: any
 	for _, Part in ipairs(Descendants) do
 		if Part.Name == "HumanoidRootPart" then
 			continue
