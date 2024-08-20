@@ -17,7 +17,7 @@ local Util = script.Parent.Parent
 local MathUtil = require(Util.MathUtil)
 local Janitor = require(Util.Parent.Janitor)
 local Promise = require(Util.Parent.Promise)
-local Fusion = require(Util.Parent["Fusion_0.3.0"])
+local Fusion = require(Util.Parent.Fusion_v0_3_0)
 
 local peek = Fusion.peek
 local scoped = Fusion.scoped
@@ -28,7 +28,7 @@ local Computed = Fusion.Computed
 --// Types //--
 type Scope<T> = Fusion.Scope<T>
 type State<T> = Fusion.StateObject<T>
-type UsedAs<T> = Fusion.UsedAs<T>
+type UsedAs<T> = State<T> | T
 type Computed<T> = Fusion.Computed<T>
 type Value<T> = Fusion.Value<T>
 type Use = Fusion.Use

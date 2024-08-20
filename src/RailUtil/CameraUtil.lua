@@ -26,13 +26,12 @@ type Value<T> = Fusion.Value<T>
 --// Constants //--
 local CurrentCamera = workspace.CurrentCamera
 
-local Value = Fusion.Value
-local Computed = Fusion.Computed
-
 local IS_EDIT = false
 pcall(function()
 	IS_EDIT = game:GetService("RunService"):IsEdit()
 end)
+
+local scope = Fusion.scoped({Fusion})
 
 --------------------------------------------------------------------------------
 --// Class //--
@@ -52,22 +51,22 @@ CameraUtil.Instance = CurrentCamera :: Camera
 	@within CameraUtil
 	A Fusion State containing the current camera's CFrame.
 ]=]
-CameraUtil.CameraCFrame = Value(CurrentCamera.CFrame) :: State<CFrame>
+CameraUtil.CameraCFrame = scope:Value(CurrentCamera.CFrame) :: State<CFrame>
 
 --[=[
 	@prop ViewportSize State<Vector2>
 	@within CameraUtil
 	A Fusion State containing the current camera's ViewportSize.
 ]=]
-CameraUtil.ViewportSize = Value(CurrentCamera.ViewportSize) :: State<Vector2>
+CameraUtil.ViewportSize = scope:Value(CurrentCamera.ViewportSize) :: State<Vector2>
 
 --[=[
 	@prop ViewportSizeY State<number>
 	@within CameraUtil
 	A Fusion Computed containing the current camera's ViewportSize.Y.
 ]=]
-CameraUtil.ViewportSizeY = Computed(function()
-	return FusionUtil.use(CameraUtil.ViewportSize).Y
+CameraUtil.ViewportSizeY = scope:Computed(function(use)
+	return use(CameraUtil.ViewportSize).Y
 end) :: Computed<number>
 
 

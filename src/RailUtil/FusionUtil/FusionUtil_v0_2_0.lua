@@ -8,16 +8,12 @@
 
 	DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
 	fusion is loaded in multiple VMs for some unknown reason.
-
-	:::warning
-	This module is not yet ready for use.
-	:::
 ]=]
 
 --// Requires //--
 local RailUtil = script.Parent.Parent
 local Promise = require(RailUtil.Parent.Promise)
-local Fusion = require(RailUtil.Parent.Fusion)
+local Fusion = require(RailUtil.Parent.Fusion_v0_2_0)
 
 local Value = Fusion.Value
 local Observer = Fusion.Observer

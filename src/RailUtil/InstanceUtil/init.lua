@@ -426,50 +426,6 @@ function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: Viewport
 	return radius / math.sin(xfov2)
 end
 
-
-
---[=[
-	Takes an Instance and Emits it and any descendants it has.
-
-	Optional Attributes that any of the descendant ParticleEmitters could have:
-	```
-		EmitDelay: number? -- The delay before emitting
-		EmitCount: number? -- The number of particles to emit at the start
-		EmitDuration: number? -- The duration to emit particles for
-	```
-
-	@param parent	 -- The Instance to search Particles for
-	@param emitCount -- The number of particles to emit
-	```lua
-	InstanceUtil.emitParticles(workspace.Effect)
-	```
-]=]
-function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
-	if parent:IsA("ParticleEmitter") then
-		local PE: ParticleEmitter = parent
-		local function Emit()
-			PE:Emit(emitCount or PE:GetAttribute("EmitCount") :: number? or 10)
-			local EmitDuration: number? = PE:GetAttribute("EmitDuration") :: any
-			if typeof(EmitDuration) == "number" then
-				PE.Enabled = true
-				task.delay(EmitDuration, function()
-					PE.Enabled = false
-				end)
-			end
-		end
-
-		local EmitDelay: number? = PE:GetAttribute("EmitDelay") :: any
-		if typeof(EmitDelay) == "number" then
-			task.delay(EmitDelay, Emit)
-		else
-			Emit()
-		end
-	end
-	for _, child in pairs(parent:GetChildren()) do
-		InstanceUtil.emitParticles(child)
-	end
-end
-
 --[=[
 	Takes an Instance and Clones all of its children into a new Instance.
 	@param parent		-- The Instance to take the children of
@@ -596,6 +552,43 @@ function InstanceUtil.hasProperty(object: Instance, property: string): (boolean,
 end
 
 --[=[
+	Plays a tween as a promise. If a tween is not given then standard tween parameters are used to create a new tween.
+	@param obj          -- The Tween to play or the instance to play on.
+	@return Promise     -- A Promise that resolves when the tween has finished.
+	```lua
+	local part = Instance.new("Part")
+	local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+	local goals = {
+		Size = Vector3.new(10, 10, 10),
+		Position = Vector3.new(0, 10, 0),
+	}
+
+	InstanceUtil.playTween(part, tweenInfo, goals):andThen(function()
+		print("Tween has finished playing.")
+	end)
+	```
+]=]
+function InstanceUtil.playTween(
+	obj: Tween | Instance,
+	info: TweenInfo?,
+	goals: { [string]: any }?
+): Promise<Enum.PlaybackState>
+	if typeof(obj) == "Instance" and not obj:IsA("TweenBase") then
+		obj = TweenService:Create(obj, info, goals)
+	end
+	assert(obj:IsA("Tween"))
+	local prom = Promise.fromEvent(obj.Completed):andThen(function(status: Enum.PlaybackState)
+		if status == Enum.PlaybackState.Cancelled then
+			return Promise.reject(status)
+		end
+		return Promise.resolve(status)
+	end)
+	obj:Play()
+	return prom
+end
+
+
+--[=[
 	Takes a track or array of AnimationTracks and plays them all asynchronously.
 	@param tracks       -- The AnimationTrack or array of AnimationTracks to play.
 	@param animInfo     -- The AnimPlayInfo to use when playing the tracks.
@@ -646,40 +639,47 @@ function InstanceUtil.playTracksAsync(
 	end))
 end
 
---[=[
-	Plays a tween as a promise. If a tween is not given then standard tween parameters are used to create a new tween.
-	@param obj          -- The Tween to play or the instance to play on.
-	@return Promise     -- A Promise that resolves when the tween has finished.
-	```lua
-	local part = Instance.new("Part")
-	local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
-	local goals = {
-		Size = Vector3.new(10, 10, 10),
-		Position = Vector3.new(0, 10, 0),
-	}
 
-	InstanceUtil.playTween(part, tweenInfo, goals):andThen(function()
-		print("Tween has finished playing.")
-	end)
+--[=[
+	Takes an Instance and Emits it and any descendants it has.
+
+	Optional Attributes that any of the descendant ParticleEmitters could have:
+	```
+		EmitDelay: number? -- The delay before emitting
+		EmitCount: number? -- The number of particles to emit at the start
+		EmitDuration: number? -- The duration to emit particles for
+	```
+
+	@param parent	 -- The Instance to search Particles for
+	@param emitCount -- The number of particles to emit
+	```lua
+	InstanceUtil.emitParticles(workspace.Effect)
 	```
 ]=]
-function InstanceUtil.playTween(
-	obj: Tween | Instance,
-	info: TweenInfo?,
-	goals: { [string]: any }?
-): Promise<Enum.PlaybackState>
-	if typeof(obj) == "Instance" and not obj:IsA("TweenBase") then
-		obj = TweenService:Create(obj, info, goals)
-	end
-	assert(obj:IsA("Tween"))
-	local prom = Promise.fromEvent(obj.Completed):andThen(function(status: Enum.PlaybackState)
-		if status == Enum.PlaybackState.Cancelled then
-			return Promise.reject(status)
+function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
+	if parent:IsA("ParticleEmitter") then
+		local PE: ParticleEmitter = parent
+		local function Emit()
+			PE:Emit(emitCount or PE:GetAttribute("EmitCount") :: number? or 10)
+			local EmitDuration: number? = PE:GetAttribute("EmitDuration") :: any
+			if typeof(EmitDuration) == "number" then
+				PE.Enabled = true
+				task.delay(EmitDuration, function()
+					PE.Enabled = false
+				end)
+			end
 		end
-		return Promise.resolve(status)
-	end)
-	obj:Play()
-	return prom
+
+		local EmitDelay: number? = PE:GetAttribute("EmitDelay") :: any
+		if typeof(EmitDelay) == "number" then
+			task.delay(EmitDelay, Emit)
+		else
+			Emit()
+		end
+	end
+	for _, child in pairs(parent:GetChildren()) do
+		InstanceUtil.emitParticles(child)
+	end
 end
 
 --------------------------------------------------------------------------------

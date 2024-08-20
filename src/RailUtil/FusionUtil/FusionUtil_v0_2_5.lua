@@ -19,7 +19,7 @@ local MathUtil = require(RailUtil.MathUtil)
 
 local Janitor = require(RailUtil.Parent.Janitor)
 local Promise = require(RailUtil.Parent.Promise)
-local Fusion = require(RailUtil.Parent.Fusion)
+local Fusion = require(RailUtil.Parent.Fusion_v0_2_5)
 
 local peek = Fusion.peek
 local Value = Fusion.Value
