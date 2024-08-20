@@ -5,7 +5,6 @@
 	@class InstanceUtil
 
 	A collection of utility functions for working with Instances.
-
 ]=]
 
 --// Services //--
@@ -47,6 +46,11 @@ local InstanceUtil = {}
     @param predicate		-- The predicate which determines whether the child was found.
     @param recurse boolean? -- Whether or not to search the parent's descendants instead of just its children.
     @return Instance?       -- The first child whose name matches the given string.
+	```lua
+	local part = InstanceUtil.findFirstChildFromPredicate(workspace, function(child)
+		return child:IsA("Part")
+	end)
+	```
 ]=]
 function InstanceUtil.findFirstChildFromPredicate(
 	parent: Instance,
@@ -69,6 +73,9 @@ end
     @param matchString      -- The string to match the child's name to. Uses Lua's string.match function. Can take patterns.
     @param recurse			-- Whether or not to search the parent's descendants instead of just its children.
     @return Instance        -- The first child whose name matches the given string.
+	```lua
+	local model = InstanceUtil.findFirstChildThatMatches(workspace, "^Part", true)
+	```
 ]=]
 function InstanceUtil.findFirstChildThatMatches(parent: Instance, matchString: string, recurse: boolean?): Instance?
 	assert(parent and typeof(parent) == "Instance", "Parent argument of findFirstChildThatMatches must be an Instance.")
@@ -86,6 +93,12 @@ end
 	@param descendant -- The Instance to find the ancestor of.
 	@param ancestor   -- The Instance to find the descendant's ancestor of.
 	@return Instance  -- The first child of the ancestor that is an ancestor of the descendant.
+	```lua
+	local character = InstanceUtil.findFirstChildOfAncestor(someDescendant, workspace.Characters)
+	if character then
+		print("Found character:", character)
+	end
+	```
 ]=]
 function InstanceUtil.findFirstChildOfAncestor(descendant: Instance, ancestor: Instance): Instance?
 	assert(
@@ -115,6 +128,9 @@ end
     @param Parent 		-- Instance to perform the search on.
     @param ClassName	-- The class name or names the descendant must match or inherit.
     @return {Instance?} -- Table with valid descendants of passed ClassName.
+	```lua
+	local partsAndTextures = InstanceUtil.getDescendantsWhichAre(workspace, {"Part", "Texture"})
+	```
 ]=]
 function InstanceUtil.getDescendantsWhichAre(Parent: Instance, ClassName: string | { string }): { Instance }
 	local ClassNames: {string} = if typeof(ClassName) == "table" then ClassName else { ClassName }
@@ -137,6 +153,13 @@ end
     @param timeout       		-- The maximum amount of time to wait for the child to be added. Defaults to 10 seconds.
     @param recurse			    -- Whether or not to search the parent's descendants instead of just its children.
     @return Promise<Instance>   -- A Promise resolving with the first child who satisfies the predicate.
+	```lua
+	InstanceUtil.waitForChildFromPredicate(workspace, function(child)
+		return child:IsA("Part") and child.Name == "MyPart"
+	end):andThen(function(part)
+		print("Found part:", part)
+	end)
+	```
 ]=]
 function InstanceUtil.waitForChildFromPredicate(
 	parent: Instance,
@@ -169,6 +192,11 @@ end
     @param className			-- The class of the child to wait for.
     @param timeout?				-- The maximum amount of time to wait for the child to be added. Defaults to 10 seconds.
     @return Promise<Instance>	-- A promise that resolves with the child when it is added.
+	```lua
+	InstanceUtil.waitForChildWhichIsA(workspace, "Part"):andThen(function(part)
+		print("Found part:", part)
+	end)
+	```
 ]=]
 function InstanceUtil.waitForChildWhichIsA(ancestor: Instance, className: string, timeout: number?): Promise<Instance>
 	assert(
@@ -197,6 +225,11 @@ end
     @param timeout              -- The maximum amount of time to wait for the child to be added. Defaults ot 10 seconds.
     @param recurse              -- Whether or not to search the parent's descendants instead of just its children.
     @return Promise<Instance>   -- The first child whose name matches the given string.
+	```lua
+	InstanceUtil.waitForChildThatMatches(workspace, "^Part"):andThen(function(part)
+		print("Found part:", part)
+	end)
+	```
 ]=]
 function InstanceUtil.waitForChildThatMatches(
 	ancestor: Instance,
@@ -239,6 +272,12 @@ end
     @param template     -- The Instance to use as a template.
     @param name         -- The name of the child to find. Uses the template's name if not given.
     @return Instance    -- The existing or new child.
+	```lua
+	local template = Instance.new("Part")
+	template.BrickColor = BrickColor.new("Bright red")
+
+	local myPart = InstanceUtil.ensureInstance(workspace, template, "MyPart")
+	```
 ]=]
 function InstanceUtil.ensureInstance(parent: Instance, template: Instance, name: string?): Instance
 	local instance = parent:FindFirstChild(name or template.Name)
@@ -256,6 +295,9 @@ end
     @param parent           -- The Instance to search the children of.
     @param descendantName   -- The name of the descendant to destroy.
     @param recurse          -- Whether or not to search the parent's descendants instead of just its children.
+	```lua
+	InstanceUtil.destroyFirstChild(workspace, "MyPart")
+	```
 ]=]
 function InstanceUtil.destroyFirstChild(parent: Instance, descendantName: string, recurse: boolean?)
 	local descendant = parent:FindFirstChild(descendantName, recurse)
@@ -269,6 +311,9 @@ end
     @param instance     -- The Instance to destroy.
     @return boolean     -- Whether or not the instance was destroyed. False is the instance was already destroyed.
     @return string      -- The error message if the instance could not be destroyed.
+	```lua
+	local success, err = InstanceUtil.safeDestroy(myPart)
+	```
 ]=]
 function InstanceUtil.safeDestroy(instance: Instance): (boolean, string)
 	local success, err = pcall(function()
@@ -337,6 +382,9 @@ end
     @param part1            -- The first part to weld.
     @param part2            -- The second part to weld.
     @return WeldConstraint  -- The WeldConstraint created.
+	```lua
+	local weld = InstanceUtil.weld(part1, part2)
+	```
 ]=]
 function InstanceUtil.weld(part1: BasePart, part2: BasePart): WeldConstraint
 	local weld = Instance.new("WeldConstraint")
@@ -351,6 +399,9 @@ end
 	@param model		-- The Model to weld the parts of.
 	@param primaryPart  -- The Part to weld the parts to. Defaults to [Model].PrimaryPart
 	@return {WeldConstraint} -- The WeldConstraints created.
+	```lua
+	local welds = InstanceUtil.weldAssembly(model, model:FindFirstChild("Core"))
+	```
 ]=]
 function InstanceUtil.weldAssembly(model: Model, primaryPart: BasePart?): { WeldConstraint }
 	local welds = {}
@@ -370,6 +421,12 @@ end
 	:::info
 	This is effectively the same as using a RigidConstraint with the attachments if the parent part is unanchored.
 	:::
+	```lua
+	local partAttachment = part:FindFirstChild("Attachment")
+	local targetAttachment = target:FindFirstChild("Attachment")
+	local cframe = InstanceUtil.getAttachmentsAlignedCFrame(partAttachment, targetAttachment)
+	part.CFrame = cframe
+	```
 ]=]
 function InstanceUtil.getAttachmentsAlignedCFrame(partAttachment: Attachment, targetAttachment: Attachment): CFrame
     assert(partAttachment:IsA("Attachment") or not targetAttachment:IsA("Attachment"), "Both inputs must be attachments")
@@ -383,6 +440,9 @@ end
 	@param vpf          -- The ViewportFrame to fit the model into.
 	@param camera       -- The Camera to use. Defaults to the ViewportFrame's CurrentCamera.
 	@return number      -- The distance from the model the camera should be.
+	```lua
+	local distance = InstanceUtil.getModelFitDistance(model, viewportFrame)
+	```
 ]=]
 function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: ViewportFrame, camera: Camera?): number
     local _, modelSize
@@ -433,6 +493,9 @@ end
 
 	@param parent	 -- The Instance to search Particles for
 	@param emitCount -- The number of particles to emit
+	```lua
+	InstanceUtil.emitParticles(workspace.Effect)
+	```
 ]=]
 function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
 	if parent:IsA("ParticleEmitter") then
@@ -466,6 +529,14 @@ end
     @param newParent    -- The Instance to parent the cloned children to
     @param predicate    -- A function to filter which children it should clone
     @return {Instance}  -- The cloned children
+	```lua
+	local modelA = workspace.ModelA
+	local modelB = workspace.ModelB
+
+	local newChildren = InstanceUtil.cloneChildren(modelA, modelB, function(child)
+		return child:IsA("Part")
+	end)
+	```
 ]=]
 function InstanceUtil.cloneChildren(
 	parent: Instance,
@@ -491,6 +562,11 @@ local PromiseWaitForChild = Promise.promisify(workspace.WaitForChild)
     @param childName    -- The Instance name to look for
     @param timeout      -- The number of seconds to wait before timing out
     @return Promise     -- A Promise that resolves when the child is found or rejects if the timeout is reached.
+	```lua
+	InstanceUtil.promiseChild(workspace, "ModelA", 10):andThen(function(model)
+		print("Found ModelA:", model)
+	end)
+	```
 ]=]
 function InstanceUtil.promiseChild(parent: Instance, childName: string, timeout: number?): Promise<Instance>
 	local stack = debug.traceback()
@@ -514,6 +590,11 @@ end
     @param instance     -- The Instance to check the type of.
     @param classNames   -- The ClassName or ClassNames to check against.
     @return boolean     -- Whether or not the instance is any of the given classes.
+	```lua
+	local part = Instance.new("Part")
+	local potentialClasses = {"BasePart", "Decal", "Texture"}
+	local isOneOfTheClasses = InstanceUtil.isClass(part, potentialClasses) -- true
+	```
 ]=]
 function InstanceUtil.isClass(instance: Instance, classNames: string | { string }): boolean
 	local ClassNames: {string} = if typeof(classNames) == "table" then classNames else { classNames }
@@ -535,6 +616,9 @@ end
     @param defaultValue -- The default value to return if the ModuleScript could not be found.
 
     @return any
+	```lua
+	local module = InstanceUtil.fetchModule(workspace, "MyModule")
+	```
 ]=]
 function InstanceUtil.fetchModule<T>(parent: Instance, moduleName: string, defaultValue: any?): any
 	local module: ModuleScript = nil
@@ -568,6 +652,17 @@ end
     @param property     -- The property to check for.
     @return boolean     -- Whether or not the instance has the property.
     @return any         -- The value of the property if it exists.
+	```lua
+	local part = Instance.new("Part")
+	local subPart = Instance.new("Part")
+	subPart.Name = "Size"
+	subPart.Parent = part
+
+	local hasProperty, value = InstanceUtil.hasProperty(part, "Size")
+	if hasProperty then
+		print("Part has Size property:", value)
+	end
+	```
 ]=]
 function InstanceUtil.hasProperty(object: Instance, property: string): (boolean, any)
 	if object:FindFirstChild(property) then
@@ -588,6 +683,19 @@ end
     @param animInfo     -- The AnimPlayInfo to use when playing the tracks.
     @param keyframeMarkerToResolveAt        -- The Keyframe marker to resolve at instead of the animations ending
     @return Promise     -- A Promise that resolves when all tracks have stopped playing.
+	```lua
+	local track = Instance.new("Animation")
+	local animInfo = {
+		FadeInTime = 0.5,
+		Weight = 1,
+		Speed = 1,
+		FadeOutTime = 0.5,
+	}
+	
+	InstanceUtil.playTracksAsync(track, animInfo):andThen(function()
+		print("Animation has finished playing.")
+	end)
+	```
 ]=]
 function InstanceUtil.playTracksAsync(
 	tracks: AnimationTrack | { AnimationTrack },
@@ -624,6 +732,18 @@ end
     Plays a tween as a promise. If a tween is not given then standard tween parameters are used to create a new tween.
     @param obj          -- The Tween to play or the instance to play on.
     @return Promise     -- A Promise that resolves when the tween has finished.
+	```lua
+	local part = Instance.new("Part")
+	local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
+	local goals = {
+		Size = Vector3.new(10, 10, 10),
+		Position = Vector3.new(0, 10, 0),
+	}
+	
+	InstanceUtil.playTween(part, tweenInfo, goals):andThen(function()
+		print("Tween has finished playing.")
+	end)
+	```
 ]=]
 function InstanceUtil.playTween(
 	obj: Tween | Instance,
