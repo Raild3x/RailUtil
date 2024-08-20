@@ -4,6 +4,12 @@
 --[=[
 	@class CameraUtil
 	@client
+
+	A collection of utility functions for working with the camera.
+
+	:::warning Fusion States
+	The states in this module are intended to be used with Fusion 0.3.0.
+	:::
 ]=]
 
 --// Services //--
@@ -14,7 +20,7 @@ end
 
 --// Requires //--
 local RailUtil = script.Parent
-local Fusion = require(RailUtil.Parent.Fusion)
+local Fusion = require(RailUtil.Parent.Fusion_v0_3_0)
 local FusionUtil = require(RailUtil.FusionUtil)
 
 --// Types //--
