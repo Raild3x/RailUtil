@@ -2,7 +2,7 @@
 -- Authors: Logan Hunt [Raildex], Marcus Mendonça [Mophyr];
 -- March 23, 2023
 --[=[
-	@class FusionUtil
+	@class [0.2.5] FusionUtil
 
 	A collection of utility functions for Fusion 0.2.5, this is a custom version of Fusion forked by me.
 
@@ -56,7 +56,7 @@ FusionUtil.isState = isState;
 FusionUtil.isValue = isValue;
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	Creates a promise that resolves when the given state changes.
 	If a callback is given then the callback must return true for the promise to resolve.
@@ -91,7 +91,7 @@ function FusionUtil.promiseStateChange(state: State<any>, callback: ((value: any
 end
 
 --[=[
-    @within FusionUtil
+    @within [0.2.5] FusionUtil
 
     Similar to a shallow reconcile, but also moves any children at numeric indices
 
@@ -112,7 +112,7 @@ function FusionUtil.defaultProps(explicitProps: Props, defaultProps: Props): Pro
 end
 
 --[=[
-    @within FusionUtil
+    @within [0.2.5] FusionUtil
 
     Ensures a passed data is a StateObject. If it is not, it will be converted to one.
 
@@ -150,7 +150,7 @@ function FusionUtil.ensureIsState<T>(data: CanBeState<T>?, defaultValue: T?, dat
 end
 
 --[=[
-    @within FusionUtil
+    @within [0.2.5] FusionUtil
 
     Ensures the given data is a settable Value. Allows for passing of a default value and a datatype to check against.
     
@@ -190,7 +190,7 @@ function FusionUtil.ensureIsValue<T>(data: T | Value<T>, defaultValue: T?, datat
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.
 
@@ -218,7 +218,7 @@ function FusionUtil.syncValues(stateToWatch: State<any>, valueToSet: Value<any>)
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	Takes an AssetId and ensures it to a valid State<string>.
 
@@ -250,7 +250,7 @@ function FusionUtil.ensureAssetId(id: CanBeState<string | number>, default: (str
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	Generates a computed that calculates the ratio of two numbers as a State<number>.
 
@@ -288,7 +288,7 @@ function FusionUtil.ratio<T>(
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	Wraps FusionUtil.ratio with a handler for UDim2s
 
@@ -317,7 +317,7 @@ function FusionUtil.ratioUDim2(
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 	@client
 
 	This wraps FusionUtil.ratio with a handler for scaling states/functions with the Screen Height.
@@ -350,7 +350,7 @@ function FusionUtil.screenRatio<T>(mutator: (CanBeState<T> | (ratio: number, use
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	Lerps between two number states. If no use function is given then it returns a state
 
@@ -378,7 +378,7 @@ function FusionUtil.lerpNumber(n1: CanBeState<number>, n2: CanBeState<number>, a
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	A simple swap function that returns the first value if the condition is true, otherwise returns the second value.
 	Helps with simplifying lots of bulky computeds.
@@ -407,7 +407,7 @@ function FusionUtil.ifThenElse(stateToCheck: State<boolean>, trueOutcome: CanBeS
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 
 	A simple equality function that returns true if the two states are equal.
 		
@@ -431,7 +431,7 @@ function FusionUtil.eq(stateToCheck1: CanBeState<any>, stateToCheck2: CanBeState
 end
 
 --[=[
-    @within FusionUtil
+    @within [0.2.5] FusionUtil
 
     Checks if a given value exists, if it does then this returns the returned value of the passed function.
 
@@ -445,7 +445,7 @@ function FusionUtil.ifExists(value: any?, fn: (...any) -> ...any, ...): ...any?
 end
 
 --[=[
-    @within FusionUtil
+    @within [0.2.5] FusionUtil
 
     Checks if a given value is a state, if it does then this returns the returned value of the passed function.
 
@@ -459,7 +459,7 @@ function FusionUtil.ifIsState(state: any?, fn: (...any) -> ...any, ...): (...any
 end
 
 --[=[
-    @within FusionUtil
+    @within [0.2.5] FusionUtil
 
     Calls the provided callback immediately with the initial state and again anytime the state updates.
 
@@ -477,7 +477,7 @@ end
 
 
 --[=[
-	@within FusionUtil
+	@within [0.2.5] FusionUtil
 	@deprecated v1.0.0 -- Use Fusion's Attribute System instead
 
 	Syncronizes an instances attribute to a Value. The value will be set to the attribute's value any time it changes.
