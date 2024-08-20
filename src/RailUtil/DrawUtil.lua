@@ -47,23 +47,36 @@ end
 
 local DrawUtil = {}
 
-function DrawUtil.vectorFromCFrame(name: string, cf: CFrame, color, scale)
+--[=[
+	Creates a Vector visualization in the world from a CFrame.
+]=]
+function DrawUtil.vectorFromCFrame(name: string, cf: CFrame, color: Color3?, scale: number?)
 	return DrawUtil.vector(name, cf.Position, cf.Position + cf.LookVector, color, scale)
 end
 
-function DrawUtil.vector(name: string, from: Vector3, to: Vector3, color: Color3?, scale: number?)
-	color = color or BrickColor.random().Color
-	scale = scale or 1
-
+--[=[
+	Creates a vector visualization in the world.
+	@param name -- The name of the vector.
+	@param from -- The starting position of the vector.
+	@param to -- The ending position of the vector.
+	@param color -- The color of the vector. Defaults to a random color.
+	@param _scale -- The scale of the vector. Defaults to 1.
+	```lua
+	DrawUtil.vector("MyVector", Vector3.new(0, 0, 0), Vector3.new(10, 10, 10), Color3.new(1, 0, 0), 1)
+	```
+]=]
+function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | Attachment), to: (Vector3 | CFrame | PVInstance | Attachment)?, color: Color3?, _scale: number?)
 	if typeof(from) == "Instance" then
-		if from:IsA("BasePart") then
-			from = from.CFrame
+		if from:IsA("PVInstance") then
+			from = from:GetPivot()
 		elseif from:IsA("Attachment") then
 			from = from.WorldCFrame
 		end
 
+		assert(typeof(from) == "CFrame", "Instance must be a PVInstance or Attachment")
+
 		if to ~= nil then
-			from = from.p
+			from = from.Position
 		end
 	end
 
@@ -73,31 +86,46 @@ function DrawUtil.vector(name: string, from: Vector3, to: Vector3, color: Color3
 		elseif to:IsA("Attachment") then
 			to = to.WorldPosition
 		end
+
+		assert(typeof(to) == "CFrame", "Instance must be a BasePart or Attachment")
 	end
 
 	if typeof(from) == "CFrame" and to == nil then
-		local look = from.lookVector
-		to = from.p
-		from = to + (look * -10)
+		local look = from.LookVector
+		to = from.Position
+		from = (to :: Vector3) + (look * -10)
 	end
+
+	assert(typeof(from) == "Vector3", "Passed parameters are of invalid types")
 
 	if to == nil then
 		to = from
-		from = to + Vector3.new(0, 10, 0)
+		from = (to :: Vector3) + Vector3.new(0, 10, 0)
 	end
 
-	assert(typeof(from) == "Vector3" and typeof(to) == "Vector3", "Passed parameters are of invalid types")
+	assert(typeof(to) == "Vector3", "Passed parameters are of invalid types")
+
+	local scale = _scale or 1
 
 	local container = workspace:FindFirstChild("Arrows") or Instance.new("Folder")
 	container.Name = "Arrows"
 	container.Parent = workspace
 
-	local arrow = container:FindFirstChild(name) or Instance.new("Folder")
-	arrow.Name = name
+	local arrow = container:FindFirstChild(name)
+	if not arrow then
+		arrow = Instance.new("Model")
+		arrow.Name = name
+	end
 
-	local shaft = arrow:FindFirstChild(name .. "_shaft") or Instance.new("CylinderHandleAdornment")
+	local shaft = arrow:FindFirstChild(name .. "_shaft") 
+	if not shaft then
+		shaft = Instance.new("CylinderHandleAdornment")
+		color = color or BrickColor.random().Color
+	else
+		color = color or shaft.Color3
+	end
 	shaft.Height = (from - to).Magnitude - 2
-	shaft.CFrame = CFrame.lookAt(((from + to) / 2) - ((to - from).unit * 1), to)
+	shaft.CFrame = CFrame.lookAt(((from + to) / 2) - ((to - from).Unit * 1), to)
 
 	if shaft.Parent == nil then
 		shaft.Name = name .. "_shaft"
@@ -128,7 +156,7 @@ function DrawUtil.vector(name: string, from: Vector3, to: Vector3, color: Color3
 		pointy.ZIndex = 5 - math.ceil(scale)
 	end
 
-	pointy.CFrame = CFrame.lookAt((CFrame.lookAt(to, from) * CFrame.new(0, 0, -2 - ((scale - 1) / 2))).p, to)
+	pointy.CFrame = CFrame.lookAt((CFrame.lookAt(to, from) * CFrame.new(0, 0, -2 - ((scale - 1) / 2))).Position, to)
 
 	arrow.Parent = container
 
@@ -148,8 +176,13 @@ end
 
 --[=[
 	Draws a point in the world.
+	@param name string -- The name of the point. Calling with the same name will override the previous point info.
+	@param position Vector3 | CFrame -- The position of the point.
+	@param radius number? -- The radius of the point. Defaults to 0.25.
+	@param color Color3? -- The color of the point. Defaults to Color3.new(1, 1, 1).
+	@return Part -- The part that was created.
 ]=]
-function DrawUtil.point(name: string, position: Vector3 | CFrame, radius: number?, color: Color3?)
+function DrawUtil.point(name: string, position: Vector3 | CFrame, radius: number?, color: Color3?): Part
 	local container = workspace:FindFirstChild("Points") or Instance.new("Folder")
 	container.Name = "Points"
 	container.Parent = workspace
@@ -192,7 +225,7 @@ end
 --[=[
 	Draws a line between two points in the world.
 ]=]
-function DrawUtil.line(name: string, from: Vector3, to: Vector3, radius: number?, color: Color3?)
+function DrawUtil.line(name: string, from: Vector3, to: Vector3, radius: number?, color: Color3?): Part
 	local container = workspace:FindFirstChild("Lines") or Instance.new("Folder")
 	container.Name = "Lines"
 	container.Parent = workspace

@@ -312,7 +312,7 @@ function PlayerUtil.onPlayerRemoving<T...>(player: Player, fn: (T...) -> (), ...
 
 	local jani: Janitor = Janitor.new()
 	local cleanerConnection = createCleanerConnection(jani)
-	local args = { ... }
+	local args = { select(1, ...) }
 
 	jani:Add(Players.PlayerRemoving:Connect(function(removedPlayer: Player)
 		if player == removedPlayer then

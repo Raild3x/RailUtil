@@ -2,8 +2,8 @@
 -- Aug 19, 2024
 
 local RailUtil = script.Parent.Parent
-local Fusion = require(RailUtil.Parent["Fusion_0.3.0"])
-local FusionUtil = require(RailUtil.FusionUtil["FusionUtil(v0.3.0)"])
+local Fusion = require(RailUtil.Parent["Fusion_v0_3_0"])
+local FusionUtil = require(RailUtil.FusionUtil)["0.3.0"]
 
 local scoped = Fusion.scoped
 local Value = Fusion.Value

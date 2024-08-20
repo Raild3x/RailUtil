@@ -2,15 +2,13 @@
 -- Authors: Logan Hunt [Raildex], Marcus Mendonça [Mophyr];
 -- March 23, 2023
 --[=[
-	@class FusionUtil
+	@class [0.3.0] FusionUtil
 
 	A collection of utility functions for Fusion 0.3.0.
 
-	DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
+	:::warning Multithreading
+	DO NOT ACCESS THIS IN MULTIPLE VMs (Parallel Luau). Studio freaks out when
 	fusion is loaded in multiple VMs for some unknown reason.
-
-	:::warning
-	This module is not yet ready for use.
 	:::
 ]=]
 
@@ -19,7 +17,7 @@ local Util = script.Parent.Parent
 local MathUtil = require(Util.MathUtil)
 local Janitor = require(Util.Parent.Janitor)
 local Promise = require(Util.Parent.Promise)
-local Fusion = require(Util.Parent["Fusion_0.3.0"])
+local Fusion = require(Util.Parent.Fusion_v0_3_0)
 
 local peek = Fusion.peek
 local scoped = Fusion.scoped
@@ -30,7 +28,7 @@ local Computed = Fusion.Computed
 --// Types //--
 type Scope<T> = Fusion.Scope<T>
 type State<T> = Fusion.StateObject<T>
-type UsedAs<T> = Fusion.UsedAs<T>
+type UsedAs<T> = State<T> | T
 type Computed<T> = Fusion.Computed<T>
 type Value<T> = Fusion.Value<T>
 type Use = Fusion.Use
@@ -61,7 +59,7 @@ type Task = Instance | () -> () | { [any]: any } | any
 local TASK_SYMBOL = newproxy(false)
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Removes a task from a scope by its taskId.
 
@@ -94,7 +92,7 @@ function FusionUtil.removeTask(scope: Scope<any>, taskId: any, dontCleanup: bool
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Adds a task to a scope. If a taskId is provided, it will remove any existing task with that taskId.
 
@@ -129,7 +127,7 @@ function FusionUtil.addTask<T>(scope: Scope<any>, task: Task & T, methodName: an
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Gets a task from a scope by its taskId.
 
@@ -164,7 +162,7 @@ end
 --------------------------------------------------------------------------------
 
 --[=[
-    @within FusionUtil
+    @within [0.3.0] FusionUtil
 
     Ensures a passed data is a StateObject. If it is not, it will be converted to one.
 
@@ -211,7 +209,7 @@ function FusionUtil.ensureIsState<T>(scope: Scope<any>, data: UsedAs<T>?, defaul
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.
 
@@ -241,7 +239,7 @@ function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valu
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Takes an AssetId and formats it to a valid string.
 
@@ -276,7 +274,7 @@ function FusionUtil.formatAssetId(scope: Scope<any>, id: UsedAs<string | number>
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Generates a computed that calculates the ratio of two numbers as a State<number>.
 
@@ -318,7 +316,7 @@ function FusionUtil.ratio<T>(
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Lerps between two number states. If no use function is given then it returns a state
 
@@ -348,7 +346,7 @@ end
 
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	A simple equality function that returns true if the two states are equal.
 	
@@ -375,7 +373,7 @@ function FusionUtil.eq(scope: Scope<any>, stateToCheck1: UsedAs<any>, stateToChe
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 
 	Calls the provided callback immediately with the initial state and then again anytime the state updates.
 

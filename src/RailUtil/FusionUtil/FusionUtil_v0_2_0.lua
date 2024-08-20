@@ -2,22 +2,18 @@
 -- Authors: Logan Hunt [Raildex], Marcus Mendonça [Mophyr];
 -- March 23, 2023
 --[=[
-	@class FusionUtil
+	@class [0.2.0] FusionUtil
 
 	A collection of utility functions for Fusion.
 
 	DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
 	fusion is loaded in multiple VMs for some unknown reason.
-
-	:::warning
-	This module is not yet ready for use.
-	:::
 ]=]
 
 --// Requires //--
 local RailUtil = script.Parent.Parent
 local Promise = require(RailUtil.Parent.Promise)
-local Fusion = require(RailUtil.Parent.Fusion)
+local Fusion = require(RailUtil.Parent.Fusion_v0_2_0)
 
 local Value = Fusion.Value
 local Observer = Fusion.Observer
@@ -61,7 +57,7 @@ FusionUtil.isValue = isValue;
 --------------------------------------------------------------------------------
 
 --[=[
-	@within FusionUtil
+	@within [0.2.0] FusionUtil
 
 	Creates a promise that resolves when the given state changes.
 	If a callback is given then the callback must return true for the promise to resolve.
@@ -96,7 +92,7 @@ function FusionUtil.promiseStateChange(state: State<any>, callback: ((value: any
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.0] FusionUtil
 
 	Takes an AssetId and ensures it to a valid State<string>.
 
@@ -130,7 +126,7 @@ end
 
 
 --[=[
-	@within FusionUtil
+	@within [0.2.0] FusionUtil
 
 	Generates a computed that calculates the ratio of two numbers as a State<number>.
 
@@ -169,7 +165,7 @@ function FusionUtil.ratio<T>(
 end
 
 --[=[
-	@within FusionUtil
+	@within [0.2.0] FusionUtil
 
 	A simple equality function that returns true if the two states are equal.
 		
