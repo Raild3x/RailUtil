@@ -4,7 +4,7 @@
 --[=[
 	@class FusionUtil
 
-	A collection of utility functions for Fusion.
+	A collection of utility functions for Fusion 0.2.5, this is a custom version of Fusion forked by me.
 
 	DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
 	fusion is loaded in multiple VMs for some unknown reason.
