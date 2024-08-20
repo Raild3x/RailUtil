@@ -40,12 +40,42 @@ type AnimPlayInfo = {
 
 local InstanceUtil = {}
 
+local PromiseWaitForChild = Promise.promisify(workspace.WaitForChild)
 --[=[
-    Searches the parent for the first child which evaluates the given predicate to be true.
-    @param parent			-- The Instance to search the children of.
-    @param predicate		-- The predicate which determines whether the child was found.
-    @param recurse boolean? -- Whether or not to search the parent's descendants instead of just its children.
-    @return Instance?       -- The first child whose name matches the given string.
+	Promisifys the WaitForChild method on an Instance and adds in more robust error handling.
+	@param parent       -- The Instance to take the children of
+	@param childName    -- The Instance name to look for
+	@param timeout      -- The number of seconds to wait before timing out
+	@return Promise     -- A Promise that resolves when the child is found or rejects if the timeout is reached.
+	```lua
+	InstanceUtil.promiseChild(workspace, "ModelA", 10):andThen(function(model)
+		print("Found ModelA:", model)
+	end)
+	```
+]=]
+function InstanceUtil.promiseChild(parent: Instance, childName: string, timeout: number?): Promise<Instance>
+	local stack = debug.traceback()
+	local prom = PromiseWaitForChild(parent, childName, math.huge)
+	if timeout then
+		prom = prom:timeout(
+			timeout,
+			("Timed out after %s seconds waiting for child %s in parent %s\n%s"):format(
+				timeout :: any,
+				childName,
+				parent:GetFullName(),
+				stack
+			)
+		)
+	end
+	return prom
+end
+
+--[=[
+	Searches the parent for the first child which evaluates the given predicate to be true.
+	@param parent			-- The Instance to search the children of.
+	@param predicate		-- The predicate which determines whether the child was found.
+	@param recurse boolean? -- Whether or not to search the parent's descendants instead of just its children.
+	@return Instance?       -- The first child whose name matches the given string.
 	```lua
 	local part = InstanceUtil.findFirstChildFromPredicate(workspace, function(child)
 		return child:IsA("Part")
@@ -68,11 +98,11 @@ function InstanceUtil.findFirstChildFromPredicate(
 end
 
 --[=[
-    Searches the parent for the first child whose name matches the given string.
-    @param parent           -- The Instance to search the children of.
-    @param matchString      -- The string to match the child's name to. Uses Lua's string.match function. Can take patterns.
-    @param recurse			-- Whether or not to search the parent's descendants instead of just its children.
-    @return Instance        -- The first child whose name matches the given string.
+	Searches the parent for the first child whose name matches the given string.
+	@param parent           -- The Instance to search the children of.
+	@param matchString      -- The string to match the child's name to. Uses Lua's string.match function. Can take patterns.
+	@param recurse			-- Whether or not to search the parent's descendants instead of just its children.
+	@return Instance        -- The first child whose name matches the given string.
 	```lua
 	local model = InstanceUtil.findFirstChildThatMatches(workspace, "^Part", true)
 	```
@@ -123,11 +153,11 @@ function InstanceUtil.findFirstChildOfAncestor(descendant: Instance, ancestor: I
 end
 
 --[=[
-    Iterates through Parent descendants and returns a table which only contains descendants of
-    passed ClassName.
-    @param Parent 		-- Instance to perform the search on.
-    @param ClassName	-- The class name or names the descendant must match or inherit.
-    @return {Instance?} -- Table with valid descendants of passed ClassName.
+	Iterates through Parent descendants and returns a table which only contains descendants of
+	passed ClassName.
+	@param Parent 		-- Instance to perform the search on.
+	@param ClassName	-- The class name or names the descendant must match or inherit.
+	@return {Instance?} -- Table with valid descendants of passed ClassName.
 	```lua
 	local partsAndTextures = InstanceUtil.getDescendantsWhichAre(workspace, {"Part", "Texture"})
 	```
@@ -147,12 +177,12 @@ function InstanceUtil.getDescendantsWhichAre(Parent: Instance, ClassName: string
 end
 
 --[=[
-    Waits for the first child which evaluates the given predicate to be true.
-    @param parent				-- The Instance to search the children of.
-    @param predicate            -- The predicate which determines whether the child was found.
-    @param timeout       		-- The maximum amount of time to wait for the child to be added. Defaults to 10 seconds.
-    @param recurse			    -- Whether or not to search the parent's descendants instead of just its children.
-    @return Promise<Instance>   -- A Promise resolving with the first child who satisfies the predicate.
+	Waits for the first child which evaluates the given predicate to be true.
+	@param parent				-- The Instance to search the children of.
+	@param predicate            -- The predicate which determines whether the child was found.
+	@param timeout       		-- The maximum amount of time to wait for the child to be added. Defaults to 10 seconds.
+	@param recurse			    -- Whether or not to search the parent's descendants instead of just its children.
+	@return Promise<Instance>   -- A Promise resolving with the first child who satisfies the predicate.
 	```lua
 	InstanceUtil.waitForChildFromPredicate(workspace, function(child)
 		return child:IsA("Part") and child.Name == "MyPart"
@@ -185,13 +215,14 @@ function InstanceUtil.waitForChildFromPredicate(
 		`[waitForChildFromPredicate] {eventTimeout} second timeout reached while waiting for child!`
 	)
 end
+InstanceUtil.promiseChildFromPredicate = InstanceUtil.waitForChildFromPredicate
 
 --[=[
-    Waits for a child of the given class in the given ancestor to be added.
-    @param ancestor				-- The Instance to search the children of.
-    @param className			-- The class of the child to wait for.
-    @param timeout?				-- The maximum amount of time to wait for the child to be added. Defaults to 10 seconds.
-    @return Promise<Instance>	-- A promise that resolves with the child when it is added.
+	Waits for a child of the given class in the given ancestor to be added.
+	@param ancestor				-- The Instance to search the children of.
+	@param className			-- The class of the child to wait for.
+	@param timeout?				-- The maximum amount of time to wait for the child to be added. Defaults to 10 seconds.
+	@return Promise<Instance>	-- A promise that resolves with the child when it is added.
 	```lua
 	InstanceUtil.waitForChildWhichIsA(workspace, "Part"):andThen(function(part)
 		print("Found part:", part)
@@ -217,14 +248,15 @@ function InstanceUtil.waitForChildWhichIsA(ancestor: Instance, className: string
 		`[waitForChildWhichIsA] {eventTimeout} second timeout reached while waiting for: "{className}"`
 	)
 end
+InstanceUtil.promiseChildWhichIsA = InstanceUtil.waitForChildWhichIsA
 
 --[=[
-    Waits for the first child whose name matches the given string.
-    @param ancestor				-- The Instance to search the children of.
-    @param matchString          -- The string to match the child's name to. Uses Lua's string.match function. Can take patterns.
-    @param timeout              -- The maximum amount of time to wait for the child to be added. Defaults ot 10 seconds.
-    @param recurse              -- Whether or not to search the parent's descendants instead of just its children.
-    @return Promise<Instance>   -- The first child whose name matches the given string.
+	Waits for the first child whose name matches the given string.
+	@param ancestor				-- The Instance to search the children of.
+	@param matchString          -- The string to match the child's name to. Uses Lua's string.match function. Can take patterns.
+	@param timeout              -- The maximum amount of time to wait for the child to be added. Defaults ot 10 seconds.
+	@param recurse              -- Whether or not to search the parent's descendants instead of just its children.
+	@return Promise<Instance>   -- The first child whose name matches the given string.
 	```lua
 	InstanceUtil.waitForChildThatMatches(workspace, "^Part"):andThen(function(part)
 		print("Found part:", part)
@@ -246,32 +278,15 @@ function InstanceUtil.waitForChildThatMatches(
 		return child.Name:match(matchString) ~= nil
 	end, timeout, recurse)
 end
+InstanceUtil.promiseChildThatMatches = InstanceUtil.waitForChildThatMatches
 
 --[=[
-	@ignore
-	THIS METHOD IS DEPRECATED AS ASSEMBLYMASS TAKES FROM THE FULL ASSEMBLY
-	Gets the Total Mass of an Assembly.
-	@param assembly -- The Instance to get the mass of.
-	@return number  -- The total mass of the assembly.
-]=]
-function InstanceUtil.getMass(assembly: Instance): number
-	assert(assembly and typeof(assembly) == "Instance", "Model argument of getMass must be an Instance.")
-	local mass = 0
-	for _, v in pairs(assembly:GetDescendants()) do
-		if v:IsA("BasePart") and not (v :: BasePart).Massless then
-			mass += (v :: BasePart).AssemblyMass
-		end
-	end
-	return mass
-end
-
---[=[
-    Ensures that the given parent has a child with the given name.
-    If not then it uses the given template to create a new child.
-    @param parent		-- The Instance to check.
-    @param template     -- The Instance to use as a template.
-    @param name         -- The name of the child to find. Uses the template's name if not given.
-    @return Instance    -- The existing or new child.
+	Ensures that the given parent has a child with the given name.
+	If not then it uses the given template to create a new child.
+	@param parent		-- The Instance to check.
+	@param template     -- The Instance to use as a template.
+	@param name         -- The name of the child to find. Uses the template's name if not given.
+	@return Instance    -- The existing or new child.
 	```lua
 	local template = Instance.new("Part")
 	template.BrickColor = BrickColor.new("Bright red")
@@ -291,10 +306,10 @@ function InstanceUtil.ensureInstance(parent: Instance, template: Instance, name:
 end
 
 --[=[
-    Attempts to destroy a named descendant of the given parent.
-    @param parent           -- The Instance to search the children of.
-    @param descendantName   -- The name of the descendant to destroy.
-    @param recurse          -- Whether or not to search the parent's descendants instead of just its children.
+	Attempts to destroy a named descendant of the given parent.
+	@param parent           -- The Instance to search the children of.
+	@param descendantName   -- The name of the descendant to destroy.
+	@param recurse          -- Whether or not to search the parent's descendants instead of just its children.
 	```lua
 	InstanceUtil.destroyFirstChild(workspace, "MyPart")
 	```
@@ -307,10 +322,10 @@ function InstanceUtil.destroyFirstChild(parent: Instance, descendantName: string
 end
 
 --[=[
-    Attempts to destroy the given instance.
-    @param instance     -- The Instance to destroy.
-    @return boolean     -- Whether or not the instance was destroyed. False is the instance was already destroyed.
-    @return string      -- The error message if the instance could not be destroyed.
+	Attempts to destroy the given instance.
+	@param instance     -- The Instance to destroy.
+	@return boolean     -- Whether or not the instance was destroyed. False is the instance was already destroyed.
+	@return string      -- The error message if the instance could not be destroyed.
 	```lua
 	local success, err = InstanceUtil.safeDestroy(myPart)
 	```
@@ -323,65 +338,10 @@ function InstanceUtil.safeDestroy(instance: Instance): (boolean, string)
 end
 
 --[=[
-	@private
-	Ensures the getting and creation of an Animator in the given Parent.
-	@param Parent       -- The Parent to search for an Animator in.
-	@return Animator    -- The Animator found or created.
-]=]
-function InstanceUtil.ensureAnimator(Parent: Instance): Animator
-	local AnimatorParent = Parent:FindFirstChildOfClass("AnimationController")
-		or Parent:FindFirstChildOfClass("Humanoid")
-	if not AnimatorParent then
-		warn(
-			"No Humanoid or AnimationController found in Parent",
-			Parent:GetFullName(),
-			"; Consider setting one up at Edit Time."
-		)
-		local AnimController = Instance.new("AnimationController")
-		AnimController.Parent = Parent
-		AnimatorParent = AnimController
-	end
-	
-	local Animator = (AnimatorParent :: any):FindFirstChildOfClass("Animator")
-	if not Animator then
-		warn("Failed to Find Animator in Parent", AnimatorParent, "; Consider setting one up at Edit Time.")
-		Animator = Instance.new("Animator")
-		Animator.Parent = AnimatorParent
-	end
-	return Animator
-end
-
---[=[
-	@private
-	Loads an animation asynchronously. Originally made to be used with models being displayed in
-	ViewportFrames with Fusion.
-	@param SourceAnimator   -- Animator to load the animation into.
-	@param AnimationToLoad  -- The animation to load.
-	@return Promise<AnimationTrack>
-]=]
-function InstanceUtil.loadAnimAsync(SourceAnimator: Animator, AnimationToLoad: Animation): Promise<AnimationTrack>
-	local function AttemptLoad()
-		return Promise.new(function(resolve, reject)
-			local success, LoadedAnim = pcall(function()
-				return SourceAnimator:LoadAnimation(AnimationToLoad)
-			end)
-			if success then
-				LoadedAnim.Name = AnimationToLoad.Name
-				resolve(LoadedAnim)
-			else
-				warn("Failed to Load Animation:", SourceAnimator:GetFullName(), AnimationToLoad.Name)
-				reject(LoadedAnim)
-			end
-		end)
-	end
-	return Promise.retryWithDelay(AttemptLoad, 50, 0.1)
-end
-
---[=[
-    Creates a WeldConstraint between two parts.
-    @param part1            -- The first part to weld.
-    @param part2            -- The second part to weld.
-    @return WeldConstraint  -- The WeldConstraint created.
+	Creates a WeldConstraint between two parts.
+	@param part1            -- The first part to weld.
+	@param part2            -- The second part to weld.
+	@return WeldConstraint  -- The WeldConstraint created.
 	```lua
 	local weld = InstanceUtil.weld(part1, part2)
 	```
@@ -466,20 +426,7 @@ function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: Viewport
 	return radius / math.sin(xfov2)
 end
 
---[=[
-	@ignore
-	Iterates through descendants of Model and unanchor necessary parts to play animations correctly.
-	@param model -- Model to check and set .Anchor property to.
-]=]
-function InstanceUtil.guaranteeAnchoringToAnimate(model: Model | Actor)
-	local Descendants: { BasePart } = InstanceUtil.getDescendantsWhichAre(model, "BasePart") :: any
-	for _, Part in ipairs(Descendants) do
-		if Part.Name == "HumanoidRootPart" then
-			continue
-		end
-		Part.Anchored = false
-	end
-end
+
 
 --[=[
 	Takes an Instance and Emits it and any descendants it has.
@@ -524,11 +471,11 @@ function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
 end
 
 --[=[
-    Takes an Instance and Clones all of its children into a new Instance.
-    @param parent		-- The Instance to take the children of
-    @param newParent    -- The Instance to parent the cloned children to
-    @param predicate    -- A function to filter which children it should clone
-    @return {Instance}  -- The cloned children
+	Takes an Instance and Clones all of its children into a new Instance.
+	@param parent		-- The Instance to take the children of
+	@param newParent    -- The Instance to parent the cloned children to
+	@param predicate    -- A function to filter which children it should clone
+	@return {Instance}  -- The cloned children
 	```lua
 	local modelA = workspace.ModelA
 	local modelB = workspace.ModelB
@@ -555,41 +502,13 @@ function InstanceUtil.cloneChildren(
 	return newChildren
 end
 
-local PromiseWaitForChild = Promise.promisify(workspace.WaitForChild)
---[=[
-    Promisifys the WaitForChild method on an Instance and adds in more robust error handling.
-    @param parent       -- The Instance to take the children of
-    @param childName    -- The Instance name to look for
-    @param timeout      -- The number of seconds to wait before timing out
-    @return Promise     -- A Promise that resolves when the child is found or rejects if the timeout is reached.
-	```lua
-	InstanceUtil.promiseChild(workspace, "ModelA", 10):andThen(function(model)
-		print("Found ModelA:", model)
-	end)
-	```
-]=]
-function InstanceUtil.promiseChild(parent: Instance, childName: string, timeout: number?): Promise<Instance>
-	local stack = debug.traceback()
-	local prom = PromiseWaitForChild(parent, childName, math.huge)
-	if timeout then
-		prom = prom:timeout(
-			timeout,
-			("Timed out after %s seconds waiting for child %s in parent %s\n%s"):format(
-				timeout :: any,
-				childName,
-				parent:GetFullName(),
-				stack
-			)
-		)
-	end
-	return prom
-end
+
 
 --[=[
-    Checks to see if the given instance is any of the given classes.
-    @param instance     -- The Instance to check the type of.
-    @param classNames   -- The ClassName or ClassNames to check against.
-    @return boolean     -- Whether or not the instance is any of the given classes.
+	Checks to see if the given instance is any of the given classes.
+	@param instance     -- The Instance to check the type of.
+	@param classNames   -- The ClassName or ClassNames to check against.
+	@return boolean     -- Whether or not the instance is any of the given classes.
 	```lua
 	local part = Instance.new("Part")
 	local potentialClasses = {"BasePart", "Decal", "Texture"}
@@ -607,15 +526,14 @@ function InstanceUtil.isClass(instance: Instance, classNames: string | { string 
 end
 
 --[=[
-    Searches for a ModuleScript in the given parent with the given name. If a descendant is found with the given name
-    and is an ObjectValue, this value will be assumed to be the ModuleScript. If the ModuleScript could not be found
-    it will return the defaultValue if it is provided. Otherwise it will error.
+	Searches for a ModuleScript in the given parent with the given name. If a descendant is found with the given name
+	and is an ObjectValue, this value will be assumed to be the ModuleScript. If the ModuleScript could not be found
+	it will return the defaultValue if it is provided. Otherwise it will error.
 
-    @param parent       -- The Instance that has it and its descendants checked against.
-    @param moduleName   -- The name of the ModuleScript to search for.
-    @param defaultValue -- The default value to return if the ModuleScript could not be found.
-
-    @return any
+	@param parent       -- The Instance that has it and its descendants checked against.
+	@param moduleName   -- The name of the ModuleScript to search for.
+	@param defaultValue -- The default value to return if the ModuleScript could not be found.
+	@return any
 	```lua
 	local module = InstanceUtil.fetchModule(workspace, "MyModule")
 	```
@@ -646,12 +564,12 @@ function InstanceUtil.fetchModule<T>(parent: Instance, moduleName: string, defau
 end
 
 --[=[
-    Checks to see if a given instance has a property. If it does, it will return true and the value of the property.
-    If it does not, it will return false and a message.
-    @param object       -- The Instance to check the property of.
-    @param property     -- The property to check for.
-    @return boolean     -- Whether or not the instance has the property.
-    @return any         -- The value of the property if it exists.
+	Checks to see if a given instance has a property. If it does, it will return true and the value of the property.
+	If it does not, it will return false and a message.
+	@param object       -- The Instance to check the property of.
+	@param property     -- The property to check for.
+	@return boolean     -- Whether or not the instance has the property.
+	@return any         -- The value of the property if it exists.
 	```lua
 	local part = Instance.new("Part")
 	local subPart = Instance.new("Part")
@@ -678,11 +596,11 @@ function InstanceUtil.hasProperty(object: Instance, property: string): (boolean,
 end
 
 --[=[
-    Takes a track or array of AnimationTracks and plays them all asynchronously.
-    @param tracks       -- The AnimationTrack or array of AnimationTracks to play.
-    @param animInfo     -- The AnimPlayInfo to use when playing the tracks.
-    @param keyframeMarkerToResolveAt        -- The Keyframe marker to resolve at instead of the animations ending
-    @return Promise     -- A Promise that resolves when all tracks have stopped playing.
+	Takes a track or array of AnimationTracks and plays them all asynchronously.
+	@param tracks       -- The AnimationTrack or array of AnimationTracks to play.
+	@param animInfo     -- The AnimPlayInfo to use when playing the tracks.
+	@param keyframeMarkerToResolveAt        -- The Keyframe marker to resolve at instead of the animations ending
+	@return Promise     -- A Promise that resolves when all tracks have stopped playing.
 	```lua
 	local track = Instance.new("Animation")
 	local animInfo = {
@@ -691,7 +609,7 @@ end
 		Speed = 1,
 		FadeOutTime = 0.5,
 	}
-	
+
 	InstanceUtil.playTracksAsync(track, animInfo):andThen(function()
 		print("Animation has finished playing.")
 	end)
@@ -729,9 +647,9 @@ function InstanceUtil.playTracksAsync(
 end
 
 --[=[
-    Plays a tween as a promise. If a tween is not given then standard tween parameters are used to create a new tween.
-    @param obj          -- The Tween to play or the instance to play on.
-    @return Promise     -- A Promise that resolves when the tween has finished.
+	Plays a tween as a promise. If a tween is not given then standard tween parameters are used to create a new tween.
+	@param obj          -- The Tween to play or the instance to play on.
+	@return Promise     -- A Promise that resolves when the tween has finished.
 	```lua
 	local part = Instance.new("Part")
 	local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Linear, Enum.EasingDirection.InOut)
@@ -739,7 +657,7 @@ end
 		Size = Vector3.new(10, 10, 10),
 		Position = Vector3.new(0, 10, 0),
 	}
-	
+
 	InstanceUtil.playTween(part, tweenInfo, goals):andThen(function()
 		print("Tween has finished playing.")
 	end)
@@ -763,5 +681,98 @@ function InstanceUtil.playTween(
 	obj:Play()
 	return prom
 end
+
+--------------------------------------------------------------------------------
+--// Deprecated / Private Methods //--
+--------------------------------------------------------------------------------
+
+--[=[
+	@private
+	Iterates through descendants of Model and unanchor necessary parts to play animations correctly.
+	@param model -- Model to check and set .Anchor property to.
+]=]
+function InstanceUtil.guaranteeAnchoringToAnimate(model: Model | Actor)
+	local Descendants: { BasePart } = InstanceUtil.getDescendantsWhichAre(model, "BasePart") :: any
+	for _, Part in ipairs(Descendants) do
+		if Part.Name == "HumanoidRootPart" then
+			continue
+		end
+		Part.Anchored = false
+	end
+end
+
+--[=[
+	@private
+	Ensures the getting and creation of an Animator in the given Parent.
+	@param Parent       -- The Parent to search for an Animator in.
+	@return Animator    -- The Animator found or created.
+]=]
+function InstanceUtil.ensureAnimator(Parent: Instance): Animator
+	local AnimatorParent = Parent:FindFirstChildOfClass("AnimationController")
+		or Parent:FindFirstChildOfClass("Humanoid")
+	if not AnimatorParent then
+		warn(
+			"No Humanoid or AnimationController found in Parent",
+			Parent:GetFullName(),
+			"; Consider setting one up at Edit Time."
+		)
+		local AnimController = Instance.new("AnimationController")
+		AnimController.Parent = Parent
+		AnimatorParent = AnimController
+	end
+	
+	local Animator = (AnimatorParent :: any):FindFirstChildOfClass("Animator")
+	if not Animator then
+		warn("Failed to Find Animator in Parent", AnimatorParent, "; Consider setting one up at Edit Time.")
+		Animator = Instance.new("Animator")
+		Animator.Parent = AnimatorParent
+	end
+	return Animator
+end
+
+--[=[
+	@private
+	Loads an animation asynchronously. Originally made to be used with models being displayed in
+	ViewportFrames with Fusion.
+	@param SourceAnimator   -- Animator to load the animation into.
+	@param AnimationToLoad  -- The animation to load.
+	@return Promise<AnimationTrack>
+]=]
+function InstanceUtil.loadAnimAsync(SourceAnimator: Animator, AnimationToLoad: Animation): Promise<AnimationTrack>
+	local function AttemptLoad()
+		return Promise.new(function(resolve, reject)
+			local success, LoadedAnim = pcall(function()
+				return SourceAnimator:LoadAnimation(AnimationToLoad)
+			end)
+			if success then
+				LoadedAnim.Name = AnimationToLoad.Name
+				resolve(LoadedAnim)
+			else
+				warn("Failed to Load Animation:", SourceAnimator:GetFullName(), AnimationToLoad.Name)
+				reject(LoadedAnim)
+			end
+		end)
+	end
+	return Promise.retryWithDelay(AttemptLoad, 50, 0.1)
+end
+
+--[=[
+	@ignore
+	THIS METHOD IS DEPRECATED AS ASSEMBLYMASS TAKES FROM THE FULL ASSEMBLY
+	Gets the Total Mass of an Assembly.
+	@param assembly -- The Instance to get the mass of.
+	@return number  -- The total mass of the assembly.
+]=]
+function InstanceUtil.getMass(assembly: Instance): number
+	assert(assembly and typeof(assembly) == "Instance", "Model argument of getMass must be an Instance.")
+	local mass = 0
+	for _, v in pairs(assembly:GetDescendants()) do
+		if v:IsA("BasePart") and not (v :: BasePart).Massless then
+			mass += (v :: BasePart).AssemblyMass
+		end
+	end
+	return mass
+end
+
 
 return InstanceUtil
