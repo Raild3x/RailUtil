@@ -375,14 +375,14 @@ function FusionUtil.eq(scope: Scope<any>, stateToCheck1: UsedAs<any>, stateToChe
 end
 
 --[=[
-    @within FusionUtil
+	@within FusionUtil
 
-    Calls the provided callback immediately with the initial state and then again anytime the state updates.
+	Calls the provided callback immediately with the initial state and then again anytime the state updates.
 
 	@param scope
-    @param fusionState  -- The state object to observe
-    @param callback     -- The callback to call when the fusionState is updated
-    @return () -> ()    -- A function that will disconnect the observer
+	@param fusionState  -- The state object to observe
+	@param callback     -- The callback to call when the fusionState is updated
+	@return () -> ()    -- A function that will disconnect the observer
 ]=]
 function FusionUtil.observeState<T>(scope: Scope<any>, fusionState: UsedAs<T>, callback: (stateValue: T) -> ()): () -> ()
 	local function onStateChange()
