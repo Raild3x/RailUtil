@@ -1,5 +1,7 @@
 build
 sourcemap.json
+*.rbxl
+*.rbxl.lock
 
 # Ignore everything in the src directory
 src/*
