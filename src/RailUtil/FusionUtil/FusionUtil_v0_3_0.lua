@@ -30,8 +30,11 @@ type Scope<T> = Fusion.Scope<T>
 type State<T> = Fusion.StateObject<T>
 type UsedAs<T> = State<T> | T
 type Computed<T> = Fusion.Computed<T>
+type Observer = Fusion.Observer
 type Value<T> = Fusion.Value<T>
 type Use = Fusion.Use
+type Spring<T> = Fusion.Spring<T>
+type Tween<T> = Fusion.Tween<T>
 
 type Props = { [any]: any }
 
@@ -51,6 +54,77 @@ local FusionUtil = {}
 FusionUtil.isState = isState;
 FusionUtil.isValue = isValue;
 
+FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
+type FUS = typeof(FusionUtil.scope)
+
+FusionUtil.raw = table.freeze {
+	Value = function<T>(value: T): Value<T>
+		return FusionUtil.scope:Value(value)
+	end;
+	Computed = function<T>(func: (use: Use) -> T): Computed<T>
+		return FusionUtil.scope:Computed(func)
+	end;
+	Observer = function<T>(watching: unknown): Observer
+		return FusionUtil.scope:Observer(watching)
+	end;
+	Spring = function<T>(value: UsedAs<T>, speed: UsedAs<number>, damping: UsedAs<T>): Spring<T>
+		return FusionUtil.scope:Spring(value)
+	end;
+	Tween = function<T>(goal: UsedAs<T>, tweenInfo: UsedAs<TweenInfo>): Tween<T>
+		return FusionUtil.scope:Tween(goal, tweenInfo)
+	end;
+	New = function(className: string): (props: Props) -> Instance
+		return FusionUtil.scope:New(className)
+	end;
+	Hydrate = function<T>(instance: T & Instance): (props: Props) -> T
+		return FusionUtil.scope:Hydrate(instance)
+	end;
+	-- For = function<KI, VI, KO, VO>(
+	-- 	inputTable: UsedAs<{[KI]: VI}>,
+	-- 	processor: (
+	-- 		scope: FUS, 
+	-- 		value: State<{key: KI, value: VI}>
+	-- 	) -> State<{key: KO, value: VO}>
+	-- ): Fusion.For<KO, VO>
+	-- 	return FusionUtil.scope:For(inputTable)
+	-- end;
+	ForKeys = function<KI, KO, V>(
+		inputTable: UsedAs<{[KI]: V}>,
+		processor: (
+			use: Use,
+			scope: FUS, 
+			key: KI
+		) -> KO,
+		destructor: unknown
+	): Fusion.For<KO, V>
+		return FusionUtil.scope:ForKeys(inputTable)
+	end;
+	ForValues = function<K, VI, VO>(
+		inputTable: UsedAs<{[K]: VI}>,
+		processor: (
+			use: Use,
+			scope: FUS, 
+			value: VI
+		) -> VO,
+		destructor: unknown
+	): Fusion.For<K, VO>
+		return FusionUtil.scope:ForValues(inputTable)
+	end;
+	ForPairs = function<KI, VI, KO, VO>(
+		inputTable: UsedAs<{[KI]: VI}>,
+		processor: (
+			use: Use,
+			scope: FUS, 
+			key: KI,
+			value: VI
+		) -> {key: KO, value: VO},
+		destructor: unknown
+	): Fusion.For<KO, VO>
+		return FusionUtil.scope:ForPairs(inputTable)
+	end;
+
+}
+
 --------------------------------------------------------------------------------
 --// TASK METHODS //--
 --------------------------------------------------------------------------------
@@ -69,7 +143,7 @@ local TASK_SYMBOL = newproxy(false)
 	@return Task?      -- The task that was removed
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local id = "Greeting"
 	local task = s:addTask(function() print("Hello, World!") end, nil, id)
@@ -103,7 +177,7 @@ end
 	@return Task    -- The task that was added
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local id = "Greeting"
 	local task = s:addTask(function() print("Hello, World!") end, nil, id)
@@ -136,7 +210,7 @@ end
 	@return Task? -- The task if found, nil otherwise
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local id = "Greeting"
 	local task = s:addTask(function() print("Hello, World!") end, nil, id)
@@ -218,7 +292,7 @@ end
 	@return () -> ()    -- A function that will disconnect the observer
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local a = s:Value(123)
 	local b = s:Value(0)
@@ -249,7 +323,7 @@ end
 	@return CanBeState<string>   -- The State<string> that is synced with the AssetId
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local assetId = s:formatAssetId("rbxefsefawsetid://1234567890")
 	print( peek(assetId) ) -- "rbxassetid://1234567890"
@@ -285,7 +359,7 @@ end
 	@return State<T>    -- The ratio (Potentially mutated)
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local numerator = s:Value(100)
 	local denominator = s:Value(200)
@@ -356,7 +430,7 @@ end
 	@return State<boolean>	-- A state resolving to the equality of the two given arguments
 
 	```lua
-	local s = scoped({Fusion, FusionUtil})
+	local s = scoped(Fusion, FusionUtil)
 
 	local a = s:Value(10)
 	local b = s:Value(10)
