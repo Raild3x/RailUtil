@@ -35,6 +35,7 @@ type Value<T> = Fusion.Value<T>
 type Use = Fusion.Use
 type Spring<T> = Fusion.Spring<T>
 type Tween<T> = Fusion.Tween<T>
+type For<K, V> = Fusion.For<K, V>
 
 type Props = { [any]: any }
 
@@ -51,18 +52,43 @@ end
 
 local FusionUtil = {}
 
+--[=[
+	@within FusionUtil
+	@function isState
+	@param arg: any -- The argument to check
+	@return boolean
+	Checks if the arg is a Fusion StateObject.
+]=]
 FusionUtil.isState = isState;
 FusionUtil.isValue = isValue;
 
 FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
 type FUS = typeof(FusionUtil.scope)
 
+--[=[
+	@within FusionUtil
+	@interface raw
+	.Value<T>(value: T): Value<T>
+	.Computed<T>(fn: (use: Use) -> T): Computed<T>
+	.Observer(watching: unknown): Observer
+	.Spring<T>(value: UsedAs<T>, speed: UsedAs<number>, damping: UsedAs<T>): Spring<T>
+	.Tween<T>(goal: UsedAs<T>, tweenInfo: UsedAs<TweenInfo>): Tween<T>
+	.ForKeys<KI, KO, V>(inputTable: UsedAs<{[KI]: V}>, processor: (use: Use, scope: FUS, key: KI) -> KO, destructor: unknown): For<KO, V>
+	.ForValues<K, VI, VO>(inputTable: UsedAs<{[K]: VI}>, processor: (use: Use, scope: FUS, value: VI) -> VO, destructor: unknown): For<K, VO>
+	.ForPairs<KI, VI, KO, VO>(inputTable: UsedAs<{[KI]: VI}>, processor: (use: Use, scope: FUS, key: KI, value: VI) -> {key: KO, value: VO}, destructor: unknown): For<KO, VO>
+	.New(className: string): (props: Props) -> Instance
+	.Hydrate<T>(instance: T & Instance): (props: Props) -> T
+
+	A table of convenience functions for creating Fusion objects.
+	These functions do not require the use of a scope, they by default use the FusionUtil scope.
+	These are meant to be used in places where you want to create persistent Fusion objects without needing to pass a scope.
+]=]
 FusionUtil.raw = table.freeze {
 	Value = function<T>(value: T): Value<T>
 		return FusionUtil.scope:Value(value)
 	end;
-	Computed = function<T>(func: (use: Use) -> T): Computed<T>
-		return FusionUtil.scope:Computed(func)
+	Computed = function<T>(fn: (use: Use) -> T): Computed<T>
+		return FusionUtil.scope:Computed(fn)
 	end;
 	Observer = function<T>(watching: unknown): Observer
 		return FusionUtil.scope:Observer(watching)
@@ -96,7 +122,7 @@ FusionUtil.raw = table.freeze {
 			key: KI
 		) -> KO,
 		destructor: unknown
-	): Fusion.For<KO, V>
+	): For<KO, V>
 		return FusionUtil.scope:ForKeys(inputTable)
 	end;
 	ForValues = function<K, VI, VO>(
@@ -107,7 +133,7 @@ FusionUtil.raw = table.freeze {
 			value: VI
 		) -> VO,
 		destructor: unknown
-	): Fusion.For<K, VO>
+	): For<K, VO>
 		return FusionUtil.scope:ForValues(inputTable)
 	end;
 	ForPairs = function<KI, VI, KO, VO>(
@@ -119,7 +145,7 @@ FusionUtil.raw = table.freeze {
 			value: VI
 		) -> {key: KO, value: VO},
 		destructor: unknown
-	): Fusion.For<KO, VO>
+	): For<KO, VO>
 		return FusionUtil.scope:ForPairs(inputTable)
 	end;
 
