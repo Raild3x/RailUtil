@@ -1,5 +1,5 @@
 --!strict
--- Authors: Logan Hunt [Raildex], Marcus Mendonça [Mophyr];
+-- Authors: Logan Hunt [Raildex];
 -- March 23, 2023
 --[=[
 	@class [0.3.0] FusionUtil
@@ -15,12 +15,9 @@
 --// Requires //--
 local Util = script.Parent.Parent
 local MathUtil = require(Util.MathUtil)
-local Janitor = require(Util.Parent.Janitor)
-local Promise = require(Util.Parent.Promise)
 local Fusion = require(Util.Parent.Fusion_v0_3_0)
 
 local peek = Fusion.peek
-local scoped = Fusion.scoped
 local Value = Fusion.Value
 local Observer = Fusion.Observer
 local Computed = Fusion.Computed
@@ -53,9 +50,9 @@ end
 local FusionUtil = {}
 
 --[=[
-	@within FusionUtil
+	@within [0.3.0] FusionUtil
 	@function isState
-	@param arg: any -- The argument to check
+	@param arg any
 	@return boolean
 	Checks if the arg is a Fusion StateObject.
 ]=]
@@ -66,22 +63,18 @@ FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
 type FUS = typeof(FusionUtil.scope)
 
 --[=[
-	@within FusionUtil
-	@interface raw
-	.Value<T>(value: T): Value<T>
-	.Computed<T>(fn: (use: Use) -> T): Computed<T>
-	.Observer(watching: unknown): Observer
-	.Spring<T>(value: UsedAs<T>, speed: UsedAs<number>, damping: UsedAs<T>): Spring<T>
-	.Tween<T>(goal: UsedAs<T>, tweenInfo: UsedAs<TweenInfo>): Tween<T>
-	.ForKeys<KI, KO, V>(inputTable: UsedAs<{[KI]: V}>, processor: (use: Use, scope: FUS, key: KI) -> KO, destructor: unknown): For<KO, V>
-	.ForValues<K, VI, VO>(inputTable: UsedAs<{[K]: VI}>, processor: (use: Use, scope: FUS, value: VI) -> VO, destructor: unknown): For<K, VO>
-	.ForPairs<KI, VI, KO, VO>(inputTable: UsedAs<{[KI]: VI}>, processor: (use: Use, scope: FUS, key: KI, value: VI) -> {key: KO, value: VO}, destructor: unknown): For<KO, VO>
-	.New(className: string): (props: Props) -> Instance
-	.Hydrate<T>(instance: T & Instance): (props: Props) -> T
-
+	@within [0.3.0] FusionUtil
+	@prop raw table
+	
 	A table of convenience functions for creating Fusion objects.
 	These functions do not require the use of a scope, they by default use the FusionUtil scope.
 	These are meant to be used in places where you want to create persistent Fusion objects without needing to pass a scope.
+
+	```lua
+	local Value = FusionUtil.raw.Value
+
+	local a = Value(10)
+	```
 ]=]
 FusionUtil.raw = table.freeze {
 	Value = function<T>(value: T): Value<T>
