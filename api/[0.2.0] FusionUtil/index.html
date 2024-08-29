@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v2.3.1">
+<title data-rh="true">[0.2.0] FusionUtil | RailUtil</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Raild3x.github.io/RailUtil/api/[0.2.0] FusionUtil"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="[0.2.0] FusionUtil | RailUtil"><meta data-rh="true" name="description" content="A collection of utility functions for Fusion.
+
+DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
+fusion is loaded in multiple VMs for some unknown reason."><meta data-rh="true" property="og:description" content="A collection of utility functions for Fusion.
+
+DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
+fusion is loaded in multiple VMs for some unknown reason."><link data-rh="true" rel="canonical" href="https://Raild3x.github.io/RailUtil/api/[0.2.0] FusionUtil"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/[0.2.0] FusionUtil" hreflang="en"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/[0.2.0] FusionUtil" hreflang="x-default"><link rel="stylesheet" href="/RailUtil/assets/css/styles.19a5646f.css">
+<link rel="preload" href="/RailUtil/assets/js/runtime~main.3e4e091f.js" as="script">
+<link rel="preload" href="/RailUtil/assets/js/main.9de64a32.js" as="script">
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
+<div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/RailUtil/"><b class="navbar__title text--truncate">RailUtil</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/RailUtil/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Raild3x/RailUtil" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="searchBox_ZlJk"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input type="search" id="search_input_react" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/RailUtil">​Rail​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/--------">--------</a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" aria-expanded="true" href="/RailUtil/api/FusionUtil">FusionUtil</a></div><ul style="display:block;overflow:visible;height:auto" class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/RailUtil/api/FusionUtil">​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/RailUtil/api/[0.2.0] FusionUtil">[0.2.0] ​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/RailUtil/api/[0.2.5] FusionUtil">[0.2.5] ​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/RailUtil/api/[0.3.0] FusionUtil">[0.3.0] ​Fusion​Util</a></li></ul></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/CameraUtil">​Camera​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/DebugUtil">​Debug​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/DrawUtil">​Draw​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/InstanceUtil">​Instance​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/MathUtil">​Math​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/PlayerUtil">​Player​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/SignalUtil">​Signal​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/StringUtil">​String​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/TableUtil">​Table​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/VectorUtil">​Vector​Util</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">[0.2.0]</span><span style="display:inline-block"></span><span style="display:inline-block">Fusion</span><span style="display:inline-block">Util</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>A collection of utility functions for Fusion.</p>
+<p>
+  DO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when
+  fusion is loaded in multiple VMs for some unknown reason.
+</p>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="promiseStateChange"><code style="text-decoration:none">promiseStateChange</code><a href="#promiseStateChange" class="hash-link" aria-label="Direct link to promiseStateChange" title="Direct link to promiseStateChange">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau#L81"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.2.0] FusionUtil<!-- -->.</code><code class="green_DgR4">promiseStateChange</code><code>(</code><div class="inset_uKQm"><div><code>state<!-- -->: </code><code class="blue_P4bS">State</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The state to observe</p>
+</span></span></div><div><code>callback<!-- -->: </code><code class="purple_ieR2">(</code><code class="green_DgR4">(</code><code>value<!-- -->: </code><code class="blue_P4bS">any</code><code class="green_DgR4">)</code><code class="green_DgR4"> → </code><code class="blue_P4bS">boolean</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>An optional condition to check before resolving the promise</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">Promise</code><span class="inlineDescription_G7Er">-- <span>
+<p>The promise that will resolve when the state changes</p>
+</span></span></div><div>
+<p>
+  Creates a promise that resolves when the given state changes.
+  If a callback is given then the callback must return true for the promise to resolve.
+</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> a <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+FusionUtil<span class="token punctuation">.</span><span class="token function">promiseStateChange</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> <span class="token keyword">function</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+	<span class="token keyword">return</span> value <span class="token operator">></span> <span class="token number">10</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span><span class="token punctuation">:</span><span class="token function">andThen</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+	<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Value is now greater than 10"</span><span class="token punctuation">)</span>
+<span class="token keyword">end</span><span class="token punctuation">)</span>
+
+a<span class="token punctuation">:</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span> <span class="token comment">-- Promise does not resolve</span>
+a<span class="token punctuation">:</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token number">15</span><span class="token punctuation">)</span> <span class="token comment">-- Promise resolves</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="formatAssetId"><code style="text-decoration:none">formatAssetId</code><a href="#formatAssetId" class="hash-link" aria-label="Direct link to formatAssetId" title="Direct link to formatAssetId">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau#L112"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.2.0] FusionUtil<!-- -->.</code><code class="green_DgR4">formatAssetId</code><code>(</code><div class="inset_uKQm"><div><code>id<!-- -->: </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">string</code><code class="op_lSLc"> | </code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The AssetId to format</p>
+</span></span></div><div><code>default<!-- -->: </code><code class="purple_ieR2">(</code><code class="blue_P4bS">string</code><code class="op_lSLc"> | </code><code class="blue_P4bS">number</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The default AssetId to use if the id is nil</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">string</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The State that is synced with the AssetId</p>
+</span></span></div><div>
+<p>Takes an AssetId and ensures it to a valid State.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> assetId <span class="token operator">=</span> FusionUtil<span class="token punctuation">.</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token string">"rbxassetid://1234567890"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>assetId<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://1234567890"</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> assetId <span class="token operator">=</span> FusionUtil<span class="token punctuation">.</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token number">1234567890</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>assetId<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://1234567890"</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ratio"><code style="text-decoration:none">ratio</code><a href="#ratio" class="hash-link" aria-label="Direct link to ratio" title="Direct link to ratio">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau#L146"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.2.0] FusionUtil<!-- -->.</code><code class="green_DgR4">ratio</code><code>(</code><div class="inset_uKQm"><div><code>numerator<!-- -->: </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The numerator of the ratio</p>
+</span></span></div><div><code>denominator<!-- -->: </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The denominator of the ratio</p>
+</span></span></div><div><code>mutator<!-- -->: </code><code class="purple_ieR2">(</code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><code class="op_lSLc"> | </code><code class="green_DgR4">(</code><code>ratio<!-- -->: </code><code class="blue_P4bS">number</code><code class="green_DgR4">)</code><code class="green_DgR4"> → </code><code class="blue_P4bS">T</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>An optional State to scale by or a function to mutate the ratio</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">State</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The ratio (Potentially mutated)</p>
+</span></span></div><div>
+<p>Generates a computed that calculates the ratio of two numbers as a State.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> numerator <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> denominator <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> ratio <span class="token operator">=</span> FusionUtil<span class="token punctuation">.</span><span class="token function">ratio</span><span class="token punctuation">(</span>numerator<span class="token punctuation">,</span> denominator<span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>ratio<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- 0.5</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="eq"><code style="text-decoration:none">eq</code><a href="#eq" class="hash-link" aria-label="Direct link to eq" title="Direct link to eq">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau#L185"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.2.0] FusionUtil<!-- -->.</code><code class="green_DgR4">eq</code><code>(</code><div class="inset_uKQm"><div><code>stateToCheck1<!-- -->: </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The first potential state to check</p>
+</span></span></div><div><code>stateToCheck2<!-- -->: </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The second potential state to check</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">State</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">boolean</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>A state resolving to the equality of the two given arguments</p>
+</span></span></div><div>
+<p>A simple equality function that returns true if the two states are equal.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> a <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> b <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> c <span class="token operator">=</span> FusionUtil<span class="token punctuation">.</span><span class="token function">eq</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- true</span>
+a<span class="token punctuation">:</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- false</span>
+</code></pre>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;promiseStateChange&quot;,
+            &quot;desc&quot;: &quot;Creates a promise that resolves when the given state changes.\nIf a callback is given then the callback must return true for the promise to resolve.\n\n\n```lua\nlocal a = Value(10)\nFusionUtil.promiseStateChange(a, function(value)\n\treturn value &gt; 10\nend):andThen(function(value)\n\tprint(\&quot;Value is now greater than 10\&quot;)\nend)\n\na:set(5) -- Promise does not resolve\na:set(15) -- Promise resolves\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;state&quot;,
+                    &quot;desc&quot;: &quot;The state to observe&quot;,
+                    &quot;lua_type&quot;: &quot;State&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;callback&quot;,
+                    &quot;desc&quot;: &quot;An optional condition to check before resolving the promise&quot;,
+                    &quot;lua_type&quot;: &quot;((value: any) -&gt; boolean)?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The promise that will resolve when the state changes&quot;,
+                    &quot;lua_type&quot;: &quot;Promise&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 81,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;formatAssetId&quot;,
+            &quot;desc&quot;: &quot;Takes an AssetId and ensures it to a valid State&lt;string&gt;.\n\n\n```lua\nlocal assetId = FusionUtil.formatAssetId(\&quot;rbxassetid://1234567890\&quot;)\nprint( peek(assetId) ) -- \&quot;rbxassetid://1234567890\&quot;\n```\n```lua\nlocal assetId = FusionUtil.formatAssetId(1234567890)\nprint( peek(assetId) ) -- \&quot;rbxassetid://1234567890\&quot;\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;id&quot;,
+                    &quot;desc&quot;: &quot;The AssetId to format&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;string | number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;default&quot;,
+                    &quot;desc&quot;: &quot;The default AssetId to use if the id is nil&quot;,
+                    &quot;lua_type&quot;: &quot;(string | number)?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The State&lt;string&gt; that is synced with the AssetId&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;string&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 112,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;ratio&quot;,
+            &quot;desc&quot;: &quot;Generates a computed that calculates the ratio of two numbers as a State&lt;number&gt;.\n\n\n```lua\nlocal numerator = Value(100)\nlocal denominator = Value(200)\n\nlocal ratio = FusionUtil.ratio(numerator, denominator)\nprint( peek(ratio) ) -- 0.5\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;numerator&quot;,
+                    &quot;desc&quot;: &quot;The numerator of the ratio&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;denominator&quot;,
+                    &quot;desc&quot;: &quot;The denominator of the ratio&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;mutator&quot;,
+                    &quot;desc&quot;: &quot;An optional State to scale by or a function to mutate the ratio&quot;,
+                    &quot;lua_type&quot;: &quot;(CanBeState&lt;T&gt; | (ratio: number) -&gt; T)?\r\n&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The ratio (Potentially mutated)&quot;,
+                    &quot;lua_type&quot;: &quot;State&lt;T&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 146,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;eq&quot;,
+            &quot;desc&quot;: &quot;A simple equality function that returns true if the two states are equal.\n\t\n\n```lua\nlocal a = Value(10)\nlocal b = Value(10)\nlocal c = FusionUtil.eq(a, b)\nprint( peek(c) ) -- true\na:set(20)\nprint( peek(c) ) -- false\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;stateToCheck1&quot;,
+                    &quot;desc&quot;: &quot;The first potential state to check&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;stateToCheck2&quot;,
+                    &quot;desc&quot;: &quot;The second potential state to check&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;any&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;A state resolving to the equality of the two given arguments&quot;,
+                    &quot;lua_type&quot;: &quot;State&lt;boolean&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 185,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [],
+    &quot;types&quot;: [],
+    &quot;name&quot;: &quot;[0.2.0] FusionUtil&quot;,
+    &quot;desc&quot;: &quot;A collection of utility functions for Fusion.\n\nDO NOT ACCESS THIS IN MULTIPLE VMs. Studio freaks out when\nfusion is loaded in multiple VMs for some unknown reason.&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 12,
+        &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_2_0.luau&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#eq" class="table-of-contents__link toc-highlight">.eq</a></li><li><a href="#formatAssetId" class="table-of-contents__link toc-highlight">.formatAssetId</a></li><li><a href="#promiseStateChange" class="table-of-contents__link toc-highlight">.promiseStateChange</a></li><li><a href="#ratio" class="table-of-contents__link toc-highlight">.ratio</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Raild3x. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/RailUtil/assets/js/runtime~main.3e4e091f.js"></script>
+<script src="/RailUtil/assets/js/main.9de64a32.js"></script>
+</body>
+</html>

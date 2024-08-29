@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="plugin-moonwave plugin-id-moonwave">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v2.3.1">
+<title data-rh="true">[0.3.0] FusionUtil | RailUtil</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Raild3x.github.io/RailUtil/api/[0.3.0] FusionUtil"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="[0.3.0] FusionUtil | RailUtil"><meta data-rh="true" name="description" content="A collection of utility functions for Fusion 0.3.0.
+
+:::warning Multithreading
+DO NOT ACCESS THIS IN MULTIPLE VMs (Parallel Luau). Studio freaks out when
+fusion is loaded in multiple VMs for some unknown reason.
+:::"><meta data-rh="true" property="og:description" content="A collection of utility functions for Fusion 0.3.0.
+
+:::warning Multithreading
+DO NOT ACCESS THIS IN MULTIPLE VMs (Parallel Luau). Studio freaks out when
+fusion is loaded in multiple VMs for some unknown reason.
+:::"><link data-rh="true" rel="canonical" href="https://Raild3x.github.io/RailUtil/api/[0.3.0] FusionUtil"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/[0.3.0] FusionUtil" hreflang="en"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/[0.3.0] FusionUtil" hreflang="x-default"><link rel="stylesheet" href="/RailUtil/assets/css/styles.19a5646f.css">
+<link rel="preload" href="/RailUtil/assets/js/runtime~main.3e4e091f.js" as="script">
+<link rel="preload" href="/RailUtil/assets/js/main.9de64a32.js" as="script">
+</head>
+<body class="navigation-with-keyboard">
+<script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
+<div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="navbar navbar--fixed-top"><div class="navbar__inner"><div class="navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/RailUtil/"><b class="navbar__title text--truncate">RailUtil</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/RailUtil/api/">API</a></div><div class="navbar__items navbar__items--right"><a href="https://github.com/Raild3x/RailUtil" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-hidden="true" viewBox="0 0 24 24" class="iconExternalLink_nPIU"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"></path></svg></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="Switch between dark and light mode (currently light mode)" aria-label="Switch between dark and light mode (currently light mode)" aria-live="polite"><svg viewBox="0 0 24 24" width="24" height="24" class="lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" class="darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg></button></div><div class="searchBox_ZlJk"><div class="navbar__search"><span aria-label="expand searchbar" role="button" class="search-icon" tabindex="0"></span><input type="search" id="search_input_react" placeholder="Loading..." aria-label="Search" class="navbar__search-input search-bar" disabled=""></div></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="docusaurus_skipToContent_fallback" class="main-wrapper mainWrapper_z2l0 docPageContainer_wNNk"><div class="docPage_Dpn1"><div class="docSidebarContainer_o_re"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/RailUtil">​Rail​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/--------">--------</a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" aria-expanded="true" href="/RailUtil/api/FusionUtil">FusionUtil</a></div><ul style="display:block;overflow:visible;height:auto" class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/RailUtil/api/FusionUtil">​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/RailUtil/api/[0.2.0] FusionUtil">[0.2.0] ​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/RailUtil/api/[0.2.5] FusionUtil">[0.2.5] ​Fusion​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/RailUtil/api/[0.3.0] FusionUtil">[0.3.0] ​Fusion​Util</a></li></ul></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/CameraUtil">​Camera​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/DebugUtil">​Debug​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/DrawUtil">​Draw​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/InstanceUtil">​Instance​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/MathUtil">​Math​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/PlayerUtil">​Player​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/SignalUtil">​Signal​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/StringUtil">​String​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/TableUtil">​Table​Util</a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/RailUtil/api/VectorUtil">​Vector​Util</a></li></ul></nav></div></div><main class="docMainContainer_HJE1"><div class="container padding-vert--lg"><div class="row"><div class="col docItemCol_MU3C"><div class="docItemContainer_Wv98"><article><div class="member_J0w1 markdown"><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_oUs_"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><header><h1 class="docTitle_mZRt" style="text-decoration:none"><span style="display:inline-block">[0.3.0]</span><span style="display:inline-block"></span><span style="display:inline-block">Fusion</span><span style="display:inline-block">Util</span></h1><div class="luaClassTags_EipM"></div><div>
+<p>A collection of utility functions for Fusion 0.3.0.</p>
+<div class="admonition admonition-warning alert alert--danger">
+  <div class="admonition-heading">
+    <h5><span class="admonition-icon"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="16" viewBox="0 0 12 16">
+          <path d="M5.05.31c.81 2.17.41 3.38-.52 4.31C3.55 5.67 1.98 6.45.9 7.98c-1.45 2.05-1.7 6.53 3.53 7.7-2.2-1.16-2.67-4.52-.3-6.61-.61 2.03.53 3.33 1.94 2.86 1.39-.47 2.3.53 2.27 1.67-.02.78-.31 1.44-1.13 1.81 3.42-.59 4.78-3.42 4.78-5.56 0-2.84-2.53-3.22-1.25-5.61-1.52.13-2.03 1.13-1.89 2.75.09 1.08-1.02 1.8-1.86 1.33-.67-.41-.66-1.19-.06-1.78C8.18 5.31 8.68 2.45 5.05.32L5.03.3l.02.01z"></path>
+        </svg></span>Multithreading</h5>
+  </div>
+  <div class="admonition-content">
+    <p>
+      DO NOT ACCESS THIS IN MULTIPLE VMs (Parallel Luau). Studio freaks out when
+      fusion is loaded in multiple VMs for some unknown reason.
+    </p>
+  </div>
+</div>
+</div></header><h2 class="anchor anchorWithStickyNavbar_LWe7" id="functions">Functions<a href="#functions" class="hash-link" aria-label="Direct link to Functions" title="Direct link to Functions">​</a></h2><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="removeTask"><code style="text-decoration:none">removeTask</code><a href="#removeTask" class="hash-link" aria-label="Direct link to removeTask" title="Direct link to removeTask">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L180"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">removeTask</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The scope to remove the task from</p>
+</span></span></div><div><code>taskId<!-- -->: </code><code class="blue_P4bS">any</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The taskId of the task to remove</p>
+</span></span></div><div><code>dontCleanup<!-- -->: </code><code class="blue_P4bS">boolean?</code><span class="inlineDescription_G7Er">-- <span>
+<p>Whether or not to run the cleanup function on the task</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">Task?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The task that was removed</p>
+</span></span></div><div>
+<p>Removes a task from a scope by its taskId.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> id <span class="token operator">=</span> <span class="token string">"Greeting"</span>
+<span class="token keyword">local</span> task <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">addTask</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Hello, World!"</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">,</span> <span class="token keyword">nil</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span>
+
+s<span class="token punctuation">:</span><span class="token function">removeTask</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span> <span class="token comment">-- Hello, World!</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="addTask"><code style="text-decoration:none">addTask</code><a href="#addTask" class="hash-link" aria-label="Direct link to addTask" title="Direct link to addTask">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L214"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">addTask</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The scope to add the task to</p>
+</span></span></div><div><code>task<!-- -->: </code><code class="blue_P4bS">Task</code><code class="blue_P4bS">&amp;</code><code class="blue_P4bS">T</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The task to add</p>
+</span></span></div><div><code>methodName<!-- -->: </code><code class="blue_P4bS">any?</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The method to call when the task is removed</p>
+</span></span></div><div><code>taskId<!-- -->: </code><code class="blue_P4bS">any?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The taskId of the task</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">Task</code><span class="inlineDescription_G7Er">-- <span>
+<p>The task that was added</p>
+</span></span></div><div>
+<p>Adds a task to a scope. If a taskId is provided, it will remove any existing task with that taskId.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> id <span class="token operator">=</span> <span class="token string">"Greeting"</span>
+<span class="token keyword">local</span> task <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">addTask</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Hello, World!"</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">,</span> <span class="token keyword">nil</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span>
+
+Fusion<span class="token punctuation">.</span><span class="token function">doCleanup</span><span class="token punctuation">(</span>s<span class="token punctuation">)</span> <span class="token comment">-- Hello, World!</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="getTask"><code style="text-decoration:none">getTask</code><a href="#getTask" class="hash-link" aria-label="Direct link to getTask" title="Direct link to getTask">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L248"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">getTask</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The scope to search for the task</p>
+</span></span></div><div><code>taskId<!-- -->: </code><code class="blue_P4bS">any</code><span class="inlineDescription_G7Er">-- <span>
+<p>The taskId of the task to find</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">Task?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The task if found, nil otherwise</p>
+</span></span></div><div>
+<p>Gets a task from a scope by its taskId.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> id <span class="token operator">=</span> <span class="token string">"Greeting"</span>
+<span class="token keyword">local</span> task <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">addTask</span><span class="token punctuation">(</span><span class="token keyword">function</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"Hello, World!"</span><span class="token punctuation">)</span> <span class="token keyword">end</span><span class="token punctuation">,</span> <span class="token keyword">nil</span><span class="token punctuation">,</span> id<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> foundTask <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">getTask</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+<span class="token function">foundTask</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">-- Hello, World!</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ensureIsState"><code style="text-decoration:none">ensureIsState</code><a href="#ensureIsState" class="hash-link" aria-label="Direct link to ensureIsState" title="Direct link to ensureIsState">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L276"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">ensureIsState</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The scope in which to create the new state object</p>
+</span></span></div><div><code>data<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><code class="blue_P4bS">?</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The potential state object</p>
+</span></span></div><div><code>defaultValue<!-- -->: </code><code class="blue_P4bS">T?</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The default value to use if the data is nil</p>
+</span></span></div><div><code>datatype<!-- -->: </code><code class="purple_ieR2">(</code><code class="blue_P4bS">string</code><code class="op_lSLc"> | </code><code class="green_DgR4">{</code><code class="blue_P4bS">string</code><code class="green_DgR4">}</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The type or types of the data expected in the state</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">StateObject</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The existing or newly created state object</p>
+</span></span></div><div>
+<p>Ensures a passed data is a StateObject. If it is not, it will be converted to one.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="syncValues"><code style="text-decoration:none">syncValues</code><a href="#syncValues" class="hash-link" aria-label="Direct link to syncValues" title="Direct link to syncValues">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L334"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">syncValues</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>stateToWatch<!-- -->: </code><code class="blue_P4bS">State</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The state to watch for changes</p>
+</span></span></div><div><code>valueToSet<!-- -->: </code><code class="blue_P4bS">Value</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The value to set when the state changes</p>
+</span></span></div></div><code>) → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>A function that will disconnect the observer</p>
+</span></span></div><div>
+<p>Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> a <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> b <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> disconnect <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">syncValues</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- 123</span>
+a<span class="token punctuation">:</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token number">456</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>b<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- 456</span>
+
+<span class="token function">disconnect</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="formatAssetId"><code style="text-decoration:none">formatAssetId</code><a href="#formatAssetId" class="hash-link" aria-label="Direct link to formatAssetId" title="Direct link to formatAssetId">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L362"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">formatAssetId</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>id<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">string</code><code class="op_lSLc"> | </code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The AssetId to ensure</p>
+</span></span></div><div><code>default<!-- -->: </code><code class="purple_ieR2">(</code><code class="blue_P4bS">string</code><code class="op_lSLc"> | </code><code class="blue_P4bS">number</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>The default AssetId to use if the id is nil</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">CanBeState</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">string</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The State that is synced with the AssetId</p>
+</span></span></div><div>
+<p>Takes an AssetId and formats it to a valid string.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> assetId <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token string">"rbxefsefawsetid://1234567890"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>assetId<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://1234567890"</span>
+</code></pre>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> assetId <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">formatAssetId</span><span class="token punctuation">(</span><span class="token number">1234567890</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>assetId<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- "rbxassetid://1234567890"</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="ratio"><code style="text-decoration:none">ratio</code><a href="#ratio" class="hash-link" aria-label="Direct link to ratio" title="Direct link to ratio">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L397"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">ratio</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The scope to create the State in</p>
+</span></span></div><div><code>numerator<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The numerator of the ratio</p>
+</span></span></div><div><code>denominator<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The denominator of the ratio</p>
+</span></span></div><div><code>mutator<!-- -->: </code><code class="purple_ieR2">(</code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><code class="op_lSLc"> | </code><code class="green_DgR4">(</code><div class="inset_uKQm"><code>ratio<!-- -->: </code><code class="blue_P4bS">number</code><code class="green_DgR4">,</code></div><div class="inset_uKQm"><code>use<!-- -->: </code><code class="blue_P4bS">Use</code></div><code class="green_DgR4">)</code><code class="green_DgR4"> → </code><code class="blue_P4bS">T</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>An optional State to scale by or a function to mutate the ratio</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">State</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The ratio (Potentially mutated)</p>
+</span></span></div><div>
+<p>Generates a computed that calculates the ratio of two numbers as a State.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> numerator <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">100</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> denominator <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">200</span><span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> ratio <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">ratio</span><span class="token punctuation">(</span>numerator<span class="token punctuation">,</span> denominator<span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>ratio<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- 0.5</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="lerpNumber"><code style="text-decoration:none">lerpNumber</code><a href="#lerpNumber" class="hash-link" aria-label="Direct link to lerpNumber" title="Direct link to lerpNumber">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L438"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">lerpNumber</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>n1<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The first number state</p>
+</span></span></div><div><code>n2<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The second number state</p>
+</span></span></div><div><code>alpha<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The alpha state</p>
+</span></span></div><div><code>_use<!-- -->: </code><code class="purple_ieR2">(</code><code class="green_DgR4">(</code><code class="blue_P4bS">any</code><code class="green_DgR4">)</code><code class="green_DgR4"> → </code><code class="green_DgR4">(</code><code class="blue_P4bS">any</code><code class="green_DgR4">)</code><code class="purple_ieR2">)</code><code class="blue_P4bS">?</code><span class="inlineDescription_G7Er">-- <span>
+<p>An optional function to use to get the values of the states</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">number</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The resultant lerped number state/value</p>
+</span></span></div><div>
+<p>Lerps between two number states. If no use function is given then it returns a state</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> a <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> b <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> alpha <span class="token operator">=</span> <span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">0.5</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> z <span class="token operator">=</span> FusionUtil<span class="token punctuation">.</span><span class="token function">lerpNumber</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">,</span> alpha<span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>z<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- 15</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="eq"><code style="text-decoration:none">eq</code><a href="#eq" class="hash-link" aria-label="Direct link to eq" title="Direct link to eq">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L469"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">eq</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>stateToCheck1<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The first potential state to check</p>
+</span></span></div><div><code>stateToCheck2<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>The second potential state to check</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS">State</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">boolean</code><code class="op_lSLc">&gt;</code><span class="inlineDescription_G7Er">-- <span>
+<p>A state resolving to the equality of the two given arguments</p>
+</span></span></div><div>
+<p>A simple equality function that returns true if the two states are equal.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> s <span class="token operator">=</span> <span class="token function">scoped</span><span class="token punctuation">(</span>Fusion<span class="token punctuation">,</span> FusionUtil<span class="token punctuation">)</span>
+
+<span class="token keyword">local</span> a <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> b <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">Value</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> c <span class="token operator">=</span> s<span class="token punctuation">:</span><span class="token function">eq</span><span class="token punctuation">(</span>a<span class="token punctuation">,</span> b<span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- true</span>
+a<span class="token punctuation">:</span><span class="token function">set</span><span class="token punctuation">(</span><span class="token number">20</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span> <span class="token function">peek</span><span class="token punctuation">(</span>c<span class="token punctuation">)</span> <span class="token punctuation">)</span> <span class="token comment">-- false</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="observeState"><code style="text-decoration:none">observeState</code><a href="#observeState" class="hash-link" aria-label="Direct link to observeState" title="Direct link to observeState">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau#L485"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>[0.3.0] FusionUtil<!-- -->.</code><code class="green_DgR4">observeState</code><code>(</code><div class="inset_uKQm"><div><code>scope<!-- -->: </code><code class="blue_P4bS">Scope</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">any</code><code class="op_lSLc">&gt;</code><code>,</code></div><div><code>fusionState<!-- -->: </code><code class="blue_P4bS">UsedAs</code><code class="op_lSLc">&lt;</code><code class="blue_P4bS">T</code><code class="op_lSLc">&gt;</code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The state object to observe</p>
+</span></span></div><div><code>callback<!-- -->: </code><code class="purple_ieR2">(</code><code>stateValue<!-- -->: </code><code class="blue_P4bS">T</code><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>The callback to call when the fusionState is updated</p>
+</span></span></div></div><code>) → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><code class="purple_ieR2"> → </code><code class="purple_ieR2">(</code><code class="purple_ieR2">)</code><span class="inlineDescription_G7Er">-- <span>
+<p>A function that will disconnect the observer</p>
+</span></span></div><div>
+<p>Calls the provided callback immediately with the initial state and then again anytime the state updates.</p>
+</div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
+    &quot;functions&quot;: [
+        {
+            &quot;name&quot;: &quot;removeTask&quot;,
+            &quot;desc&quot;: &quot;Removes a task from a scope by its taskId.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal id = \&quot;Greeting\&quot;\nlocal task = s:addTask(function() print(\&quot;Hello, World!\&quot;) end, nil, id)\n\ns:removeTask(id) -- Hello, World!\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;The scope to remove the task from&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;taskId&quot;,
+                    &quot;desc&quot;: &quot;The taskId of the task to remove&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;dontCleanup&quot;,
+                    &quot;desc&quot;: &quot;Whether or not to run the cleanup function on the task&quot;,
+                    &quot;lua_type&quot;: &quot;boolean?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The task that was removed&quot;,
+                    &quot;lua_type&quot;: &quot;Task?&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 180,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;addTask&quot;,
+            &quot;desc&quot;: &quot;Adds a task to a scope. If a taskId is provided, it will remove any existing task with that taskId.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal id = \&quot;Greeting\&quot;\nlocal task = s:addTask(function() print(\&quot;Hello, World!\&quot;) end, nil, id)\n\nFusion.doCleanup(s) -- Hello, World!\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;The scope to add the task to&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;task&quot;,
+                    &quot;desc&quot;: &quot;The task to add&quot;,
+                    &quot;lua_type&quot;: &quot;Task &amp; T&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;methodName&quot;,
+                    &quot;desc&quot;: &quot;The method to call when the task is removed&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;taskId&quot;,
+                    &quot;desc&quot;: &quot;The taskId of the task&quot;,
+                    &quot;lua_type&quot;: &quot;any?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The task that was added&quot;,
+                    &quot;lua_type&quot;: &quot;Task&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 214,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;getTask&quot;,
+            &quot;desc&quot;: &quot;Gets a task from a scope by its taskId.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal id = \&quot;Greeting\&quot;\nlocal task = s:addTask(function() print(\&quot;Hello, World!\&quot;) end, nil, id)\n\nlocal foundTask = s:getTask(id)\nfoundTask() -- Hello, World!\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;The scope to search for the task&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;taskId&quot;,
+                    &quot;desc&quot;: &quot;The taskId of the task to find&quot;,
+                    &quot;lua_type&quot;: &quot;any&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The task if found, nil otherwise&quot;,
+                    &quot;lua_type&quot;: &quot;Task?&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 248,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;ensureIsState&quot;,
+            &quot;desc&quot;: &quot;Ensures a passed data is a StateObject. If it is not, it will be converted to one.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;The scope in which to create the new state object&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;data&quot;,
+                    &quot;desc&quot;: &quot;The potential state object&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;T&gt;?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;defaultValue&quot;,
+                    &quot;desc&quot;: &quot;The default value to use if the data is nil&quot;,
+                    &quot;lua_type&quot;: &quot;T?&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;datatype&quot;,
+                    &quot;desc&quot;: &quot;The type or types of the data expected in the state&quot;,
+                    &quot;lua_type&quot;: &quot;(string | { string })?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The existing or newly created state object&quot;,
+                    &quot;lua_type&quot;: &quot;StateObject&lt;T&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 276,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;syncValues&quot;,
+            &quot;desc&quot;: &quot;Syncronizes a StateObject to a Value. The Value will be set to the StateObject&#x27;s value any time it changes.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal a = s:Value(123)\nlocal b = s:Value(0)\nlocal disconnect = s:syncValues(a, b)\n\nprint( peek(b) ) -- 123\na:set(456)\nprint( peek(b) ) -- 456\n\ndisconnect()\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;stateToWatch&quot;,
+                    &quot;desc&quot;: &quot;The state to watch for changes&quot;,
+                    &quot;lua_type&quot;: &quot;State&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;valueToSet&quot;,
+                    &quot;desc&quot;: &quot;The value to set when the state changes&quot;,
+                    &quot;lua_type&quot;: &quot;Value&lt;any&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;A function that will disconnect the observer&quot;,
+                    &quot;lua_type&quot;: &quot;() -&gt; ()&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 334,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;formatAssetId&quot;,
+            &quot;desc&quot;: &quot;Takes an AssetId and formats it to a valid string.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal assetId = s:formatAssetId(\&quot;rbxefsefawsetid://1234567890\&quot;)\nprint( peek(assetId) ) -- \&quot;rbxassetid://1234567890\&quot;\n```\n```lua\nlocal assetId = s:formatAssetId(1234567890)\nprint( peek(assetId) ) -- \&quot;rbxassetid://1234567890\&quot;\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;id&quot;,
+                    &quot;desc&quot;: &quot;The AssetId to ensure&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;string | number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;default&quot;,
+                    &quot;desc&quot;: &quot;The default AssetId to use if the id is nil&quot;,
+                    &quot;lua_type&quot;: &quot;(string | number)?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The State&lt;string&gt; that is synced with the AssetId&quot;,
+                    &quot;lua_type&quot;: &quot;CanBeState&lt;string&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 362,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;ratio&quot;,
+            &quot;desc&quot;: &quot;Generates a computed that calculates the ratio of two numbers as a State&lt;number&gt;.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal numerator = s:Value(100)\nlocal denominator = s:Value(200)\n\nlocal ratio = s:ratio(numerator, denominator)\nprint( peek(ratio) ) -- 0.5\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;The scope to create the State in&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;numerator&quot;,
+                    &quot;desc&quot;: &quot;The numerator of the ratio&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;denominator&quot;,
+                    &quot;desc&quot;: &quot;The denominator of the ratio&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;mutator&quot;,
+                    &quot;desc&quot;: &quot;An optional State to scale by or a function to mutate the ratio&quot;,
+                    &quot;lua_type&quot;: &quot;(UsedAs&lt;T&gt; | (ratio: number, use: Use) -&gt; T)?\r\n&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The ratio (Potentially mutated)&quot;,
+                    &quot;lua_type&quot;: &quot;State&lt;T&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 397,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;lerpNumber&quot;,
+            &quot;desc&quot;: &quot;Lerps between two number states. If no use function is given then it returns a state\n\n\n```lua\nlocal a = Value(10)\nlocal b = Value(20)\nlocal alpha = Value(0.5)\nlocal z = FusionUtil.lerpNumber(a, b, alpha)\nprint( peek(z) ) -- 15\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;n1&quot;,
+                    &quot;desc&quot;: &quot;The first number state&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;n2&quot;,
+                    &quot;desc&quot;: &quot;The second number state&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;alpha&quot;,
+                    &quot;desc&quot;: &quot;The alpha state&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;number&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;_use&quot;,
+                    &quot;desc&quot;: &quot;An optional function to use to get the values of the states&quot;,
+                    &quot;lua_type&quot;: &quot;((any) -&gt; (any))?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The resultant lerped number state/value&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;number&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 438,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;eq&quot;,
+            &quot;desc&quot;: &quot;A simple equality function that returns true if the two states are equal.\n\n\n```lua\nlocal s = scoped(Fusion, FusionUtil)\n\nlocal a = s:Value(10)\nlocal b = s:Value(10)\nlocal c = s:eq(a, b)\nprint( peek(c) ) -- true\na:set(20)\nprint( peek(c) ) -- false\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;stateToCheck1&quot;,
+                    &quot;desc&quot;: &quot;The first potential state to check&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;stateToCheck2&quot;,
+                    &quot;desc&quot;: &quot;The second potential state to check&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;any&gt;&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;A state resolving to the equality of the two given arguments&quot;,
+                    &quot;lua_type&quot;: &quot;State&lt;boolean&gt;&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 469,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;observeState&quot;,
+            &quot;desc&quot;: &quot;Calls the provided callback immediately with the initial state and then again anytime the state updates.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;scope&quot;,
+                    &quot;desc&quot;: &quot;&quot;,
+                    &quot;lua_type&quot;: &quot;Scope&lt;any&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;fusionState&quot;,
+                    &quot;desc&quot;: &quot;The state object to observe&quot;,
+                    &quot;lua_type&quot;: &quot;UsedAs&lt;T&gt;&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;callback&quot;,
+                    &quot;desc&quot;: &quot;The callback to call when the fusionState is updated&quot;,
+                    &quot;lua_type&quot;: &quot;(stateValue: T) -&gt; ()&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;A function that will disconnect the observer&quot;,
+                    &quot;lua_type&quot;: &quot;() -&gt; ()&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 485,
+                &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+            }
+        }
+    ],
+    &quot;properties&quot;: [],
+    &quot;types&quot;: [],
+    &quot;name&quot;: &quot;[0.3.0] FusionUtil&quot;,
+    &quot;desc&quot;: &quot;A collection of utility functions for Fusion 0.3.0.\n\n:::warning Multithreading\nDO NOT ACCESS THIS IN MULTIPLE VMs (Parallel Luau). Studio freaks out when\nfusion is loaded in multiple VMs for some unknown reason.\n:::&quot;,
+    &quot;source&quot;: {
+        &quot;line&quot;: 14,
+        &quot;path&quot;: &quot;src/RailUtil/FusionUtil/FusionUtil_v0_3_0.luau&quot;
+    }
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#addTask" class="table-of-contents__link toc-highlight">.addTask</a></li><li><a href="#ensureIsState" class="table-of-contents__link toc-highlight">.ensureIsState</a></li><li><a href="#eq" class="table-of-contents__link toc-highlight">.eq</a></li><li><a href="#formatAssetId" class="table-of-contents__link toc-highlight">.formatAssetId</a></li><li><a href="#getTask" class="table-of-contents__link toc-highlight">.getTask</a></li><li><a href="#lerpNumber" class="table-of-contents__link toc-highlight">.lerpNumber</a></li><li><a href="#observeState" class="table-of-contents__link toc-highlight">.observeState</a></li><li><a href="#ratio" class="table-of-contents__link toc-highlight">.ratio</a></li><li><a href="#removeTask" class="table-of-contents__link toc-highlight">.removeTask</a></li><li><a href="#syncValues" class="table-of-contents__link toc-highlight">.syncValues</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Raild3x. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/RailUtil/assets/js/runtime~main.3e4e091f.js"></script>
+<script src="/RailUtil/assets/js/main.9de64a32.js"></script>
+</body>
+</html>
