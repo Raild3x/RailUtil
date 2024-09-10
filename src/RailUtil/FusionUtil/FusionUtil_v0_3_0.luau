@@ -64,19 +64,19 @@ type FUS = typeof(FusionUtil.scope)
 
 --[=[
 	@within [0.3.0] FusionUtil
-	@prop raw table
+	@prop scopeless table
 	
 	A table of convenience functions for creating Fusion objects.
 	These functions do not require the use of a scope, they by default use the FusionUtil scope.
 	These are meant to be used in places where you want to create persistent Fusion objects without needing to pass a scope.
 
 	```lua
-	local Value = FusionUtil.raw.Value
+	local Value = FusionUtil.scopeless.Value
 
 	local a = Value(10)
 	```
 ]=]
-FusionUtil.raw = table.freeze {
+FusionUtil.scopeless = table.freeze {
 	Value = function<T>(value: T): Value<T>
 		return FusionUtil.scope:Value(value)
 	end;
