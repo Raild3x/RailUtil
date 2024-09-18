@@ -28,14 +28,63 @@ type Value<T> = Fusion.Value<T>
 type Props = { [any]: any }
 
 --// Helper Functions //--
+
+--[=[
+	@within [0.2.0] FusionUtil
+	@function isState
+
+	Checks if the given value is a state object.
+
+	@param v any -- The object to check
+	@return boolean  -- Whether the value is a state object
+
+	```lua
+	local a = Value(10)
+	print( FusionUtil.isState(a) ) -- true
+	```
+]=]
 local function isState(v: any): boolean
 	return typeof(v) == "table" and v.type == "State"
 end
 
+
+--[=[
+	@within [0.2.0] FusionUtil
+	@function isValue
+
+	Checks if the given value is a state object with a set method.
+
+	@param v any -- The object to check
+	@return boolean  -- Whether the value is a state object with a set method
+
+	```lua
+	local a = Value(10)
+	print( FusionUtil.isValue(a) ) -- true
+	```
+]=]
 local function isValue(v: any): boolean
 	return isState(v) and v.set --v.kind == "Value"
 end
 
+--[=[
+	@within [0.2.0] FusionUtil
+	@function use<T>
+
+	Returns the given literal or state object's value.
+
+	@param obj CanBeState<T>  -- The state or literal to get the value of
+	@return T  -- The value of the state or literal
+
+	```lua
+	local a = Value(10)
+	local b = 20
+
+	local use = FusionUtil.use
+
+	print( use(a) ) -- 10
+	print( use(b) ) -- 20
+	```
+]=]
 local function use<T>(initialValue: CanBeState<T> | any): T
 	if isState(initialValue) then
 		return initialValue:get() :: T
@@ -47,6 +96,7 @@ end
 --------------------------------------------------------------------------------
 
 local FusionUtil = {}
+
 
 FusionUtil.use = use
 FusionUtil.isState = isState;
@@ -102,11 +152,11 @@ end
 
 	```lua
 	local assetId = FusionUtil.formatAssetId("rbxassetid://1234567890")
-	print( peek(assetId) ) -- "rbxassetid://1234567890"
+	print( use(assetId) ) -- "rbxassetid://1234567890"
 	```
 	```lua
 	local assetId = FusionUtil.formatAssetId(1234567890)
-	print( peek(assetId) ) -- "rbxassetid://1234567890"
+	print( use(assetId) ) -- "rbxassetid://1234567890"
 	```
 ]=]
 function FusionUtil.formatAssetId(id: CanBeState<string | number>, default: (string | number)?): CanBeState<string>
@@ -140,7 +190,7 @@ end
 	local denominator = Value(200)
 
 	local ratio = FusionUtil.ratio(numerator, denominator)
-	print( peek(ratio) ) -- 0.5
+	print( use(ratio) ) -- 0.5
 	```
 ]=]
 function FusionUtil.ratio<T>(
@@ -177,9 +227,9 @@ end
 	local a = Value(10)
 	local b = Value(10)
 	local c = FusionUtil.eq(a, b)
-	print( peek(c) ) -- true
+	print( use(c) ) -- true
 	a:set(20)
-	print( peek(c) ) -- false
+	print( use(c) ) -- false
 	```
 ]=]
 function FusionUtil.eq(stateToCheck1: CanBeState<any>, stateToCheck2: CanBeState<any>): State<boolean>

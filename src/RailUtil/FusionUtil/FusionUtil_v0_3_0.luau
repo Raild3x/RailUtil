@@ -28,7 +28,7 @@ type State<T> = Fusion.StateObject<T>
 type UsedAs<T> = State<T> | T
 type Computed<T> = Fusion.Computed<T>
 type Observer = Fusion.Observer
-type Value<T> = Fusion.Value<T>
+type Value<T, S> = Fusion.Value<T, S>
 type Use = Fusion.Use
 type Spring<T> = Fusion.Spring<T>
 type Tween<T> = Fusion.Tween<T>
@@ -59,8 +59,7 @@ local FusionUtil = {}
 FusionUtil.isState = isState;
 FusionUtil.isValue = isValue;
 
-FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
-type FUS = typeof(FusionUtil.scope)
+
 
 --[=[
 	@within [0.3.0] FusionUtil
@@ -77,7 +76,7 @@ type FUS = typeof(FusionUtil.scope)
 	```
 ]=]
 FusionUtil.scopeless = table.freeze {
-	Value = function<T>(value: T): Value<T>
+	Value = function<T>(value: T): Value<T, any>
 		return FusionUtil.scope:Value(value)
 	end;
 	Computed = function<T>(fn: (use: Use) -> T): Computed<T>
@@ -324,7 +323,7 @@ end
 	disconnect()
 	```
 ]=]
-function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any>): () -> ()
+function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any, any>): () -> ()
 	valueToSet:set(peek(stateToWatch))
 	return Observer(scope, stateToWatch):onChange(function()
 		valueToSet:set(peek(stateToWatch))
@@ -397,11 +396,12 @@ function FusionUtil.ratio<T>(
 		local a: number = use(numerator)
 		local b: number = use(denominator)
 		local ratio = a / b
+		mutator = use(mutator)
 		if mutator then
 			if typeof(mutator) == "function" then
-				return mutator(ratio, use)
+				return (mutator :: any)(ratio, use)
 			else
-				return use(mutator) :: any * ratio
+				return (mutator :: any) * ratio
 			end
 		end
 		return ratio :: T | any
@@ -487,7 +487,39 @@ function FusionUtil.observeState<T>(scope: Scope<any>, fusionState: UsedAs<T>, c
 	return function() end
 end
 
+--------------------------------------------------------------------------------
+	--// SPECIAL //--
+--------------------------------------------------------------------------------
 
+--[=[
+	@within [0.3.0] FusionUtil
+	@prop scope Scope<Fusion, FusionUtil>
+	
+	The global scope for FusionUtil.
+]=]
+FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
+export type FUS = typeof(FusionUtil.scope)
+
+
+local comboTbl
+local function getComboTbl()
+	if comboTbl then
+		return comboTbl
+	end
+	comboTbl = table.clone(Fusion)
+	for k, v in pairs(FusionUtil) do
+		comboTbl[k] = v
+	end
+	return comboTbl
+end
+
+-- Passthrough functions
+FusionUtil.peek = Fusion.peek
+FusionUtil.Contextual = Fusion.Contextual
+
+FusionUtil.scoped = function(...)
+	return Fusion.scoped(getComboTbl(), ...)
+end
 
 
 return table.freeze(FusionUtil)

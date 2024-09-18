@@ -432,5 +432,59 @@ function VectorUtil.pointLiesOnPlane(point: Vector3, plane: Plane): boolean
 	return (X * point.X + Y * point.Y + Z * point.Z) == plane[4]
 end
 
+--[=[
+	Projects a vector onto a plane defined by a normal.
+	@param dir -- The vector to project.
+	@param normal -- The normal of the plane to project onto. Defaults to Vector3.new(0, 1, 0).
+	@return Vector3 -- The projected vector.
+
+	```lua
+	local dir = Vector3.new(1, 1, 1)
+	local normal = Vector3.new(0, 1, 0)
+
+	VectorUtil.projectOnPlane(dir, normal) -- Output: Vector3.new(1, 0, 1)
+	```
+]=]
+function VectorUtil.projectOnPlane(dir: Vector3, normal: Vector3?): Vector3
+    -- Normalize the plane's normal vector to ensure correct projection
+    local normalizedNormal = (normal or Vector3.yAxis).Unit
+
+    -- Project the vector onto the normal and subtract to flatten it to the plane
+    local projectionOntoNormal = dir:Dot(normalizedNormal) * normalizedNormal
+    local flattenedVector = dir - projectionOntoNormal
+
+    return flattenedVector
+end
+
+--[=[
+	Reflects a vector off a surface normal.
+	@param dir -- The vector to reflect.
+	@param normal -- The normal of the surface to reflect off of.
+	@return Vector3 -- The reflected vector.
+]=]
+function VectorUtil.reflect(dir: Vector3, normal: Vector3): Vector3
+	return dir - 2 * dir:Dot(normal) * normal
+end
+
+--[=[
+	Reflects a vector ignoring the Y component of the surface normal.
+	This is useful when you want to keep reflections on a 2D plane.
+	@param dir -- The vector to reflect.
+	@param surfaceNormal -- The normal of the surface to reflect off of.
+	@return Vector3 -- The reflected vector.
+]=]
+function VectorUtil.reflectIgnoringY(dir: Vector3, surfaceNormal: Vector3): Vector3
+    -- Flatten the surface normal by setting the Y component to 0
+    local flattenedNormal = Vector3.new(surfaceNormal.X, 0, surfaceNormal.Z)
+    
+    -- Normalize the flattened normal to make sure it's a unit vector
+    local normalizedNormal = flattenedNormal.Magnitude > 0 and flattenedNormal.Unit or Vector3.zero
+
+    -- Calculate the reflection using the flattened normal
+    local reflectedVector = dir - 2 * dir:Dot(normalizedNormal) * normalizedNormal
+
+    return reflectedVector
+end
+
 
 return table.freeze(VectorUtil)
