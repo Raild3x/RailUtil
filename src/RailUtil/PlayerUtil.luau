@@ -150,7 +150,7 @@ function PlayerUtil.promiseCharacter(plr: Player, timeOut: number?): Promise<Cha
 				return Promise.reject("Character not found")
 			end
 	
-			local prom = Promise.fromEvent(folder.ChildAdded):Connect(function(child)
+			local prom = Promise.fromEvent(folder.ChildAdded, function(child)
 				return child == plr.Character
 			end)
 			if timeOut then

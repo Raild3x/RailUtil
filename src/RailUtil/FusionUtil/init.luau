@@ -12,11 +12,14 @@ local v0_2_0 : typeof(require(script.FusionUtil_v0_2_0)) = nil
 local v0_2_5 : typeof(require(script.FusionUtil_v0_2_5)) = nil
 local v0_3_0 : typeof(require(script.FusionUtil_v0_3_0)) = nil
 
-local LatestVersion = "0_3_0"
+local LatestVersion = "0.3.0"
 local Versions = {
     ["0.2.0"] = "0_2_0",
     ["0.2.5"] = "0_2_5",
-    ["0.3.0"] = "0_3_0"
+    ["0.3.0"] = "0_3_0",
+    ["0_2_0"] = "0_2_0",
+    ["0_2_5"] = "0_2_5",
+    ["0_3_0"] = "0_3_0",
 }
 
 -- MODULE
