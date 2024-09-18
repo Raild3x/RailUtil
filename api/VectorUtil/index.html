@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v2.3.1">
 <title data-rh="true">VectorUtil | RailUtil</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://Raild3x.github.io/RailUtil/api/VectorUtil"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docusaurus_tag" content="default"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docsearch:docusaurus_tag" content="default"><meta data-rh="true" property="og:title" content="VectorUtil | RailUtil"><meta data-rh="true" name="description" content="A library of useful vector functions."><meta data-rh="true" property="og:description" content="A library of useful vector functions."><link data-rh="true" rel="canonical" href="https://Raild3x.github.io/RailUtil/api/VectorUtil"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/VectorUtil" hreflang="en"><link data-rh="true" rel="alternate" href="https://Raild3x.github.io/RailUtil/api/VectorUtil" hreflang="x-default"><link rel="stylesheet" href="/RailUtil/assets/css/styles.19a5646f.css">
-<link rel="preload" href="/RailUtil/assets/js/runtime~main.3e4e091f.js" as="script">
-<link rel="preload" href="/RailUtil/assets/js/main.9de64a32.js" as="script">
+<link rel="preload" href="/RailUtil/assets/js/runtime~main.9f4a5c34.js" as="script">
+<link rel="preload" href="/RailUtil/assets/js/main.2a8adf28.js" as="script">
 </head>
 <body class="navigation-with-keyboard">
 <script>!function(){function e(e){document.documentElement.setAttribute("data-theme",e)}var t=function(){var e=null;try{e=localStorage.getItem("theme")}catch(e){}return e}();null!==t?e(t):window.matchMedia("(prefers-color-scheme: dark)").matches?e("dark"):(window.matchMedia("(prefers-color-scheme: light)").matches,e("light"))}()</script><div id="__docusaurus">
@@ -219,6 +219,38 @@
 
 VectorUtil<span class="token punctuation">.</span><span class="token function">pointLiesOnPlane</span><span class="token punctuation">(</span>point plane<span class="token punctuation">)</span> <span class="token comment">-- Output: true</span>
 </code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="projectOnPlane"><code style="text-decoration:none">projectOnPlane</code><a href="#projectOnPlane" class="hash-link" aria-label="Direct link to projectOnPlane" title="Direct link to projectOnPlane">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/VectorUtil.luau#L448"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>VectorUtil<!-- -->.</code><code class="green_DgR4">projectOnPlane</code><code>(</code><div class="inset_uKQm"><div><code>dir<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The vector to project.</p>
+</span></span></div><div><code>normal<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3?<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The normal of the plane to project onto. Defaults to Vector3.new(0, 1, 0).</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The projected vector.</p>
+</span></span></div><div>
+<p>Projects a vector onto a plane defined by a normal.</p>
+<pre class="language-lua"><code class="language-lua"><span class="token keyword">local</span> dir <span class="token operator">=</span> Vector3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token keyword">local</span> normal <span class="token operator">=</span> Vector3<span class="token punctuation">.</span><span class="token function">new</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+
+VectorUtil<span class="token punctuation">.</span><span class="token function">projectOnPlane</span><span class="token punctuation">(</span>dir<span class="token punctuation">,</span> normal<span class="token punctuation">)</span> <span class="token comment">-- Output: Vector3.new(1, 0, 1)</span>
+</code></pre>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="reflect"><code style="text-decoration:none">reflect</code><a href="#reflect" class="hash-link" aria-label="Direct link to reflect" title="Direct link to reflect">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/VectorUtil.luau#L465"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>VectorUtil<!-- -->.</code><code class="green_DgR4">reflect</code><code>(</code><div class="inset_uKQm"><div><code>dir<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The vector to reflect.</p>
+</span></span></div><div><code>normal<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The normal of the surface to reflect off of.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The reflected vector.</p>
+</span></span></div><div>
+<p>Reflects a vector off a surface normal.</p>
+</div><div class="divider_rE5g"></div><h3 class="anchor anchorWithStickyNavbar_LWe7" id="reflectIgnoringY"><code style="text-decoration:none">reflectIgnoringY</code><a href="#reflectIgnoringY" class="hash-link" aria-label="Direct link to reflectIgnoringY" title="Direct link to reflectIgnoringY">​</a></h3><div class="repositoryDetailsContainer_BPdw"><a class="sourceButton_sEho" href="https://github.com/Raild3x/RailUtil/blob/main/src/RailUtil/VectorUtil.luau#L476"><div class="sourceButtonText_Vh0m">&lt;/&gt;</div></a></div><div class="memberString_GwaU"><code>VectorUtil<!-- -->.</code><code class="green_DgR4">reflectIgnoringY</code><code>(</code><div class="inset_uKQm"><div><code>dir<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><code>,</code><span class="inlineDescription_G7Er">-- <span>
+<p>The vector to reflect.</p>
+</span></span></div><div><code>surfaceNormal<!-- -->: </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The normal of the surface to reflect off of.</p>
+</span></span></div></div><code>) → </code><code class="blue_P4bS"><a style="text-decoration:underline;color:inherit" href="https://developer.roblox.com/en-us/api-reference/datatype/Vector3" target="_blank" rel="noopener noreferrer">Vector3<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" x="0px" y="0px" viewBox="0 0 100 100" width="15" height="15" class="icon outbound" style="color:gray;vertical-align:middle;margin-left:2px"><path fill="currentColor" d="M18.8,85.1h56l0,0c2.2,0,4-1.8,4-4v-32h-8v28h-48v-48h28v-8h-32l0,0c-2.2,0-4,1.8-4,4v56C14.8,83.3,16.6,85.1,18.8,85.1z"></path> <polygon fill="currentColor" points="45.7,48.7 51.3,54.3 77.2,28.5 77.2,37.2 85.2,37.2 85.2,14.9 62.8,14.9 62.8,22.9 71.5,22.9"></polygon></svg></a></code><span class="inlineDescription_G7Er">-- <span>
+<p>The reflected vector.</p>
+</span></span></div><div>
+<p>
+  Reflects a vector ignoring the Y component of the surface normal.
+  This is useful when you want to keep reflections on a 2D plane.
+</p>
 </div></div></article></div><details><summary>Show raw api</summary><pre style="max-width:100%;white-space:pre-wrap">{
     &quot;functions&quot;: [
         {
@@ -1032,6 +1064,87 @@ VectorUtil<span class="token punctuation">.</span><span class="token function">p
                 &quot;line&quot;: 430,
                 &quot;path&quot;: &quot;src/RailUtil/VectorUtil.luau&quot;
             }
+        },
+        {
+            &quot;name&quot;: &quot;projectOnPlane&quot;,
+            &quot;desc&quot;: &quot;Projects a vector onto a plane defined by a normal.\n\n```lua\nlocal dir = Vector3.new(1, 1, 1)\nlocal normal = Vector3.new(0, 1, 0)\n\nVectorUtil.projectOnPlane(dir, normal) -- Output: Vector3.new(1, 0, 1)\n```&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;dir&quot;,
+                    &quot;desc&quot;: &quot;The vector to project.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;normal&quot;,
+                    &quot;desc&quot;: &quot;The normal of the plane to project onto. Defaults to Vector3.new(0, 1, 0).&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3?&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The projected vector.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 448,
+                &quot;path&quot;: &quot;src/RailUtil/VectorUtil.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;reflect&quot;,
+            &quot;desc&quot;: &quot;Reflects a vector off a surface normal.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;dir&quot;,
+                    &quot;desc&quot;: &quot;The vector to reflect.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;normal&quot;,
+                    &quot;desc&quot;: &quot;The normal of the surface to reflect off of.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The reflected vector.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 465,
+                &quot;path&quot;: &quot;src/RailUtil/VectorUtil.luau&quot;
+            }
+        },
+        {
+            &quot;name&quot;: &quot;reflectIgnoringY&quot;,
+            &quot;desc&quot;: &quot;Reflects a vector ignoring the Y component of the surface normal.\nThis is useful when you want to keep reflections on a 2D plane.&quot;,
+            &quot;params&quot;: [
+                {
+                    &quot;name&quot;: &quot;dir&quot;,
+                    &quot;desc&quot;: &quot;The vector to reflect.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                },
+                {
+                    &quot;name&quot;: &quot;surfaceNormal&quot;,
+                    &quot;desc&quot;: &quot;The normal of the surface to reflect off of.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                }
+            ],
+            &quot;returns&quot;: [
+                {
+                    &quot;desc&quot;: &quot;The reflected vector.&quot;,
+                    &quot;lua_type&quot;: &quot;Vector3&quot;
+                }
+            ],
+            &quot;function_type&quot;: &quot;static&quot;,
+            &quot;source&quot;: {
+                &quot;line&quot;: 476,
+                &quot;path&quot;: &quot;src/RailUtil/VectorUtil.luau&quot;
+            }
         }
     ],
     &quot;properties&quot;: [],
@@ -1061,8 +1174,8 @@ VectorUtil<span class="token punctuation">.</span><span class="token function">p
         &quot;line&quot;: 27,
         &quot;path&quot;: &quot;src/RailUtil/VectorUtil.luau&quot;
     }
-}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#Plane" class="table-of-contents__link toc-highlight">Plane</a></li><li><a href="#Vector" class="table-of-contents__link toc-highlight">Vector</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#abs" class="table-of-contents__link toc-highlight">.abs</a></li><li><a href="#calculatePlaneFromPointAndNormal" class="table-of-contents__link toc-highlight">.calculatePlaneFromPointAndNormal</a></li><li><a href="#calculatePlaneFromPoints" class="table-of-contents__link toc-highlight">.calculatePlaneFromPoints</a></li><li><a href="#closestPointOnLine" class="table-of-contents__link toc-highlight">.closestPointOnLine</a></li><li><a href="#closestPointsBetweenLines" class="table-of-contents__link toc-highlight">.closestPointsBetweenLines</a></li><li><a href="#flatten" class="table-of-contents__link toc-highlight">.flatten</a></li><li><a href="#flattenY" class="table-of-contents__link toc-highlight">.flattenY</a></li><li><a href="#getAngle" class="table-of-contents__link toc-highlight">.getAngle</a></li><li><a href="#getAngleBetween" class="table-of-contents__link toc-highlight">.getAngleBetween</a></li><li><a href="#getAxis" class="table-of-contents__link toc-highlight">.getAxis</a></li><li><a href="#getSignedAngleBetweenVector2s" class="table-of-contents__link toc-highlight">.getSignedAngleBetweenVector2s</a></li><li><a href="#getSignedAngleBetweenVector3s" class="table-of-contents__link toc-highlight">.getSignedAngleBetweenVector3s</a></li><li><a href="#isNaN" class="table-of-contents__link toc-highlight">.isNaN</a></li><li><a href="#lineIntersectsSphere" class="table-of-contents__link toc-highlight">.lineIntersectsSphere</a></li><li><a href="#lineSegmentIntersectsSphere" class="table-of-contents__link toc-highlight">.lineSegmentIntersectsSphere</a></li><li><a href="#normalize" class="table-of-contents__link toc-highlight">.normalize</a></li><li><a href="#planeIntersectionPoint" class="table-of-contents__link toc-highlight">.planeIntersectionPoint</a></li><li><a href="#pointLiesOnPlane" class="table-of-contents__link toc-highlight">.pointLiesOnPlane</a></li><li><a href="#randomUnitVector" class="table-of-contents__link toc-highlight">.randomUnitVector</a></li><li><a href="#rotateVector2" class="table-of-contents__link toc-highlight">.rotateVector2</a></li><li><a href="#rotateVector3" class="table-of-contents__link toc-highlight">.rotateVector3</a></li><li><a href="#roundLength" class="table-of-contents__link toc-highlight">.roundLength</a></li><li><a href="#setAxis" class="table-of-contents__link toc-highlight">.setAxis</a></li><li><a href="#sign" class="table-of-contents__link toc-highlight">.sign</a></li><li><a href="#snap" class="table-of-contents__link toc-highlight">.snap</a></li><li><a href="#truncate" class="table-of-contents__link toc-highlight">.truncate</a></li><li><a href="#unpack" class="table-of-contents__link toc-highlight">.unpack</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Raild3x. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
-<script src="/RailUtil/assets/js/runtime~main.3e4e091f.js"></script>
-<script src="/RailUtil/assets/js/main.9de64a32.js"></script>
+}</pre></details></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#types" class="table-of-contents__link toc-highlight">Types</a><ul><li><a href="#Plane" class="table-of-contents__link toc-highlight">Plane</a></li><li><a href="#Vector" class="table-of-contents__link toc-highlight">Vector</a></li></ul></li><li><a href="#properties" class="table-of-contents__link toc-highlight">Properties</a></li><li><a href="#functions" class="table-of-contents__link toc-highlight">Functions</a><ul><li><a href="#abs" class="table-of-contents__link toc-highlight">.abs</a></li><li><a href="#calculatePlaneFromPointAndNormal" class="table-of-contents__link toc-highlight">.calculatePlaneFromPointAndNormal</a></li><li><a href="#calculatePlaneFromPoints" class="table-of-contents__link toc-highlight">.calculatePlaneFromPoints</a></li><li><a href="#closestPointOnLine" class="table-of-contents__link toc-highlight">.closestPointOnLine</a></li><li><a href="#closestPointsBetweenLines" class="table-of-contents__link toc-highlight">.closestPointsBetweenLines</a></li><li><a href="#flatten" class="table-of-contents__link toc-highlight">.flatten</a></li><li><a href="#flattenY" class="table-of-contents__link toc-highlight">.flattenY</a></li><li><a href="#getAngle" class="table-of-contents__link toc-highlight">.getAngle</a></li><li><a href="#getAngleBetween" class="table-of-contents__link toc-highlight">.getAngleBetween</a></li><li><a href="#getAxis" class="table-of-contents__link toc-highlight">.getAxis</a></li><li><a href="#getSignedAngleBetweenVector2s" class="table-of-contents__link toc-highlight">.getSignedAngleBetweenVector2s</a></li><li><a href="#getSignedAngleBetweenVector3s" class="table-of-contents__link toc-highlight">.getSignedAngleBetweenVector3s</a></li><li><a href="#isNaN" class="table-of-contents__link toc-highlight">.isNaN</a></li><li><a href="#lineIntersectsSphere" class="table-of-contents__link toc-highlight">.lineIntersectsSphere</a></li><li><a href="#lineSegmentIntersectsSphere" class="table-of-contents__link toc-highlight">.lineSegmentIntersectsSphere</a></li><li><a href="#normalize" class="table-of-contents__link toc-highlight">.normalize</a></li><li><a href="#planeIntersectionPoint" class="table-of-contents__link toc-highlight">.planeIntersectionPoint</a></li><li><a href="#pointLiesOnPlane" class="table-of-contents__link toc-highlight">.pointLiesOnPlane</a></li><li><a href="#projectOnPlane" class="table-of-contents__link toc-highlight">.projectOnPlane</a></li><li><a href="#randomUnitVector" class="table-of-contents__link toc-highlight">.randomUnitVector</a></li><li><a href="#reflect" class="table-of-contents__link toc-highlight">.reflect</a></li><li><a href="#reflectIgnoringY" class="table-of-contents__link toc-highlight">.reflectIgnoringY</a></li><li><a href="#rotateVector2" class="table-of-contents__link toc-highlight">.rotateVector2</a></li><li><a href="#rotateVector3" class="table-of-contents__link toc-highlight">.rotateVector3</a></li><li><a href="#roundLength" class="table-of-contents__link toc-highlight">.roundLength</a></li><li><a href="#setAxis" class="table-of-contents__link toc-highlight">.setAxis</a></li><li><a href="#sign" class="table-of-contents__link toc-highlight">.sign</a></li><li><a href="#snap" class="table-of-contents__link toc-highlight">.snap</a></li><li><a href="#truncate" class="table-of-contents__link toc-highlight">.truncate</a></li><li><a href="#unpack" class="table-of-contents__link toc-highlight">.unpack</a></li></ul></li></ul></div></div></div></div></main></div></div><footer class="footer footer--dark"><div class="container container-fluid"><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2024 Raild3x. Built with Moonwave and Docusaurus.</div></div></div></footer></div>
+<script src="/RailUtil/assets/js/runtime~main.9f4a5c34.js"></script>
+<script src="/RailUtil/assets/js/main.2a8adf28.js"></script>
 </body>
 </html>
