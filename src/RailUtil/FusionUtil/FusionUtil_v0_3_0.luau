@@ -175,6 +175,10 @@ function FusionUtil.removeTask(scope: Scope<any>, taskId: any, dontCleanup: bool
 		if task[TASK_SYMBOL] and task.Id == taskId then
 			table.remove(scope, i)
 			if not dontCleanup then
+				local methodName = task.Deconstructor
+				if typeof(methodName) == "string" then
+					(task.Task :: any)[methodName]()
+				end
 				Fusion.doCleanup(task.Task)
 			end
 			return task.Task
@@ -212,7 +216,13 @@ function FusionUtil.addTask<T>(scope: Scope<any>, task: Task & T, methodName: an
 		[TASK_SYMBOL] = true,
 		Id = taskId,
 		Task = task, 
-		Deconstructor = methodName, 
+		Deconstructor = methodName,
+		Destroy = function()
+			if typeof(methodName) == "string" then
+				(task :: any)[methodName]()
+			end
+			Fusion.doCleanup(task :: any)
+		end
 	}
 	table.insert(scope, taskContainer :: any)
 	return task
