@@ -23,13 +23,13 @@ local Observer = Fusion.Observer
 local Computed = Fusion.Computed
 
 --// Types //--
+type Use = Fusion.Use
 type Scope<T> = Fusion.Scope<T>
 type State<T> = Fusion.StateObject<T>
 type UsedAs<T> = State<T> | T
 type Computed<T> = Fusion.Computed<T>
 type Observer = Fusion.Observer
 type Value<T, S> = Fusion.Value<T, S>
-type Use = Fusion.Use
 type Spring<T> = Fusion.Spring<T>
 type Tween<T> = Fusion.Tween<T>
 type For<K, V> = Fusion.For<K, V>
@@ -59,6 +59,13 @@ local FusionUtil = {}
 FusionUtil.isState = isState;
 FusionUtil.isValue = isValue;
 
+--[=[
+	@within [0.3.0] FusionUtil
+	@prop scope Scope<Fusion, FusionUtil>
+	
+	The global scope for FusionUtil.
+]=]
+FusionUtil.scope = nil :: Scope<Fusion, FusionUtil>
 
 
 --[=[
@@ -257,11 +264,38 @@ function FusionUtil.getTask<T>(scope: Scope<any>, taskId: any): Task?
 	return nil
 end
 
-
-
 --------------------------------------------------------------------------------
 --// METHODS //--
 --------------------------------------------------------------------------------
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Binds a scope to the lifecycle of an instance. When the instance is destroyed, the scope will be cleaned up.
+	Also applies vice versa; when the scope is cleaned up, the instance will be destroyed.
+
+	```lua
+	local s = scoped(Fusion, FusionUtil)
+
+	s:bindTo(s:New "Part" {
+		Anchored = true;
+	})
+	```
+]=]
+function FusionUtil.bindTo(scope: Scope<any>, obj: Instance): Instance
+	local isCleaned = false
+	local function TryCleanup()
+		if not isCleaned then
+			isCleaned = true
+			Fusion.doCleanup(scope)
+		end
+	end
+
+	FusionUtil.addTask(scope, TryCleanup)
+	table.insert(scope, obj.Destroying:Connect(TryCleanup))
+
+	return obj
+end
 
 --[=[
     @within [0.3.0] FusionUtil
@@ -501,15 +535,8 @@ end
 	--// SPECIAL //--
 --------------------------------------------------------------------------------
 
---[=[
-	@within [0.3.0] FusionUtil
-	@prop scope Scope<Fusion, FusionUtil>
-	
-	The global scope for FusionUtil.
-]=]
 FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
 export type FUS = typeof(FusionUtil.scope)
-
 
 local comboTbl
 local function getComboTbl()
