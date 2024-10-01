@@ -291,7 +291,9 @@ function FusionUtil.bindTo(scope: Scope<any>, obj: Instance): Instance
 		end
 	end
 
-	FusionUtil.addTask(scope, TryCleanup)
+	FusionUtil.addTask(scope, function()
+		isCleaned = true
+	end)
 	table.insert(scope, obj.Destroying:Connect(TryCleanup))
 
 	return obj
