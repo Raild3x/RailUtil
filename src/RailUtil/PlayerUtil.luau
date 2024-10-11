@@ -101,7 +101,8 @@ function PlayerUtil.getCharactersFolder(): Folder
 	local CharactersFolder: Folder = _GetCharactersFolder()
 	if not CharactersFolder then
 		if RunService:IsServer() then
-			warn("Failed to find characters folder! Creating...")
+			warn("Failed to find Characters folder! Creating...")
+			warn("Please create a folder named 'Characters' in workspace ahead of time.")
 			local newFolder = Instance.new("Folder")
 			newFolder.Name = CHARACTERS_FOLDER_NAME
 			newFolder.Parent = workspace
@@ -111,7 +112,7 @@ function PlayerUtil.getCharactersFolder(): Folder
 			CharactersFolder = workspace:WaitForChild(CHARACTERS_FOLDER_NAME)
 		end
 	end
-	assert(CharactersFolder and CharactersFolder:IsA("Folder"), "Characters folder not found! (PlayerUtil.lua)")
+	assert(CharactersFolder, "Characters folder not found! (PlayerUtil.lua)")
 	return CharactersFolder
 end
 
@@ -144,13 +145,13 @@ function PlayerUtil.promiseCharacter(plr: Player, timeOut: number?): Promise<Cha
 
 		return PlayerUtil.promiseCharactersFolder():andThen(function(folder)
 			local char = plr.Character
-			if char and char.Parent == folder then
+			if char and char:IsDescendantOf(folder) then
 				return Promise.resolve(char)
 			elseif timeOut and timeOut == 0 then
 				return Promise.reject("Character not found")
 			end
 	
-			local prom = Promise.fromEvent(folder.ChildAdded, function(child)
+			local prom = Promise.fromEvent(folder.DescendantAdded, function(child)
 				return child == plr.Character
 			end)
 			if timeOut then
@@ -179,10 +180,37 @@ function PlayerUtil.getPlayerFromCharacterDescendant(descendant: Instance): Play
 end
 
 --[=[
+	Returns the character that owns the specified descendant.
+	Returns nil if the descendant is not a descendant of a character.
+
+	@param descendant -- The descendant to get the character of
+	@return Character? -- The character that owns the descendant
+]=]
+function PlayerUtil.getCharacterFromDescendant(descendant: Instance): Character?
+	if not descendant:IsDescendantOf(PlayerUtil.getCharactersFolder()) then
+		return nil
+	end
+	for _, char in PlayerUtil.getAllLoadedCharacters() do
+		if descendant:IsDescendantOf(char) then
+			return char
+		end
+	end
+	return nil
+end
+
+--[=[
 	@return {Character} -- A table of all the fully loaded characters
 ]=]
 function PlayerUtil.getAllLoadedCharacters(): { Character }
-	return PlayerUtil.getCharactersFolder():GetChildren() :: { Character }
+	local characters = {}
+	local charFolder = PlayerUtil.getCharactersFolder()
+	for _, plr: Player in Players:GetPlayers() do
+		local char = plr.Character
+		if char and char:IsDescendantOf(charFolder) then
+			table.insert(characters, char)
+		end
+	end
+	return characters :: any
 end
 
 --[=[
@@ -323,5 +351,42 @@ function PlayerUtil.onPlayerRemoving<T...>(player: Player, fn: (T...) -> (), ...
 
 	return cleanerConnection
 end
+
+
+--[=[
+	Sets up code to auto parent characters to the Characters folder when they spawn.
+	Optionally, a function can be passed to run immediately prior to when a character is added to the folder.
+]=]
+local isSetupCharacterInitialization = nil
+function PlayerUtil.setupCharacterInitialization(func: (char: Character) -> ()): any
+	assertFunction(func)
+	if isSetupCharacterInitialization then
+		error("Character initialization already setup. Calling this function multiple times is not supported.\nOriginal call: "..tostring(isSetupCharacterInitialization).."\n\nCurrent call: ")
+	end
+	isSetupCharacterInitialization = debug.traceback()
+
+	return PlayerUtil.forEachPlayer(function(plr: Player)
+		local function onCharAdded(char: Model?)
+			if not char then return end
+			local charactersFolder = PlayerUtil.getCharactersFolder()
+
+			-- repeatedly try to parent the character to the characters folder. Roblox is super finnicky about this so we need to keep trying.
+			while char.Parent ~= charactersFolder do
+				char.Parent = charactersFolder
+				task.wait()
+			end 
+
+			if func then
+				func(char :: any)
+			end
+
+			char.Parent = charactersFolder
+		end
+
+		plr.CharacterAdded:Connect(onCharAdded)
+		onCharAdded(plr.Character)
+	end)
+end
+
 
 return table.freeze(PlayerUtil)

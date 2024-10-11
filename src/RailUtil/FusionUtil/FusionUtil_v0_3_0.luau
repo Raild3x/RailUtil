@@ -16,6 +16,8 @@
 local Util = script.Parent.Parent
 local MathUtil = require(Util.MathUtil)
 local Fusion = require(Util.Parent.Fusion_v0_3_0)
+local Promise = require(Util.Parent.Promise)
+local Types = require(Util.RailUtilTypes)
 
 local peek = Fusion.peek
 local Value = Fusion.Value
@@ -23,6 +25,7 @@ local Observer = Fusion.Observer
 local Computed = Fusion.Computed
 
 --// Types //--
+type Promise = Types.Promise
 type Use = Fusion.Use
 type Scope<T> = Fusion.Scope<T>
 type State<T> = Fusion.StateObject<T>
@@ -271,6 +274,50 @@ end
 --[=[
 	@within [0.3.0] FusionUtil
 
+	Creates a promise that resolves when the given state changes. If a predicate is given then the promise will only resolve if the predicate returns true.
+	If the third argument `canResolveImmediately` is true, the promise will will check the predicate immediately.
+
+	```lua
+	local a = s:Value(10)
+
+	s:promiseState(a):andThen(function(value)
+		print("Value is now", value)
+	end)
+
+	a:set(20) -- "Value is now 20"
+	a:set(30) -- Promise has already resolved so no print
+	```
+]=]
+function FusionUtil.promiseState<T>(scope: Scope<any>, state: State<T>, predicate: ((value: T) -> boolean)?, canResolveImmediately: boolean?): Promise
+	local prom = Promise.new(function(resolve, _, onCancel)
+		local disconnect = nil
+		local function Check()
+			local value = peek(state)
+			if not predicate or predicate(value) then
+				disconnect()
+				resolve(value)
+			end
+		end
+
+		disconnect = Observer(scope, state):onChange(Check)
+		if canResolveImmediately then
+			Check()
+		end
+		onCancel(disconnect) 
+	end)
+
+	if scope then
+		table.insert(scope, function()
+			prom:cancel()
+		end)
+	end
+
+	return prom
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
 	Binds a scope to the lifecycle of an instance. When the instance is destroyed, the scope will be cleaned up.
 	Also applies vice versa; when the scope is cleaned up, the instance will be destroyed.
 
@@ -344,36 +391,6 @@ function FusionUtil.ensureIsState<T>(scope: Scope<any>, data: UsedAs<T>?, defaul
         -- Wrap non-state data in a state object within the given scope
         return Value(scope, data) :: any
     end
-end
-
---[=[
-	@within [0.3.0] FusionUtil
-
-	Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.
-
-	@param stateToWatch -- The state to watch for changes
-	@param valueToSet   -- The value to set when the state changes
-	@return () -> ()    -- A function that will disconnect the observer
-
-	```lua
-	local s = scoped(Fusion, FusionUtil)
-
-	local a = s:Value(123)
-	local b = s:Value(0)
-	local disconnect = s:syncValues(a, b)
-
-	print( peek(b) ) -- 123
-	a:set(456)
-	print( peek(b) ) -- 456
-
-	disconnect()
-	```
-]=]
-function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any, any>): () -> ()
-	valueToSet:set(peek(stateToWatch))
-	return Observer(scope, stateToWatch):onChange(function()
-		valueToSet:set(peek(stateToWatch))
-	end)
 end
 
 --[=[
@@ -533,6 +550,267 @@ function FusionUtil.observeState<T>(scope: Scope<any>, fusionState: UsedAs<T>, c
 	return function() end
 end
 
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Copies the state of a state object to a new state object. If the state object is updated, the new state object will be updated as well.
+
+	@param scope
+	@param state UsedAs<T> -- The state object to copy
+	@return State<T>  -- The new state object copied from the original state object 
+	@return () -> () -- A function to disconnect the syncronization of the two states
+
+	```lua
+	local s = scoped(Fusion, FusionUtil)
+
+	local a = s:Value(10)
+	local b, disconnect = s:copyState(a)
+
+	print( peek(b) ) -- 10
+	a:set(20)
+	print( peek(b) ) -- 20
+	```
+]=]
+function FusionUtil.copyState<T>(scope: Scope<any>, state: UsedAs<T>): (State<T>, () -> ())
+	local stateCopy = Fusion.Value(scope, peek(state))
+	if not isState(state) then
+		return stateCopy, function() end
+	end
+	return stateCopy, Fusion.Observer(scope, state):onChange(function()
+		Fusion.Value(scope, peek(state))
+	end) :: any
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.
+
+	@param stateToWatch -- The state to watch for changes
+	@param valueToSet   -- The value to set when the state changes
+	@return () -> ()    -- A function that will disconnect the observer
+
+	```lua
+	local s = scoped(Fusion, FusionUtil)
+
+	local a = s:Value(123)
+	local b = s:Value(0)
+	local disconnect = s:syncValues(a, b)
+
+	print( peek(b) ) -- 123
+	a:set(456)
+	print( peek(b) ) -- 456
+
+	disconnect()
+	```
+]=]
+function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any, any>): () -> ()
+	valueToSet:set(peek(stateToWatch))
+	return Observer(scope, stateToWatch):onChange(function()
+		valueToSet:set(peek(stateToWatch))
+	end)
+end
+
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Inserts a value into a container state object.
+	Follows the structure of `table.insert` so giving an extra arg for the index will insert the value at that index.
+
+	@param valueState -- The container state object
+	@param ...
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	FusionUtil.arrayInsert(myArr, 2, "X")
+	print( peek(myArr) ) -- {"A", "X", "B", "C"}
+
+	FusionUtil.arrayInsert(myArr, "Z")
+	print( peek(myArr) ) -- {"A", "X", "B", "C", "Z"}
+	```
+]=]
+function FusionUtil.arrayInsert(valueState: Value<{any}, any>, ...)
+	local containerArray = peek(valueState)
+	table.insert(containerArray, ...)
+	if isValue(valueState) then
+		valueState:set(containerArray)
+	else
+		assert(not isState(valueState), "Expected a Value, got a State")
+	end
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Removes a value from a container state object.
+
+	@param valueState -- The container state object
+	@param index      -- The index of the value to remove
+	@param swapRemove -- Whether to swap the value with the last value before removing it. This is faster than a regular remove but does not maintain the order of the array.
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	local removedValue = FusionUtil.arrayRemove(myArr, 2)
+	print( peek(myArr) ) -- {"A", "C"}
+	print( removedValue ) -- "B"
+	```
+]=]
+function FusionUtil.arrayRemove(valueState: Value<{any}, any>, index: number?, swapRemove: boolean?): any
+	if swapRemove then
+		assert(index, "Expected an index to swap remove")
+		return FusionUtil.arraySwapRemove(valueState, index)
+	end
+	local containerArray = peek(valueState)
+	local v = table.remove(containerArray, index)
+	if isValue(valueState) then
+		valueState:set(containerArray)
+	else
+		assert(not isState(valueState), "Expected a Value, got a State")
+	end
+	return v
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Swaps two values in a container state object.
+
+	@param valueState -- The container state object
+	@param index1     -- The index of the first value to swap
+	@param index2     -- The index of the second value to swap
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	local removedValue = FusionUtil.arraySwapRemove(myArr, 1)
+	print( peek(myArr) ) -- {"C", "B"}
+	print( removedValue ) -- "A"
+	```
+]=]
+function FusionUtil.arraySwapRemove(valueState: Value<{any}, any>, index: number): any
+	local containerArray = peek(valueState)
+	local v = containerArray[index]
+	containerArray[index] = containerArray[#containerArray]
+	table.remove(containerArray)
+	if isValue(valueState) then
+		valueState:set(containerArray)
+	else
+		assert(not isState(valueState), "Expected a Value, got a State")
+	end
+	return v
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Removes the first instance of a value from a container state object.
+
+	@param valueState -- The container state object
+	@param value      -- The value to remove
+	@param swapRemove -- Whether to swap the value with the last value before removing it. This is faster than a regular remove but does not maintain the order of the array.
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	local indexOfRemovedValue = FusionUtil.arrayRemoveFirstValue(myArr, "A")
+	print( peek(myArr) ) -- {"B", "C"}
+	print( indexOfRemovedValue ) -- 1
+	```
+]=]
+function FusionUtil.arrayRemoveFirstValue(valueState: Value<{any}, any>, value: any, swapRemove: boolean?): any
+	local containerArray = peek(valueState)
+	local idx = table.find(containerArray, value)
+	if idx then
+		FusionUtil.arrayRemove(valueState, idx, swapRemove)
+	end
+	return idx
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Removes the first instance of a value from a container state object via swap replacement.
+	Faster than normal removal but does not maintain order.
+
+	@param valueState -- The container state object
+	@param value      -- The value to remove
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	FusionUtil.arraySwapRemoveFirstValue(myArr, "A")
+	print( peek(myArr) ) -- {"C", "B"}
+	```
+]=]
+function FusionUtil.arraySwapRemoveFirstValue(valueState: Value<{any}, any>, value: any): any
+	return FusionUtil.arrayRemoveFirstValue(valueState, value, true)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Sets a value in a container state object.
+
+	@param valueState -- The container state object
+	@param index      -- The index of the value to change
+	@param newValue   -- The new value to change index to
+	@param updateInsteadOfReplace -- Whether to update the value at the index if it is a ValueState instead of overwriting it
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	FusionUtil.arraySet(myArr, 2, "X")
+	print( peek(myArr) ) -- {"A", "X", "C"}
+	```
+]=]
+function FusionUtil.arraySet(valueState: Value<{any}, any>, index: number, newValue: any, updateInsteadOfReplace: boolean?)
+	local containerArray = peek(valueState)
+	if updateInsteadOfReplace then
+		if isValue(containerArray[index]) then
+			containerArray[index]:set(newValue)
+			return newValue
+		else
+			warn("FusionUtil.arraySet: Expected a Value, got a " .. typeof(containerArray[index]))
+		end
+	end
+	containerArray[index] = newValue
+	if isValue(valueState) then
+		valueState:set(containerArray)
+	else
+		assert(not isState(valueState), "Expected a Value, got a State")
+	end
+	return newValue
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Sets the first instance of a value in a container state object.
+
+	@param valueState -- The container state object
+	@param valueToFind -- The value to find
+	@param valueToReplaceWith -- The value to replace the found value with
+	@param updateInsteadOfReplace -- Whether to update the value at the index if it is a ValueState instead of overwriting it
+
+	```lua
+	local myArr = s:Value({"A", "B", "C"})
+
+	FusionUtil.arraySetFirstValue(myArr, "B", "X")
+	print( peek(myArr) ) -- {"A", "X", "C"}
+	```
+]=]
+function FusionUtil.arraySetFirstValue(valueState: Value<{any}, any>, valueToFind: any, valueToReplaceWith: any, updateInsteadOfReplace: boolean?)
+	local containerArray = peek(valueState)
+	local idx = table.find(containerArray, valueToFind)
+	if idx then
+		return FusionUtil.arraySet(valueState, idx, valueToReplaceWith)
+	end
+	return nil
+end
+
 --------------------------------------------------------------------------------
 	--// SPECIAL //--
 --------------------------------------------------------------------------------
@@ -552,13 +830,18 @@ local function getComboTbl()
 	return comboTbl
 end
 
--- Passthrough functions
-FusionUtil.peek = Fusion.peek
-FusionUtil.Contextual = Fusion.Contextual
-
-FusionUtil.scoped = function(...)
+FusionUtil.Scoped = function(...)
 	return Fusion.scoped(getComboTbl(), ...)
 end
+
+setmetatable(FusionUtil, {
+	__index = function(t, k)
+		if k == "scoped" then
+			return FusionUtil.Scoped
+		end
+		return Fusion[k]
+	end;
+})
 
 
 return table.freeze(FusionUtil)
