@@ -40,6 +40,7 @@ type Character = Model & {
 }
 
 --// Setup Code //--
+local isSetupCharacterInitialization = nil
 local CHARACTERS_FOLDER_NAME = "Characters"
 local CONNECTION_COUNT = if RunService:IsServer() then 0 else 1
 
@@ -352,13 +353,11 @@ function PlayerUtil.onPlayerRemoving<T...>(player: Player, fn: (T...) -> (), ...
 	return cleanerConnection
 end
 
-
 --[=[
 	Sets up code to auto parent characters to the Characters folder when they spawn.
 	Optionally, a function can be passed to run immediately prior to when a character is added to the folder.
 ]=]
-local isSetupCharacterInitialization = nil
-function PlayerUtil.setupCharacterInitialization(func: (char: Character) -> ()): any
+function PlayerUtil.setupCharacterInitialization(func: (char: Character) -> ()?): any
 	assertFunction(func)
 	if isSetupCharacterInitialization then
 		error("Character initialization already setup. Calling this function multiple times is not supported.\nOriginal call: "..tostring(isSetupCharacterInitialization).."\n\nCurrent call: ")
