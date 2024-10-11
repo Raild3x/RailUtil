@@ -971,10 +971,10 @@ end
 	@param mode string? -- The mode to use for the weak table
 	@return T & tbl -- The weak table
 ]=]
-function TableUtil.Weak<T>(tbl: T?, mode: string?): T & tbl
+function TableUtil.Weak<T>(tbl: T, mode: string?): T
 	assert(not mode or mode == "k" or mode == "v" or mode == "kv", "Invalid mode")
 	assert(not tbl or (typeof(tbl) == "table" and not getmetatable(tbl)), "Invalid table")
-	return setmetatable(tbl or {}, { __mode = mode or "k" })
+	return setmetatable(tbl :: any or {}, { __mode = mode or "k" })
 end
 
 return TableUtil
