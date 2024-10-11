@@ -619,7 +619,7 @@ end
 	Follows the structure of `table.insert` so giving an extra arg for the index will insert the value at that index.
 
 	@param valueState -- The container state object
-	@param ...
+	@param ... (number, any) | (any)
 
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
@@ -679,8 +679,7 @@ end
 	Swaps two values in a container state object.
 
 	@param valueState -- The container state object
-	@param index1     -- The index of the first value to swap
-	@param index2     -- The index of the second value to swap
+	@param index -- the index of the value to swap out
 
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
