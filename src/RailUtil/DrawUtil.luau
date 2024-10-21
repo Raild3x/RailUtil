@@ -124,8 +124,6 @@ function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | At
 	else
 		color = color or shaft.Color3
 	end
-	shaft.Height = (from - to).Magnitude - 2
-	shaft.CFrame = CFrame.lookAt(((from + to) / 2) - ((to - from).Unit * 1), to)
 
 	if shaft.Parent == nil then
 		shaft.Name = name .. "_shaft"
@@ -139,6 +137,8 @@ function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | At
 		shaft.ZIndex = 5 - math.ceil(scale)
 	end
 
+	shaft.Height = (from - to).Magnitude - 2
+	shaft.CFrame = CFrame.lookAt(((from + to) / 2) - ((to - from).Unit * 1), to)
 	shaft.Parent = arrow
 
 	local pointy = arrow:FindFirstChild(name .. "_head") or Instance.new("ConeHandleAdornment")
@@ -157,6 +157,7 @@ function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | At
 	end
 
 	pointy.CFrame = CFrame.lookAt((CFrame.lookAt(to, from) * CFrame.new(0, 0, -2 - ((scale - 1) / 2))).Position, to)
+	pointy.Parent = arrow
 
 	arrow.Parent = container
 

@@ -2,7 +2,7 @@
 name = "raild3x/railutil"
 description = "A collection of utility functions for Roblox Luau."
 authors = ["Logan Hunt (Raildex)"]
-version = "1.7.1"
+version = "1.7.2"
 license = "MIT"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"

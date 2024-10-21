@@ -86,6 +86,7 @@ local scriptRefs = {
 	Fusion = script:FindFirstChild("FusionUtil"),
 	String = script:FindFirstChild("StringUtil"),
 	Camera = script:FindFirstChild("CameraUtil"),
+	Draw = script:FindFirstChild("DrawUtil"),
 }
 
 -- I have a metatable redirecting all these because roblox
