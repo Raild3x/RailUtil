@@ -1081,4 +1081,45 @@ function TableUtil.GreedyMesh2D<T>(grid: {{T}}, isValid: ((node: T, X: number, Y
     return rects
 end
 
+
+--[=[
+	@wihin TableUtil
+
+	Performs a binary search on a sorted array. The array is expected to be sorted in ascending order.
+	@param array {T} -- The array to search
+	@param value any -- The value to search for
+	@param _comparator ((a: T, b: T) -> boolean)? -- An optional comparator function. Defaults to a simple less-than comparison.
+	@return number? -- The index of the value if found, otherwise nil.
+
+	```lua
+	local array = {1, 2, 4, 4, 4, 5, 6, 9, 12}
+	local index = TableUtil.BinarySearch(array, 5)
+	print(index) --> 6
+	```
+	```lua
+	-- Exmaple with a custom comparator
+	-- TODO: Add example
+	```
+]=]
+function TableUtil.BinarySearch<T>(array: { T }, value: any, _comparator: ((a: T, b: T) -> boolean)?): number?
+	local comparator: any = _comparator or function(a: any, b: any)
+		return a < b
+	end
+
+	local l = 1
+	local r = #array
+	while l <= r do
+		local m = math.floor((l + r) / 2)
+		local mV = array[m]
+		if comparator(mV, value) then
+			l = m + 1
+		elseif comparator(value, mV) then
+			r = m - 1
+		else
+			return m
+		end
+	end
+
+	return nil
+end
 return TableUtil

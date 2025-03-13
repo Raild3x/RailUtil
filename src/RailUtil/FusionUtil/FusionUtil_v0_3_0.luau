@@ -574,6 +574,7 @@ end
 
 --[=[
 	@within [0.3.0] FusionUtil
+	@unreleased
 	@client
 
 	This wraps FusionUtil.ratio with a handler for scaling states/functions with the Screen Height.
@@ -618,10 +619,10 @@ end
 	@return UsedAs<number>	-- The resultant lerped number state/value
 
 	```lua
-	local a = Value(10)
-	local b = Value(20)
-	local alpha = Value(0.5)
-	local z = FusionUtil.lerpNumber(a, b, alpha)
+	local a = s:Value(10)
+	local b = s:Value(20)
+	local alpha = s:Value(0.5)
+	local z = s:lerpNumber(a, b, alpha)
 	print( peek(z) ) -- 15
 	```
 ]=]
@@ -631,6 +632,26 @@ function FusionUtil.lerpNumber(scope: Scope<any>, n1: UsedAs<number>, n2: UsedAs
 	end
 	return Computed(scope, function(use)
 		return MathUtil.lerp(use(n1), use(n2), use(alpha)) :: number
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	A method to simplify Computeds that return simple UDims. If neither the scale nor offset are states
+	then it will just return a raw UDim.
+
+	```lua
+	local scale = s:Value(10)
+	local udim = s:UDim(scale, 0)
+	```
+]=]
+function FusionUtil.UDim(scope: Scope<any>, scale: UsedAs<number>, offset: UsedAs<number>): UsedAs<UDim>
+	if not isState(scale) and not isState(offset) then
+		return UDim.new(scale, offset)
+	end
+	return Computed(scope, function(use)
+		return UDim.new(use(scale), use(offset))
 	end)
 end
 
@@ -646,8 +667,6 @@ end
 	@return State<boolean>	-- A state resolving to the equality of the two given arguments
 
 	```lua
-	local s = RailUtil.Fusion.scoped()
-
 	local a = s:Value(10)
 	local b = s:Value(10)
 	local c = s:eq(a, b)
@@ -659,6 +678,83 @@ end
 function FusionUtil.eq(scope: Scope<any>, stateToCheck1: UsedAs<any>, stateToCheck2: UsedAs<any>): State<boolean>
 	return Computed(scope, function(use)
 		return use(stateToCheck1) == use(stateToCheck2)
+	end)
+end
+-- Backwards compat aliases
+FusionUtil.Eq = FusionUtil.eq
+FusionUtil.Equal = FusionUtil.eq
+FusionUtil.Equals = FusionUtil.eq
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Checks if a given state is truthy. If it is, the state will resolve to 
+	the second arg, otherwise it will resolve to the third arg.
+
+	@param scope
+	@param state -- The state to check
+	@param trueValue -- The value to resolve to if the state is truthy
+	@param falseValue -- The value to resolve to if the state is falsey
+
+	```lua
+	local s = RailUtil.Fusion.scoped()
+
+	local a = s:Value(false)
+	local b = s:Value(20)
+	local c = s:If(a, b, 0)
+	print( peek(c) ) -- 0
+	a:set(true)
+	print( peek(c) ) -- 20
+	b:set(30)
+	print( peek(c) ) -- 30
+	```
+]=]
+function FusionUtil.If<U, V>(scope: Scope<any>, state: UsedAs<any>, trueValue: UsedAs<U>, falseValue: UsedAs<V>): State<U | V>
+	return Computed(scope, function(use)
+		return if use(state) then use(trueValue) else use(falseValue)
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Flips the Truthiness of the given state.
+
+	@param scope
+	@param state -- The state to flip
+	@return State<boolean> -- The flipped state
+
+	```lua
+	local a = s:Value(false)
+	local b = s:Not(a)
+	print( peek(b) ) -- true
+	```
+]=]
+function FusionUtil.Not(scope: Scope<any>, state: UsedAs<any>): State<boolean>
+	return Computed(scope, function(use)
+		return not use(state)
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Runs an `or` operation on two states and returns the result.
+]=]
+function FusionUtil.Or<U, V>(scope: Scope<any>, state1: UsedAs<U>, state2: UsedAs<V>): State<U | V>
+	return Computed(scope, function(use)
+		return use(state1) or use(state2)
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Runs an `and` operation on two states and returns the result.
+]=]
+function FusionUtil.And<U, V>(scope: Scope<any>, state1: UsedAs<U>, state2: UsedAs<V>): State<U | V>
+	return Computed(scope, function(use)
+		return use(state1) and use(state2)
 	end)
 end
 
@@ -1042,6 +1138,11 @@ end
 --------------------------------------------------------------------------------
 	--// SPECIAL //--
 --------------------------------------------------------------------------------
+
+-- This is an alias to allow for janitors to inherently clean up scopes without needing to specify doCleanup
+function FusionUtil.destroy(scope: Scope<any>)
+	Fusion.doCleanup(scope)
+end
 
 FusionUtil.scope = Fusion:scoped(FusionUtil)
 export type FUS = typeof(FusionUtil.scope)
