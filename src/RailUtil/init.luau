@@ -7,73 +7,51 @@
 	RailUtil is a collection of utility libraries created by Logan Hunt (Raildex).
 
 	This module serves as an entrypoint to each of the sub libraries.
+
+	- [Math](/api/MathUtil)
+	- [Vector](/api/VectorUtil)
+	- [Table](/api/TableUtil)
+	- [String](/api/StringUtil)
+	- [Player](/api/PlayerUtil)
+	- [Instance](/api/InstanceUtil)
+	- [Input](/api/InputUtil)
+	- [Signal](/api/SignalUtil)
+	- [Camera](/api/CameraUtil)
+	- [Fusion](/api/FusionUtil)
+	- [Draw](/api/DrawUtil)
+	- [Debug](/api/DebugUtil)
+
+	Reference the desired utility modules via the RailUtil package to get started:
+
+	```lua
+	local RailUtil = require(Packages.RailUtil)
+	local MathUtil = RailUtil.Math
+	local TableUtil = RailUtil.Table
+	local StringUtil = RailUtil.String
+	local VectorUtil = RailUtil.Vector
+	local SignalUtil = RailUtil.Signal
+	local PlayerUtil = RailUtil.Player
+	local InstanceUtil = RailUtil.Instance
+	local InputUtil = RailUtil.Input
+	local CameraUtil = RailUtil.Camera
+	local FusionUtil = RailUtil.Fusion
+	local DrawUtil = RailUtil.Draw
+	local DebugUtil = RailUtil.Debug
+	```
 ]=]
 
---[=[
-	@within RailUtil
-	@prop Math MathUtil
-	The MathUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Vector VectorUtil
-	The VectorUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Table TableUtil
-	The TableUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Signal SignalUtil
-	The SignalUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Player PlayerUtil
-	The PlayerUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Instance InstanceUtil
-	The InstanceUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Fusion FusionUtil
-	The FusionUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop String StringUtil
-	The StringUtil module.
-]=]
-
---[=[
-	@within RailUtil
-	@prop Camera CameraUtil
-	The CameraUtil module.
-]=]
-
-local DrawUtil : typeof(require(script.DrawUtil)) = nil
 local MathUtil : typeof(require(script.MathUtil)) = nil
-local VectorUtil : typeof(require(script.VectorUtil)) = nil
 local TableUtil : typeof(require(script.TblUtil)) = nil
-local DebugUtil : typeof(require(script.DebugUtil)) = nil
-local SignalUtil : typeof(require(script.SignalUtil)) = nil
+local VectorUtil : typeof(require(script.VectorUtil)) = nil
 local PlayerUtil : typeof(require(script.PlayerUtil)) = nil
 local InstanceUtil : typeof(require(script.InstanceUtil)) = nil
-local FusionUtil : typeof(require(script.FusionUtil)) = nil
 local StringUtil : typeof(require(script.StringUtil)) = nil
 local CameraUtil : typeof(require(script.CameraUtil)) = nil
+local InputUtil : typeof(require(script.InputUtil)) = nil
+local FusionUtil : typeof(require(script.FusionUtil)) = nil
+local DrawUtil : typeof(require(script.DrawUtil)) = nil
+local DebugUtil : typeof(require(script.DebugUtil)) = nil
+local SignalUtil : typeof(require(script.SignalUtil)) = nil
 
 local scriptRefs = {
 	Math = script:FindFirstChild("MathUtil"),
@@ -86,6 +64,8 @@ local scriptRefs = {
 	Fusion = script:FindFirstChild("FusionUtil"),
 	String = script:FindFirstChild("StringUtil"),
 	Camera = script:FindFirstChild("CameraUtil"),
+	Draw = script:FindFirstChild("DrawUtil"),
+	Input = script:FindFirstChild("InputUtil"),
 }
 
 -- I have a metatable redirecting all these because roblox
@@ -120,6 +100,7 @@ local Util = {
 	Fusion = FusionUtil,
 	String = StringUtil,
 	Camera = CameraUtil,
+	Input = InputUtil,
 }
 
 setmetatable(Util, UtilMT)

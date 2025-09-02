@@ -16,6 +16,7 @@
 	```
 ]=]
 
+local HttpService = game:GetService("HttpService")
 type PartProps = {
 	Name: string?,
 	CFrame: CFrame?,
@@ -65,7 +66,11 @@ end
 	DrawUtil.vector("MyVector", Vector3.new(0, 0, 0), Vector3.new(10, 10, 10), Color3.new(1, 0, 0), 1)
 	```
 ]=]
-function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | Attachment), to: (Vector3 | CFrame | PVInstance | Attachment)?, color: Color3?, _scale: number?)
+function DrawUtil.vector(name: string?, from: (Vector3 | CFrame | PVInstance | Attachment), to: (Vector3 | CFrame | PVInstance | Attachment)?, color: Color3?, _scale: number?)
+	if not name then
+		name = HttpService:GenerateGUID(false)
+	end
+
 	if typeof(from) == "Instance" then
 		if from:IsA("PVInstance") then
 			from = from:GetPivot()
@@ -124,8 +129,6 @@ function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | At
 	else
 		color = color or shaft.Color3
 	end
-	shaft.Height = (from - to).Magnitude - 2
-	shaft.CFrame = CFrame.lookAt(((from + to) / 2) - ((to - from).Unit * 1), to)
 
 	if shaft.Parent == nil then
 		shaft.Name = name .. "_shaft"
@@ -139,6 +142,8 @@ function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | At
 		shaft.ZIndex = 5 - math.ceil(scale)
 	end
 
+	shaft.Height = (from - to).Magnitude - 2
+	shaft.CFrame = CFrame.lookAt(((from + to) / 2) - ((to - from).Unit * 1), to)
 	shaft.Parent = arrow
 
 	local pointy = arrow:FindFirstChild(name .. "_head") or Instance.new("ConeHandleAdornment")
@@ -157,6 +162,7 @@ function DrawUtil.vector(name: string, from: (Vector3 | CFrame | PVInstance | At
 	end
 
 	pointy.CFrame = CFrame.lookAt((CFrame.lookAt(to, from) * CFrame.new(0, 0, -2 - ((scale - 1) / 2))).Position, to)
+	pointy.Parent = arrow
 
 	arrow.Parent = container
 
@@ -206,7 +212,7 @@ function DrawUtil.point(name: string, position: Vector3 | CFrame, radius: number
 	end
 
 	point.Position = position
-	point.Size = Vector3.one * radius
+	point.Size = Vector3.one * radius :: number
 	point.Color = color
 
 	point.Parent = container
@@ -243,7 +249,7 @@ function DrawUtil.line(name: string, from: Vector3, to: Vector3, radius: number?
 		line.Shape = Enum.PartType.Cylinder
 	end
 	
-	line.CFrame = CFrame.lookAt(from, to) * CFrame.new(0, 0, -((from - to).Magnitude / 2))
+	line.CFrame = CFrame.lookAt(from, to) * CFrame.new(0, 0, -((from - to).Magnitude / 2)) * CFrame.Angles(0, math.pi / 2, 0)
 	line.Size = Vector3.new((from - to).Magnitude, radius, radius)
 	line.Color = color or Color3.new(1, 1, 1)
 

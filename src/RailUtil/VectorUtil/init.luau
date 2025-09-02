@@ -1,4 +1,5 @@
 --!strict
+--!native
 -- Logan Hunt [Raildex]
 -- Nov 22, 2022
 
@@ -17,6 +18,16 @@ type Vector = Vector3 | Vector2
 	Data type representing a plane. The plane is represented by a table with 4 values. Typically used for plane intersection calculations.
 ]=]
 type Plane = {number}
+
+
+-- Function to determine orientation of three points
+local function orientation(p: Vector2, q: Vector2, r: Vector2): number
+	local val = (q.Y - p.Y) * (r.X - q.X) - (q.X - p.X) * (r.Y - q.Y)
+	if val == 0 then return 0 -- Collinear
+	elseif val > 0 then return 1 -- Clockwise
+	else return 2 -- Counterclockwise
+	end
+end
 
 --------------------------------------------------------------------------------
 --[=[
@@ -393,6 +404,7 @@ end
 
 --[=[
 	Creates a plane from three points. The normal of the plane is determined by the input order of the points.
+	Planes are used by other RailUtil.Vector functions in order to allow precomputation.
 	@param p1 -- The first point.
 	@param p2 -- The second point.
 	@param p3 -- The third point.
@@ -405,6 +417,7 @@ end
 
 --[=[
 	Creates a plane from a point and a normal.
+	Planes are used by other RailUtil.Vector functions in order to allow precomputation.
 	@param point -- A point on the plane.
 	@param normal -- The normal of the plane.
 	@return Plane -- The plane defined by the point and normal.
@@ -442,10 +455,10 @@ end
 	local dir = Vector3.new(1, 1, 1)
 	local normal = Vector3.new(0, 1, 0)
 
-	VectorUtil.projectOnPlane(dir, normal) -- Output: Vector3.new(1, 0, 1)
+	VectorUtil.projectVectorToPlane(dir, normal) -- Output: Vector3.new(1, 0, 1)
 	```
 ]=]
-function VectorUtil.projectOnPlane(dir: Vector3, normal: Vector3?): Vector3
+function VectorUtil.projectVectorToPlane(dir: Vector3, normal: Vector3?): Vector3
     -- Normalize the plane's normal vector to ensure correct projection
     local normalizedNormal = (normal or Vector3.yAxis).Unit
 
@@ -454,6 +467,251 @@ function VectorUtil.projectOnPlane(dir: Vector3, normal: Vector3?): Vector3
     local flattenedVector = dir - projectionOntoNormal
 
     return flattenedVector
+end
+
+
+--[=[
+	Checks if a point is inside a polygon defined by a set of points.
+	The points *must* be in order within the array, this order defines the winding of the polygon.
+
+	@param point -- The point to check.
+	@param polygon -- The polygon to check against.
+	@return boolean -- Whether or not the point is inside the polygon.
+
+	```lua
+	local point = Vector2.new(0, 0)
+	local polygon = {
+		Vector2.new(1, 0),
+		Vector2.new(0, 1),
+		Vector2.new(0, 0)
+	}
+
+	VectorUtil.pointInPolygon2D(point, polygon) -- Output: true
+	```
+]=]
+function VectorUtil.pointInPolygon2D(point: Vector2, polygon: {Vector2}): boolean
+    local crossings = 0
+    local count = #polygon
+
+    for i = 1, count do
+        local v1 = polygon[i]
+        local v2 = polygon[i % count + 1] -- Wrap around to the first point
+
+        -- Check if the ray crosses the edge
+        if (v1.Y > point.Y) ~= (v2.Y > point.Y) then
+            local intersectX = (v2.X - v1.X) * (point.Y - v1.Y) / (v2.Y - v1.Y) + v1.X
+            if point.X < intersectX then
+                crossings += 1
+            end
+        end
+    end
+
+    return crossings % 2 == 1 -- Odd number of crossings means inside
+end
+
+--[=[
+	Checks if a point is inside a polygon defined by a set of points and a normal. The polygon has infinite height, extending in both directions
+	of the surface normal. The points that define the polygon must be in order within the array if you aren't using the Hull flag.
+	The order of the points defines the winding of the polygon.
+
+	Allows for checking against the convex hull of the polygon by setting the `_useHull` parameter to true.
+	This should be used only when needed as it can result in a higher computational cost in some scenarios.
+
+	@param point -- The point to check.
+	@param polygon -- The polygon to check against.
+	@param _normal -- The normal of the polygon. Defaults to Vector3.new(0, 1, 0).
+	@param _useHull -- Whether or not to use the convex hull of the polygon. Defaults to false.
+	@return boolean -- Whether or not the point is inside the polygon.
+
+	```lua
+	local point = Vector3.new(0, 0, 0)
+	local polygon = {
+		Vector3.new(1, 0, 0),
+		Vector3.new(0, 1, 0),
+		Vector3.new(0, 0, 1)
+	}
+	local normal = Vector3.new(1, 1, 1)
+
+	VectorUtil.pointInPolygon3D(point, polygon, normal) -- Output: true
+	```
+]=]
+function VectorUtil.pointInPolygon3D(point: Vector3, polygon: {Vector3}, _normal: Vector3?, _useHull: boolean?): boolean
+	if #polygon < 3 then
+        return false -- Not a valid polygon
+    end
+
+	local normal = _normal or Vector3.yAxis
+
+    -- Pick a reference point on the plane
+    local planePoint = polygon[1]
+
+	local function projectPointOntoPlane(point: Vector3, normal: Vector3): Vector3
+		local toPoint = point - planePoint
+		local distance = toPoint:Dot(normal)
+		return point - normal * distance -- Projected point
+	end
+
+    -- Project all points and the test point onto the plane
+    local projectedPoints = {}
+    for _, p in pairs(polygon) do
+        table.insert(projectedPoints, projectPointOntoPlane(p, normal))
+    end
+    local projectedTestPoint = projectPointOntoPlane(point, normal)
+
+    -- Generate a 2D basis using two edges of the polygon
+    local u = (projectedPoints[2] - projectedPoints[1]).Unit
+    local v = normal:Cross(u) -- Perpendicular vector
+
+    -- Convert 3D projected points into 2D
+    local polygon2D = {}
+    for _, p in pairs(projectedPoints) do
+        local relative = p - planePoint
+        table.insert(polygon2D, Vector2.new(relative:Dot(u), relative:Dot(v)))
+    end
+
+    -- Convert the test point to 2D
+    local relativeTest = projectedTestPoint - planePoint
+    local testPoint2D = Vector2.new(relativeTest:Dot(u), relativeTest:Dot(v))
+
+	if _useHull then
+		polygon2D = VectorUtil.calculateConvexHullGiftWrap(polygon2D)
+	end
+
+    -- Check if the test point is inside the polygon
+    return VectorUtil.pointInPolygon2D(testPoint2D, polygon2D)
+end
+
+--[=[
+	Uses Graham's scan algorithm to calculate the convex hull of a set of 2D points.
+	Graham's scan is better suited for larger sets of points than Giftwrapping.
+	However, they will produce the same result.
+
+	@param points -- The points to calculate the convex hull of.
+	@return {Vector2} -- The convex hull of the points.
+
+	```lua
+	local points = {
+		Vector2.new(0, 0),
+		Vector2.new(1, 0),
+		Vector2.new(0.5, 0.5)
+		Vector2.new(0, 1),
+		Vector2.new(1, 1),
+	}
+
+	local hull = VectorUtil.calculateConvexHullGrahamScan(points) -- Output: {Vector2.new(0, 0), Vector2.new(1, 0), Vector2.new(1, 1), Vector2.new(0, 1)}
+	```
+]=]
+function VectorUtil.calculateConvexHullGrahamScan(points: {Vector2}): {Vector2}
+	local n = #points
+	if n < 3 then
+		warn("Cannot calculate convex hull with less than 3 points.")
+		return points
+	end
+
+	-- Find the lowest point (break ties by X)
+	local lowest = 1
+	for i = 2, n do
+		if points[i].Y < points[lowest].Y or (points[i].Y == points[lowest].Y and points[i].X < points[lowest].X) then
+			lowest = i
+		end
+	end
+
+	-- Swap lowest point to front
+	points[1], points[lowest] = points[lowest], points[1]
+	local p0 = points[1]
+
+	-- Sort by polar angle with respect to the lowest point
+	table.sort(points, function(a, b)
+		local o = orientation(p0, a, b)
+		if o == 0 then -- If collinear, keep the farthest point
+			return (p0 - a).Magnitude < (p0 - b).Magnitude
+		end
+		return o == 2 -- Sort counterclockwise
+	end)
+
+	-- Process points using a stack
+	local hullSize = 2
+	local hull = {points[1], points[2]}
+
+	for i = 3, n do
+		while hullSize >= 2 and orientation(hull[hullSize - 1], hull[hullSize], points[i]) ~= 2 do
+			table.remove(hull, hullSize) -- Remove the last point if it makes a right turn (clockwise)
+			hullSize -= 1
+		end
+		hullSize += 1
+		table.insert(hull, hullSize, points[i]) -- Add the current point to the hull
+	end
+
+	return hull
+end
+
+--[=[
+	Uses the Giftwrapping algorithm (Jarvis March) to calculate the convex hull of a set of 2D points.
+	Giftwrapping is better suited for smaller sets of points than Graham's scan.
+	However, they will produce the same result.
+
+	@param points -- The points to calculate the convex hull of.
+	@return {Vector2} -- The convex hull of the points.
+
+	```lua
+	local points = {
+		Vector2.new(0, 0),
+		Vector2.new(1, 0),
+		Vector2.new(0.5, 0.5)
+		Vector2.new(0, 1),
+		Vector2.new(1, 1),
+	}
+
+	local hull = VectorUtil.calculateConvexHullGiftWrap(points) -- Output: {Vector2.new(0, 0), Vector2.new(1, 0), Vector2.new(1, 1), Vector2.new(0, 1)}
+	```
+]=]
+function VectorUtil.calculateConvexHullGiftWrap(points: {Vector2}): {Vector2}
+	local n = #points
+	if n < 3 then
+		warn("Cannot calculate convex hull with less than 3 points.")
+		return points
+	end
+	
+	-- find leftmost point
+	local l = 1
+	for i = 2, n do
+		if points[i].X < points[l].X or (points[i].X == points[l].X and points[i].Y < points[l].Y) then
+			l = i
+		end
+	end
+
+	local hull = table.create(math.floor(n/2)) -- try to do a little space preallocation
+
+	-- Start from leftmost point, keep moving counterclockwise until we reach the start point again
+	-- This loop runs O(h) times where h is the number of points in the hull
+	local p, q = l, 0
+	repeat
+		-- Add current point to hull
+		table.insert(hull, points[p])
+
+		-- Search for a point 'q' such that  
+		-- orientation(p, x, q) is counterclockwise  
+		-- for all points 'x'. The idea is to keep  
+		-- track of last visited most counterclock- 
+		-- wise point in q. If any point 'i' is more  
+		-- counterclock-wise than q, then update q.
+		q = (p + 1) % n + 1
+
+		for i = 1, n do
+			-- If i is more counterclockwise than current q, then update q
+			if orientation(points[p], points[i], points[q]) == 2 then
+				q = i
+			end
+		end
+
+		-- Now q is the most counterclockwise with respect to p
+		-- Set p as q for next iteration, so that q is added to hull
+		p = q
+
+	-- While we don't come to the first point
+	until p == l
+
+	return hull
 end
 
 --[=[

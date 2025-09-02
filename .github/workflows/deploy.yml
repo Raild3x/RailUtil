@@ -10,8 +10,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Install Aftman
-        uses: ok-nick/setup-aftman@v0.4.2
+      - name: Install Rokit
+        uses: raild3x/setup-rokit@v0.1.1
       - name: Run Selene
         run: selene src
   build_docs:

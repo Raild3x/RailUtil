@@ -178,4 +178,6 @@ return function()
             expect(callbackValue).to.equal(20)
         end)
     end)
+
+    -- Add more checks here
 end

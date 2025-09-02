@@ -37,7 +37,7 @@ pcall(function()
 	IS_EDIT = game:GetService("RunService"):IsEdit()
 end)
 
-local scope = Fusion.scoped({Fusion})
+local scope = Fusion:scoped()
 
 --------------------------------------------------------------------------------
 --// Class //--
@@ -67,13 +67,18 @@ CameraUtil.CameraCFrame = scope:Value(CurrentCamera.CFrame) :: State<CFrame>
 CameraUtil.ViewportSize = scope:Value(CurrentCamera.ViewportSize) :: State<Vector2>
 
 --[=[
+	@prop ViewportSizeX State<number>
+	@within CameraUtil
+	A Fusion Computed containing the current camera's ViewportSize.X.
+]=]
+CameraUtil.ViewportSizeX = scope:Value(CurrentCamera.ViewportSize.X) :: State<number>
+
+--[=[
 	@prop ViewportSizeY State<number>
 	@within CameraUtil
 	A Fusion Computed containing the current camera's ViewportSize.Y.
 ]=]
-CameraUtil.ViewportSizeY = scope:Computed(function(use)
-	return use(CameraUtil.ViewportSize).Y
-end) :: Computed<number>
+CameraUtil.ViewportSizeY = scope:Value(CurrentCamera.ViewportSize.Y) :: State<number>
 
 
 -- INITIALIZATION HANDLING OF STATES --
@@ -81,10 +86,12 @@ if RunService:IsClient() or (IS_EDIT) then
 	-- Init State Updates --
 	CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
 		CameraUtil.ViewportSize:set(CurrentCamera.ViewportSize)
+		CameraUtil.ViewportSizeX:set(CurrentCamera.ViewportSize.X)
+		CameraUtil.ViewportSizeY:set(CurrentCamera.ViewportSize.Y)
 	end)
 
-	workspace.CurrentCamera:GetPropertyChangedSignal("CFrame"):Connect(function()
-		CameraUtil.CameraCFrame:set(workspace.CurrentCamera.CFrame)
+	CurrentCamera:GetPropertyChangedSignal("CFrame"):Connect(function()
+		CameraUtil.CameraCFrame:set(CurrentCamera.CFrame)
 	end)
 end
 

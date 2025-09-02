@@ -10,7 +10,17 @@
 	DO NOT ACCESS THIS IN MULTIPLE VMs (Parallel Luau). Studio freaks out when
 	fusion is loaded in multiple VMs for some unknown reason.
 	:::
+
+	:::tip
+	If you see a variable `s` being used in the examples, you can assume it is a Fusion Scope equivalent to the following:
+	```lua
+	local s = RailUtil.Fusion:scoped()
+	```
+	:::
 ]=]
+
+--// Services //--
+local RunService = game:GetService("RunService")
 
 --// Requires //--
 local Util = script.Parent.Parent
@@ -32,7 +42,7 @@ type State<T> = Fusion.StateObject<T>
 type UsedAs<T> = State<T> | T
 type Computed<T> = Fusion.Computed<T>
 type Observer = Fusion.Observer
-type Value<T, S> = Fusion.Value<T, S>
+type Value<T> = Fusion.Value<T, T>
 type Spring<T> = Fusion.Spring<T>
 type Tween<T> = Fusion.Tween<T>
 type For<K, V> = Fusion.For<K, V>
@@ -60,15 +70,23 @@ local FusionUtil = {}
 	Checks if the arg is a Fusion StateObject.
 ]=]
 FusionUtil.isState = isState;
+
+--[=[
+	@within [0.3.0] FusionUtil
+	@function isValue
+	@param arg any
+	@return boolean
+	Checks if the arg is a Fusion Value.
+]=]
 FusionUtil.isValue = isValue;
 
 --[=[
 	@within [0.3.0] FusionUtil
-	@prop scope Scope<Fusion, FusionUtil>
+	@prop scope Scope<FusionUtil>
 	
 	The global scope for FusionUtil.
 ]=]
-FusionUtil.scope = nil :: Scope<Fusion, FusionUtil>
+FusionUtil.scope = nil :: Scope<typeof(Fusion) & typeof(FusionUtil)>
 
 
 --[=[
@@ -86,7 +104,7 @@ FusionUtil.scope = nil :: Scope<Fusion, FusionUtil>
 	```
 ]=]
 FusionUtil.scopeless = table.freeze {
-	Value = function<T>(value: T): Value<T, any>
+	Value = function<T>(value: T): Value<T, T>
 		return FusionUtil.scope:Value(value)
 	end;
 	Computed = function<T>(fn: (use: Use) -> T): Computed<T>
@@ -171,8 +189,6 @@ local TASK_SYMBOL = newproxy(false)
 	@return Task?      -- The task that was removed
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
-
 	local id = "Greeting"
 	local task = s:addTask(function() print("Hello, World!") end, nil, id)
 
@@ -181,21 +197,18 @@ local TASK_SYMBOL = newproxy(false)
 ]=]
 function FusionUtil.removeTask(scope: Scope<any>, taskId: any, dontCleanup: boolean?): Task?
 	for i = 1, #scope do
-		local task = (scope :: any)[i]
-		if task[TASK_SYMBOL] and task.Id == taskId then
+		local tsk = (scope :: any)[i]
+		if typeof(tsk) == "table" and tsk[TASK_SYMBOL] and tsk.Id == taskId then
 			table.remove(scope, i)
 			if not dontCleanup then
-				local methodName = task.Deconstructor
-				if typeof(methodName) == "string" then
-					(task.Task :: any)[methodName]()
-				end
-				Fusion.doCleanup(task.Task)
+				tsk.Destroy()
 			end
-			return task.Task
+			return tsk.Task
 		end
 	end
 	return nil
 end
+FusionUtil.RemoveTask = FusionUtil.removeTask
 
 --[=[
 	@within [0.3.0] FusionUtil
@@ -203,13 +216,13 @@ end
 	Adds a task to a scope. If a taskId is provided, it will remove any existing task with that taskId.
 
 	@param scope    -- The scope to add the task to
-	@param task     -- The task to add
+	@param tsk     -- The task to add
 	@param methodName -- The method to call when the task is removed
 	@param taskId   -- The taskId of the task
 	@return Task    -- The task that was added
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	local id = "Greeting"
 	local task = s:addTask(function() print("Hello, World!") end, nil, id)
@@ -217,26 +230,33 @@ end
 	Fusion.doCleanup(s) -- Hello, World!
 	```
 ]=]
-function FusionUtil.addTask<T>(scope: Scope<any>, task: Task & T, methodName: any?, taskId: any?): T
+function FusionUtil.addTask<T>(scope: Scope<any>, tsk: Task & T, methodName: any?, taskId: any?): T
 	if taskId then
 		FusionUtil.removeTask(scope, taskId)
+	end
+
+	if methodName and not (typeof(tsk) == "table" or typeof(tsk) == "Instance") then
+		warn("FusionUtil.addTask: methodName not supported for tasks of type:", typeof(tsk))
 	end
 
 	local taskContainer = {
 		[TASK_SYMBOL] = true,
 		Id = taskId,
-		Task = task, 
-		Deconstructor = methodName,
+		Task = tsk,
 		Destroy = function()
 			if typeof(methodName) == "string" then
-				(task :: any)[methodName]()
+				(tsk :: any)[methodName](tsk)
+			elseif typeof(tsk) == "thread" then
+				task.cancel(tsk)
+			else
+				Fusion.doCleanup(tsk :: any)
 			end
-			Fusion.doCleanup(task :: any)
 		end
 	}
 	table.insert(scope, taskContainer :: any)
-	return task
+	return tsk
 end
+FusionUtil.AddTask = FusionUtil.addTask
 
 --[=[
 	@within [0.3.0] FusionUtil
@@ -248,7 +268,7 @@ end
 	@return Task? -- The task if found, nil otherwise
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	local id = "Greeting"
 	local task = s:addTask(function() print("Hello, World!") end, nil, id)
@@ -259,13 +279,14 @@ end
 ]=]
 function FusionUtil.getTask<T>(scope: Scope<any>, taskId: any): Task?
 	for i = 1, #scope do
-		local task = (scope :: any)[i]
-		if task[TASK_SYMBOL] and task.Id == taskId then
-			return task.Task
+		local tsk = (scope :: any)[i]
+		if typeof(tsk) == "table" and tsk[TASK_SYMBOL] and tsk.Id == taskId then
+			return tsk.Task
 		end
 	end
 	return nil
 end
+FusionUtil.GetTask = FusionUtil.getTask
 
 --------------------------------------------------------------------------------
 --// METHODS //--
@@ -322,7 +343,7 @@ end
 	Also applies vice versa; when the scope is cleaned up, the instance will be destroyed.
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	s:bindTo(s:New "Part" {
 		Anchored = true;
@@ -358,7 +379,7 @@ end
     
     @return StateObject<T> -- The existing or newly created state object
 ]=]
-function FusionUtil.ensureIsState<T>(scope: Scope<any>, data: UsedAs<T>?, defaultValue: T?, datatype: (string | { string })?): State<T>
+function FusionUtil.ensureIsState<T>(scope: Scope<any>, data: UsedAs<T>?, defaultValue: T, datatype: (string | { string })?): State<T>
     -- Handle case where data is nil by defaulting to the defaultValue
     if data == nil then
         return Value(scope, defaultValue) :: any
@@ -394,6 +415,55 @@ function FusionUtil.ensureIsState<T>(scope: Scope<any>, data: UsedAs<T>?, defaul
 end
 
 --[=[
+    @within [0.3.0] FusionUtil
+
+    Ensures a passed data is a Value. If it is not, it will be converted to one.
+
+    @param scope        -- The scope in which to create the new state object
+    @param data         -- The potential state object
+    @param defaultValue -- The default value to use if the data is nil
+    @param datatype     -- The type or types of the data expected in the state
+    
+    @return Value<T> -- The existing or newly created state object
+]=]
+function FusionUtil.ensureIsValue<T>(scope: Scope<any>, data: UsedAs<T>, defaultValue: T, datatype: (string | { string })?): Value<T>
+	-- Handle case where data is nil by defaulting to the defaultValue
+	if data == nil then
+		return Value(scope, defaultValue)
+	end
+
+	-- If a datatype is specified, ensure data conforms to the expected type
+	if datatype then
+		-- Ensure datatype is a table
+		if typeof(datatype) == "string" then
+			datatype = { datatype }
+		end
+
+		-- Validate the data type
+		local dType = typeof(peek(data))
+		if not table.find(datatype :: {string}, dType) then
+			warn(
+				"FusionUtil.ensureIsState: Expected data to be of type",
+				table.concat(datatype :: {string}, ", "),
+				", got " .. dType .. ". Defaulting to",
+				defaultValue
+			)
+			return Value(scope, defaultValue) :: any
+		end
+	end
+
+	-- Check if data is already a state object
+	if isValue(data) then
+		return data
+	else
+		if isState(data) then
+			warn("FusionUtil.ensureIsValue: Expected a Value, got a State. ", data, "\n", debug.traceback())
+		end
+		return Value(scope, peek(data))
+	end
+end
+
+--[=[
 	@within [0.3.0] FusionUtil
 
 	Takes an AssetId and formats it to a valid string.
@@ -404,7 +474,7 @@ end
 	@return CanBeState<string>   -- The State<string> that is synced with the AssetId
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	local assetId = s:formatAssetId("rbxefsefawsetid://1234567890")
 	print( peek(assetId) ) -- "rbxassetid://1234567890"
@@ -440,7 +510,7 @@ end
 	@return State<T>    -- The ratio (Potentially mutated)
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	local numerator = s:Value(100)
 	local denominator = s:Value(200)
@@ -457,7 +527,7 @@ function FusionUtil.ratio<T>(
 ): Computed<T>
 	return Computed(scope, function(use)
 		local a: number = use(numerator)
-		local b: number = use(denominator)
+		local b: number = use(denominator) or 1
 		local ratio = a / b
 		mutator = use(mutator)
 		if mutator then
@@ -474,6 +544,71 @@ end
 --[=[
 	@within [0.3.0] FusionUtil
 
+	Wraps FusionUtil.ratio with a handler for UDim2s
+
+	@param scope
+	@param numerator     -- The numerator of the ratio
+	@param denominator   -- The denominator of the ratio
+	@param v             -- The UDim2 to scale
+	@return State<UDim2> -- The scaled UDim2
+
+	```lua
+	local numerator = s:Value(100)
+	local denominator = s:Value(200)
+	local size = s:Value(UDim2.new(0.2, 100, 0.2, 100))
+	local sizeAdjusted = s:ratioUDim2(numerator, denominator, size)
+	print( peek(sizeAdjusted) ) -- UDim2.new(0.1, 50, 0.1, 50)
+	```
+]=]
+function FusionUtil.ratioUDim2(
+	scope: Scope<any>,
+	numerator: UsedAs<number>,
+	denominator: UsedAs<number>,
+	v: UsedAs<UDim2>
+): State<UDim2>
+	return FusionUtil.ratio(scope, numerator, denominator, function(ratio, use)
+		v = use(v) :: UDim2
+		return UDim2.new(v.X.Scale * ratio, v.X.Offset * ratio, v.Y.Scale * ratio, v.Y.Offset * ratio)
+	end) :: any -- silence warning
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+	@unreleased
+	@client
+
+	This wraps FusionUtil.ratio with a handler for scaling states/functions with the Screen Height.
+
+	@param mutator -- An optional State to scale by or a function to mutate the ratio
+	@param ratioFn any -- An optional function to use for the ratio, defaults to FusionUtil.ratio, but could be given something like FusionUtil.ratioUDim2
+
+	```lua
+	local paddingOffset = s:Value(10)
+
+	local paddingAdjusted = s:screenRatio(paddingOffset)
+	```
+	```lua
+	local size = Value(UDim2.new(0, 100, 0, 100))
+
+	local sizeAdjusted = s:screenRatio(size, FusionUtil.ratioUDim2)
+	```
+	```lua
+	local x = s:Value(10)
+	local y = s:Value(20)
+	local z = s:screenRatio(function(ratio, use)
+		return (use(x) + use(y)) * ratio
+	end)
+	```
+]=]
+function FusionUtil.screenRatio<T>(scope: Scope<any>, mutator: (UsedAs<T> | (ratio: number, use: Use) -> T)?, ratioFn)
+	ratioFn = ratioFn or FusionUtil.ratio
+	local CameraUtil = require(Util.CameraUtil)
+	return ratioFn(scope, CameraUtil.ViewportSizeY :: any, 1080, mutator)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
 	Lerps between two number states. If no use function is given then it returns a state
 
 	@param scope
@@ -484,10 +619,10 @@ end
 	@return UsedAs<number>	-- The resultant lerped number state/value
 
 	```lua
-	local a = Value(10)
-	local b = Value(20)
-	local alpha = Value(0.5)
-	local z = FusionUtil.lerpNumber(a, b, alpha)
+	local a = s:Value(10)
+	local b = s:Value(20)
+	local alpha = s:Value(0.5)
+	local z = s:lerpNumber(a, b, alpha)
 	print( peek(z) ) -- 15
 	```
 ]=]
@@ -497,6 +632,26 @@ function FusionUtil.lerpNumber(scope: Scope<any>, n1: UsedAs<number>, n2: UsedAs
 	end
 	return Computed(scope, function(use)
 		return MathUtil.lerp(use(n1), use(n2), use(alpha)) :: number
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	A method to simplify Computeds that return simple UDims. If neither the scale nor offset are states
+	then it will just return a raw UDim.
+
+	```lua
+	local scale = s:Value(10)
+	local udim = s:UDim(scale, 0)
+	```
+]=]
+function FusionUtil.UDim(scope: Scope<any>, scale: UsedAs<number>, offset: UsedAs<number>): UsedAs<UDim>
+	if not isState(scale) and not isState(offset) then
+		return UDim.new(scale, offset)
+	end
+	return Computed(scope, function(use)
+		return UDim.new(use(scale), use(offset))
 	end)
 end
 
@@ -512,8 +667,6 @@ end
 	@return State<boolean>	-- A state resolving to the equality of the two given arguments
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
-
 	local a = s:Value(10)
 	local b = s:Value(10)
 	local c = s:eq(a, b)
@@ -525,6 +678,83 @@ end
 function FusionUtil.eq(scope: Scope<any>, stateToCheck1: UsedAs<any>, stateToCheck2: UsedAs<any>): State<boolean>
 	return Computed(scope, function(use)
 		return use(stateToCheck1) == use(stateToCheck2)
+	end)
+end
+-- Backwards compat aliases
+FusionUtil.Eq = FusionUtil.eq
+FusionUtil.Equal = FusionUtil.eq
+FusionUtil.Equals = FusionUtil.eq
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Checks if a given state is truthy. If it is, the state will resolve to 
+	the second arg, otherwise it will resolve to the third arg.
+
+	@param scope
+	@param state -- The state to check
+	@param trueValue -- The value to resolve to if the state is truthy
+	@param falseValue -- The value to resolve to if the state is falsey
+
+	```lua
+	local s = RailUtil.Fusion.scoped()
+
+	local a = s:Value(false)
+	local b = s:Value(20)
+	local c = s:If(a, b, 0)
+	print( peek(c) ) -- 0
+	a:set(true)
+	print( peek(c) ) -- 20
+	b:set(30)
+	print( peek(c) ) -- 30
+	```
+]=]
+function FusionUtil.If<U, V>(scope: Scope<any>, state: UsedAs<any>, trueValue: UsedAs<U>, falseValue: UsedAs<V>): State<U | V>
+	return Computed(scope, function(use)
+		return if use(state) then use(trueValue) else use(falseValue)
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Flips the Truthiness of the given state.
+
+	@param scope
+	@param state -- The state to flip
+	@return State<boolean> -- The flipped state
+
+	```lua
+	local a = s:Value(false)
+	local b = s:Not(a)
+	print( peek(b) ) -- true
+	```
+]=]
+function FusionUtil.Not(scope: Scope<any>, state: UsedAs<any>): State<boolean>
+	return Computed(scope, function(use)
+		return not use(state)
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Runs an `or` operation on two states and returns the result.
+]=]
+function FusionUtil.Or<U, V>(scope: Scope<any>, state1: UsedAs<U>, state2: UsedAs<V>): State<U | V>
+	return Computed(scope, function(use)
+		return use(state1) or use(state2)
+	end)
+end
+
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Runs an `and` operation on two states and returns the result.
+]=]
+function FusionUtil.And<U, V>(scope: Scope<any>, state1: UsedAs<U>, state2: UsedAs<V>): State<U | V>
+	return Computed(scope, function(use)
+		return use(state1) and use(state2)
 	end)
 end
 
@@ -561,7 +791,7 @@ end
 	@return () -> () -- A function to disconnect the syncronization of the two states
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	local a = s:Value(10)
 	local b, disconnect = s:copyState(a)
@@ -577,21 +807,22 @@ function FusionUtil.copyState<T>(scope: Scope<any>, state: UsedAs<T>): (State<T>
 		return stateCopy, function() end
 	end
 	return stateCopy, Fusion.Observer(scope, state):onChange(function()
-		Fusion.Value(scope, peek(state))
-	end) :: any
+		stateCopy:set(peek(state))
+	end) :: () -> ()
 end
 
 --[=[
 	@within [0.3.0] FusionUtil
 
 	Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.
+	Functions similarly to FusionUtil.copyState but requires you to give it the Value StateObject to update.
 
 	@param stateToWatch -- The state to watch for changes
 	@param valueToSet   -- The value to set when the state changes
 	@return () -> ()    -- A function that will disconnect the observer
 
 	```lua
-	local s = scoped(Fusion, FusionUtil)
+	local s = RailUtil.Fusion.scoped()
 
 	local a = s:Value(123)
 	local b = s:Value(0)
@@ -604,13 +835,99 @@ end
 	disconnect()
 	```
 ]=]
-function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any, any>): () -> ()
+function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any>): () -> ()
 	valueToSet:set(peek(stateToWatch))
 	return Observer(scope, stateToWatch):onChange(function()
 		valueToSet:set(peek(stateToWatch))
 	end)
 end
 
+--[=[
+	@within [0.3.0] FusionUtil
+
+	Creates a State that is updated on RenderStepped.
+	The value of the State will contain a number representing the amount of time
+	that the clock has spent running.
+
+	@param scope
+	@param paused -- A State that can be used to pause the clock
+
+	```lua
+	local s = RailUtil.Fusion.scoped()
+
+	local clock = s:clock()
+
+	s:New "Part" {
+		Position = s:Computed(function(use)
+			local t = use(clock)
+			return Vector3.new(0, 5 + math.sin(t) * 5, 0)
+		end)
+	}
+	```
+]=]
+function FusionUtil.clock(scope: Scope<any>, paused: State<boolean>?): Value<number>
+    local clockTime = Fusion.Value(scope, 0)
+    
+    local conn = RunService.RenderStepped:Connect(function(dt: number)
+        if not peek(paused) then
+            clockTime:set(peek(clockTime) + dt)
+        end
+    end)
+    table.insert(scope, conn)
+
+    return clockTime
+end
+
+-- --[=[
+-- 	@within [0.3.0] FusionUtil
+-- 	@unreleased
+
+-- 	:::caution Unreleased
+-- 	:::
+
+-- 	Converts a state containing a dictionary into a similar dictionary where the values are states.
+-- 	This enables easier listening to changes in the dictionary values when using Fusion For objects.
+-- ]=]
+-- function FusionUtil.mapValuesToStates<K, V, V2=V>(scope: Scope<any>, state: UsedAs<{[K]: V}>, mutator: ((key: K, value: V) -> (V2))?): State<{[K]: State<V2>}>
+-- 	warn("FusionUtil.mapValuesToStates is not yet released")
+-- 	-- TODO: Finish this method!!!!
+-- 	local mappedDict = Fusion.Value(scope, {})
+-- 	mutator = mutator or function(_, v) return v end
+	
+-- 	Fusion.Observer(scope, state):onBind(function()
+-- 		local refDict = peek(state)
+-- 		local valuesDict = peek(mappedDict)
+-- 		local dictKeysChanged = false
+
+-- 		for key, value in refDict do
+-- 			if not valuesDict[key] then
+-- 				valuesDict[key] = Fusion.Value(s, mutator(key, value))
+-- 				dictKeysChanged = true
+-- 			else
+-- 				lastValue:set(mutator(value, key))
+-- 				newDict[key] = lastValue
+-- 			end
+-- 		end
+
+-- 		-- for key, value in valuesDict do
+-- 		-- 	local mutatedKey = mutator(refDict[key], key)
+-- 		-- 	if not refDict[key] then
+-- 		-- 		valuesDict[key] = nil
+-- 		-- 		dictKeysChanged = true
+-- 		-- 	end
+-- 		-- end
+
+-- 		if dictKeysChanged then
+-- 			mappedDict:set(newDict)
+-- 		end
+-- 	end)
+
+-- 	return mappedDict
+-- end
+
+--------------------------------------------------------------------------------
+	--// Array Util //--
+--------------------------------------------------------------------------------
 
 --[=[
 	@within [0.3.0] FusionUtil
@@ -619,7 +936,7 @@ end
 	Follows the structure of `table.insert` so giving an extra arg for the index will insert the value at that index.
 
 	@param valueState -- The container state object
-	@param ... (number, any) | (any)
+	@param ... (number, T) | T
 
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
@@ -631,7 +948,7 @@ end
 	print( peek(myArr) ) -- {"A", "X", "B", "C", "Z"}
 	```
 ]=]
-function FusionUtil.arrayInsert(valueState: Value<{any}, any>, ...)
+function FusionUtil.arrayInsert<T>(valueState: Value<{T}>, ...)
 	local containerArray = peek(valueState)
 	table.insert(containerArray, ...)
 	if isValue(valueState) then
@@ -650,6 +967,8 @@ end
 	@param index      -- The index of the value to remove
 	@param swapRemove -- Whether to swap the value with the last value before removing it. This is faster than a regular remove but does not maintain the order of the array.
 
+	@return T -- The removed value
+
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
 
@@ -658,7 +977,7 @@ end
 	print( removedValue ) -- "B"
 	```
 ]=]
-function FusionUtil.arrayRemove(valueState: Value<{any}, any>, index: number?, swapRemove: boolean?): any
+function FusionUtil.arrayRemove<T>(valueState: Value<{T}>, index: number?, swapRemove: boolean?): T
 	if swapRemove then
 		assert(index, "Expected an index to swap remove")
 		return FusionUtil.arraySwapRemove(valueState, index)
@@ -681,6 +1000,8 @@ end
 	@param valueState -- The container state object
 	@param index -- the index of the value to swap out
 
+	@return T -- The value that was swapped out
+
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
 
@@ -689,7 +1010,7 @@ end
 	print( removedValue ) -- "A"
 	```
 ]=]
-function FusionUtil.arraySwapRemove(valueState: Value<{any}, any>, index: number): any
+function FusionUtil.arraySwapRemove<T>(valueState: Value<{T}>, index: number): T
 	local containerArray = peek(valueState)
 	local v = containerArray[index]
 	containerArray[index] = containerArray[#containerArray]
@@ -711,6 +1032,8 @@ end
 	@param value      -- The value to remove
 	@param swapRemove -- Whether to swap the value with the last value before removing it. This is faster than a regular remove but does not maintain the order of the array.
 
+	@return number? -- The index of the removed value if found
+
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
 
@@ -719,7 +1042,7 @@ end
 	print( indexOfRemovedValue ) -- 1
 	```
 ]=]
-function FusionUtil.arrayRemoveFirstValue(valueState: Value<{any}, any>, value: any, swapRemove: boolean?): any
+function FusionUtil.arrayRemoveFirstValue<T>(valueState: Value<{T}>, value: T, swapRemove: boolean?): number?
 	local containerArray = peek(valueState)
 	local idx = table.find(containerArray, value)
 	if idx then
@@ -737,6 +1060,8 @@ end
 	@param valueState -- The container state object
 	@param value      -- The value to remove
 
+	@return number? -- The index of the removed value if found
+
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
 
@@ -744,7 +1069,7 @@ end
 	print( peek(myArr) ) -- {"C", "B"}
 	```
 ]=]
-function FusionUtil.arraySwapRemoveFirstValue(valueState: Value<{any}, any>, value: any): any
+function FusionUtil.arraySwapRemoveFirstValue<T>(valueState: Value<{T}>, value: T): number?
 	return FusionUtil.arrayRemoveFirstValue(valueState, value, true)
 end
 
@@ -765,7 +1090,7 @@ end
 	print( peek(myArr) ) -- {"A", "X", "C"}
 	```
 ]=]
-function FusionUtil.arraySet(valueState: Value<{any}, any>, index: number, newValue: any, updateInsteadOfReplace: boolean?)
+function FusionUtil.arraySet<T>(valueState: Value<{T}>, index: number, newValue: T, updateInsteadOfReplace: boolean?): T
 	local containerArray = peek(valueState)
 	if updateInsteadOfReplace then
 		if isValue(containerArray[index]) then
@@ -801,7 +1126,7 @@ end
 	print( peek(myArr) ) -- {"A", "X", "C"}
 	```
 ]=]
-function FusionUtil.arraySetFirstValue(valueState: Value<{any}, any>, valueToFind: any, valueToReplaceWith: any, updateInsteadOfReplace: boolean?)
+function FusionUtil.arraySetFirstValue<T>(valueState: Value<{T}>, valueToFind: T, valueToReplaceWith: T, updateInsteadOfReplace: boolean?): T?
 	local containerArray = peek(valueState)
 	local idx = table.find(containerArray, valueToFind)
 	if idx then
@@ -814,7 +1139,12 @@ end
 	--// SPECIAL //--
 --------------------------------------------------------------------------------
 
-FusionUtil.scope = Fusion.scoped(Fusion, FusionUtil)
+-- This is an alias to allow for janitors to inherently clean up scopes without needing to specify doCleanup
+function FusionUtil.destroy(scope: Scope<any>)
+	Fusion.doCleanup(scope)
+end
+
+FusionUtil.scope = Fusion:scoped(FusionUtil)
 export type FUS = typeof(FusionUtil.scope)
 
 local comboTbl

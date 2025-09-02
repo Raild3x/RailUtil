@@ -775,4 +775,23 @@ function InstanceUtil.getMass(assembly: Instance): number
 end
 
 
+--[=[
+	Gets the first ancestor of the given object that satisfies the given predicate.
+	@param obj       -- The Instance to start the search from.
+	@param predicate -- The predicate to check for.
+	@return Instance -- The first ancestor that satisfies the predicate.
+]=]
+function InstanceUtil.getFirstAncestorWithPredicate(obj: Instance, predicate: (ancestor: Instance) -> boolean, includeObject: boolean?): Instance?
+	local current = if includeObject then obj else obj.Parent
+	while current do
+		if predicate(current) then
+			return current
+		end
+		current = current.Parent
+	end
+	return nil
+end
+
+
+
 return InstanceUtil

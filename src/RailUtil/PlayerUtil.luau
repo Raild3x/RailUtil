@@ -59,7 +59,7 @@ local function createCleanerConnection(cleaner: () -> () | Janitor): Connection
 		if not isConnected then return end
 		isConnected = false
 		if typeof(cleaner) == "function" then
-			cleaner()
+			(cleaner :: () -> ())()
 		else
 			cleaner:Destroy()
 		end
@@ -75,7 +75,8 @@ local function createCleanerConnection(cleaner: () -> () | Janitor): Connection
 	})
 end
 
-local function assertFunction(func)
+local function assertFunction(func, isOptional: boolean?)
+	if isOptional and func == nil then return end
 	assert(func, "Missing Function to execute.")
 	assert(typeof(func) == "function", "Function must be a function.")
 end
@@ -358,7 +359,7 @@ end
 	Optionally, a function can be passed to run immediately prior to when a character is added to the folder.
 ]=]
 function PlayerUtil.setupCharacterInitialization(func: (char: Character) -> ()?): any
-	assertFunction(func)
+	assertFunction(func, true)
 	if isSetupCharacterInitialization then
 		error("Character initialization already setup. Calling this function multiple times is not supported.\nOriginal call: "..tostring(isSetupCharacterInitialization).."\n\nCurrent call: ")
 	end

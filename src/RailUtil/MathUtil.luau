@@ -1,4 +1,5 @@
 --!strict
+--!native
 -- Logan Hunt [Raildex]
 -- Nov 22, 2022
 --[=[
@@ -150,7 +151,7 @@ function MathUtil.tryRandom(data: number | NumberRange | NumberSequence | { numb
 	elseif typeof(data) == "NumberSequence" then
 		return MathUtil.randomFromNumberSequence(data)
 	else
-		error("Invalid data type.")
+		error("Invalid data type. Got type: " .. typeof(data))
 	end
 end
 

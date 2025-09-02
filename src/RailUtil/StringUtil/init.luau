@@ -7,13 +7,16 @@
 	Utility library of useful string functions.
 ]=]
 
+local TextService = game:GetService("TextService")
+
+local T = require(script.Parent.Parent.T)
 
 --[=[
 	@within StringUtil
 	@interface StrokeData
 	.Color Color3? -- The color of the stroke.
-	.Joins ("miter" | "round" | "bevel")? | Enum.LineJoinMode? -- The type of joins the stroke has.
-	.Thickness number? -- The thickness
+	.Joins ("miter" | "round" | "bevel" | Enum.LineJoinMode)? -- The type of joins the stroke has.
+	.Thickness number? -- The thickness of the stroke.
 	.Transparency number? -- The transparency of the stroke.
 ]=]
 type StrokeData = {
@@ -37,67 +40,103 @@ end
 local StringUtil = {}
 
 --[=[
-    Returns a string with the given color applied to it.
-    @param text -- The text to apply the color to.
-    @param color -- The color to apply to the text.
-    @return string -- The new string with the color applied.
+	Returns a function that transforms a string with the given color applied to it.
+	@param color -- The color to apply to the text.
+	@return (text: string) -> string -- A function that applies a color to the given text.
+
+	```lua
+	local yellow = StringUtil.color(Color3.new(1, 1, 0))
+	local amt = yellow(5)
+	local txt = `You need to go collect {amt} eggs!`
+	print(txt) -- "You need to go collect <font color="rgb(255,255,0)">5</font> eggs!"
+	```
 ]=]
-function StringUtil.color(text: string, color: Color3): string
-	return string.format(`<font color="%s">%s</font>`, colorToString(color), text)
+function StringUtil.color(color: Color3): (text: string) -> string
+	local formatString = `<font color="{colorToString(color)}">%s</font>`
+	return function(text: string): string
+		return string.format(formatString, tostring(text))
+	end
 end
 
 --[=[
-    Returns a string with the given stroke applied to it.
-    @param text -- The text to apply the stroke to.
-    @param data -- The stroke data to apply to the text.
-    @return string -- The new string with the stroke applied.
+	Returns a function that transforms a string with the given options applied to it.
+	@param config -- The stroke data to apply to the text.
+	@return (text: string) -> string -- A function that applies a stroke to the given text.
+	
+	```lua
+	local applyStroke = StringUtil.stroke({
+		Color = Color3.new(1, 0, 0),
+		Joins = Enum.LineJoinMode.Round,
+		Thickness = 2,
+		Transparency = 0.5,
+	})
+	local txt = applyStroke("Hello World!")
+	```
 ]=]
-function StringUtil.stroke(text: string, data: StrokeData): string
-	assert(typeof(data) == "table", "Stroke data must be a table")
-	local color = colorToString(data.Color or Color3.fromRGB(0, 0, 0))
-	local joins = data.Joins
+function StringUtil.stroke(config: StrokeData): (text: string) -> string
+	assert(typeof(config) == "table", "Stroke data must be a table")
+	local color = colorToString(config.Color or Color3.fromRGB(0, 0, 0))
+	local joins = config.Joins
 	joins = if typeof(joins) == "EnumItem" and joins.EnumType == Enum.LineJoinMode then string.lower(joins.Name) else joins
-	local thickness = data.Thickness or 1
-	local transparency = data.Transparency or 0
-
-	return `<stroke color="{color}" joins="{joins}" thickness="{thickness}" transparency="{transparency}">{text}</stroke>`
+	local thickness = config.Thickness or 1
+	local transparency = config.Transparency or 0
+	local formatStr = `<stroke color="{color}" joins="{joins}" thickness="{thickness}" transparency="{transparency}">%</stroke>`
+	return function(text: string): string
+		return string.format(formatStr, tostring(text))
+	end
 end
 
 --[=[
-    Returns a string with the given options applied to it.
-    @param text -- The text to apply the options to.
-    @param options -- The options to apply to the text.
-    @return string -- The new string with the options applied.
+	Returns a function that transforms a string with the given options applied to it.
+	@param config -- The options to apply to the text.
+	@return (text: string) -> string -- A function that applies a color to the given text.
+	
+	```lua
+	local applyRich = StringUtil.rich({
+		Color = Color3.new(1, 0, 0),
+		Stroke = {
+			Color = Color3.new(1, 0, 0),
+			Joins = Enum.LineJoinMode.Round,
+			Thickness = 2,
+			Transparency = 0.5,
+		},
+		Bold = true,
+		Italic = true,
+		Underline = true,
+	})
+	local txt = applyRich("Hello World!")
+	```
 ]=]
 function StringUtil.rich(
-	text: string,
-	options: {
+	config: {
 		Color: Color3?,
 		Stroke: StrokeData?,
 		Bold: boolean?,
 		Italic: boolean?,
 		Underline: boolean?,
 	}
-): string
-	local newStr = text
+): (text: string) -> string
+	local formatStr = "%s"
 
-	if options.Color then
-		newStr = StringUtil.color(newStr, options.Color)
+	if config.Color then
+		formatStr = StringUtil.color(config.Color)(formatStr)
 	end
-	if options.Stroke then
-		newStr = StringUtil.stroke(newStr, options.Stroke)
+	if config.Stroke then
+		formatStr = StringUtil.stroke(config.Stroke)(formatStr)
 	end
-	if options.Bold then
-		newStr = string.format("<b>%s</b>", newStr)
+	if config.Bold then
+		formatStr = string.format("<b>%s</b>", formatStr)
 	end
-	if options.Italic then
-		newStr = string.format("<i>%s</i>", newStr)
+	if config.Italic then
+		formatStr = string.format("<i>%s</i>", formatStr)
 	end
-	if options.Underline then
-		newStr = string.format("<u>%s</u>", newStr)
+	if config.Underline then
+		formatStr = string.format("<u>%s</u>", formatStr)
 	end
 
-	return newStr
+	return function(text: string): string
+		return string.format(formatStr, tostring(text))
+	end
 end
 
 --[=[
@@ -229,7 +268,7 @@ end
 	Takes a number, a string defining the type of time given, and an output format and formats it to a pleasing structure ideal for displaying time.
 
 	@param inputTime -- The time to format.
-	@param inputTimeType -- The type of time that is being given to format. (d, h, m, s, ds, cs, ms)
+	@param inputTimeType -- The type of time that is being given to format. (w, d, h, m, s, ds, cs, ms, μs, ns)
 	@param outputStringFormat -- The format of the output string. Must separated by colons, if you put a number before the timetype it will make sure the number has atleast that length, adding zeroes before it as needed. By default it will be (2h:2m:2s)
 	@param config
 	@return string -- The formatted time string.
@@ -254,6 +293,7 @@ function StringUtil.formatTime(inputTime: number, inputTimeType: string?, output
 
 	-- conversion table for time types relative to seconds
 	local timeTypes = table.freeze {
+		w = 604800, -- week
 		d = 86400, -- day
 		h = 3600, -- hour
 		m = 60, -- minute
@@ -266,10 +306,11 @@ function StringUtil.formatTime(inputTime: number, inputTimeType: string?, output
 	}
 
 	config = config or {}
+	assert(typeof(config) == "table", "Config must be a table")
 	inputTime = inputTime or 0
 	local timeType = inputTimeType or "s"
 	local stringFormat = outputStringFormat or "2h:2m:2s"
-	local delimeter = config.Delimeter or ":"
+	local delimeter = (config :: any).Delimeter or ":"
 
 	-- Convert input time to seconds
 	local timeInSeconds = inputTime * timeTypes[timeType]
@@ -284,18 +325,18 @@ function StringUtil.formatTime(inputTime: number, inputTimeType: string?, output
 	-- Calculate time values based on the format parts
 	local timeValues = {}
 	for _, formatPart in ipairs(formatParts) do
-		local timeType = formatPart.type
-		local value = math.floor(timeInSeconds / timeTypes[timeType])
-		timeInSeconds = timeInSeconds % timeTypes[timeType]
-		timeValues[timeType] = value
+		local partTimeType = formatPart.type
+		local value = math.floor(timeInSeconds / timeTypes[partTimeType])
+		timeInSeconds = timeInSeconds % timeTypes[partTimeType]
+		timeValues[partTimeType] = value
 	end
 
 	-- Build the output string
 	local outputParts = {}
 	local parentZeroHidden = false
 	for i, formatPart in ipairs(formatParts) do
-		local timeType = formatPart.type
-		local value = timeValues[timeType]
+		local partTimeType = formatPart.type
+		local value = timeValues[partTimeType]
 		local formattedValue = string.format("%0" .. formatPart.width .. "d", value)
 
 		if config.HideParentZeroValues and value == 0 and not parentZeroHidden and i < #formatParts then
@@ -307,6 +348,103 @@ function StringUtil.formatTime(inputTime: number, inputTimeType: string?, output
 	end
 
 	return table.concat(outputParts, delimeter)
+end
+
+--[=[
+	Returns the largest possible font size that allows all given text to fit within the specified frame width while
+	maintaining the same font size.
+
+	@param textTable -- Table with all the text to be iterated through to get a consistent size for frames.
+	@param absSize -- The AbsoluteSize property of the container.
+	@param font -- The font to be used. Needed in order to determine the size of the text.
+	@param config -- Configuration for customization and tweaks to sizing.
+	@return number -- The font size to be used.
+
+	```lua
+	local textTable = {
+		"Hello World!",
+		"Egg",
+		"Goodbye, Galaxy!",
+	}
+	local absSize = Vector2.new(100, 50)
+
+	local maxSize = StringUtil.getMaxConsistentTextSize(textTable, absSize, Enum.Font.SourceSans)
+
+	for _, text in pairs(textTable) do
+		local label = Instance.new("TextLabel")
+		label.Text = text
+		label.Font = Enum.Font.SourceSans
+		label.TextSize = maxSize
+		label.TextWrapped = true
+	end
+	```
+]=]
+function StringUtil.getMaxConsistentTextSize(
+	textTable: { [any]: string },
+	absSize: Vector2,
+	font: Enum.Font,
+	config: {
+		MinFontSize: number?,
+		MaxFontSize: number?,
+		Padding: Vector2?,
+		TextWrapped: boolean?,
+	}?
+): number
+	assert(T.tuple(
+		T.values(T.string),
+		T.Vector2,
+		T.Font,
+		T.optional(T.interface({
+			MinFontSize = T.optional(T.number),
+			MaxFontSize = T.optional(T.number),
+			Padding = T.optional(T.Vector2),
+			TextWrapped = T.optional(T.boolean),
+		}))
+	))
+
+	-- Setup the configuration.
+	config = config or {}
+	assert(typeof(config) == "table", "Config must be a table")
+	local maxFontSize = config.MaxFontSize or 64
+	local minFontSize = config.MinFontSize or 8
+	local padding = config.Padding or Vector2.new(2, 2) -- To avoid text being cut off
+
+	if config.TextWrapped then -- This is a temporary solution and does not account for frame size Y limits!
+		local splitTable = {}
+		for _, text in pairs(textTable) do
+			local splitText = string.split(text, " ")
+			for _, word in pairs(splitText) do
+				table.insert(splitTable, word)
+			end
+		end
+		textTable = splitTable
+	end
+
+	-- Check whether or not a specific font size can fit in.
+	local absSizeX = math.floor(absSize.X)
+	local function canFit(fontSize)
+		for _, text in pairs(textTable) do
+			local textSize = TextService:GetTextSize(text, fontSize, font, Vector2.new(math.huge, math.huge))
+			if textSize.X + padding.X > absSizeX then
+				return false
+			end
+		end
+		return true
+	end
+
+	-- Binary search to find the largest font size that fits all texts
+	local low, high = minFontSize, maxFontSize
+	local bestFit = minFontSize
+	while low <= high do
+		local mid = math.floor((low + high) / 2)
+		if canFit(mid) then
+			bestFit = mid
+			low = mid + 1
+		else
+			high = mid - 1
+		end
+	end
+	return bestFit
 end
 
 --------------------------------------------------------------------------------
