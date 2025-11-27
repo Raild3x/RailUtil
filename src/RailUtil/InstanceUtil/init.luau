@@ -652,29 +652,36 @@ end
 
 	@param parent	 -- The Instance to search Particles for
 	@param emitCount -- The number of particles to emit
+	@return {thread?} -- A table of delayed threads if any of the emitters had EmitDelay.
+		Useful for cleaning up if needed.
 	```lua
 	InstanceUtil.emitParticles(workspace.Effect)
 	```
 ]=]
-function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
+function InstanceUtil.emitParticles(parent: Instance, emitCount: number?): {thread?}
+	local delayedThreads: {thread?} = {}
 	local function Emit(emitter: ParticleEmitter)
-		emitter:Emit(emitCount or emitter:GetAttribute("EmitCount") :: number? or 10)
+		local emitDelay: number? = emitter:GetAttribute("EmitDelay") :: number
+		local emitCount: number? = emitCount or emitter:GetAttribute("EmitCount") :: number? or 10
+		if emitDelay and typeof(emitDelay) == "number" then
+			local delayedThread = task.delay(emitDelay, function()
+				emitter:Emit(emitCount)
+			end)
+			table.insert(delayedThreads, delayedThread)
+		else
+			emitter:Emit(emitCount)
+		end
 	end
 
 	if parent:IsA("ParticleEmitter") then
 		Emit(parent :: ParticleEmitter)
 	else
 		for _, emitter in parent:QueryDescendants("ParticleEmitter") do
-			local emitDelay: number? = emitter:GetAttribute("EmitDelay") :: number
-			if emitDelay and typeof(emitDelay) == "number" then
-				task.delay(emitDelay, function()
-					Emit(emitter :: ParticleEmitter)
-				end)
-			else
-				Emit(emitter :: ParticleEmitter)
-			end
+			Emit(emitter :: ParticleEmitter)
 		end
 	end
+
+	return delayedThreads
 end
 
 --------------------------------------------------------------------------------
