@@ -657,28 +657,23 @@ end
 	```
 ]=]
 function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
+	local function Emit(emitter: ParticleEmitter)
+		emitter:Emit(emitCount or emitter:GetAttribute("EmitCount") :: number? or 10)
+	end
+
 	if parent:IsA("ParticleEmitter") then
-		local PE: ParticleEmitter = parent
-		local function Emit()
-			PE:Emit(emitCount or PE:GetAttribute("EmitCount") :: number? or 10)
-			local EmitDuration: number? = PE:GetAttribute("EmitDuration") :: any
-			if typeof(EmitDuration) == "number" then
-				PE.Enabled = true
-				task.delay(EmitDuration, function()
-					PE.Enabled = false
+		Emit(parent :: ParticleEmitter)
+	else
+		for _, emitter in parent:QueryDescendants("ParticleEmitter") do
+			local emitDelay: number? = emitter:GetAttribute("EmitDelay") :: number
+			if emitDelay and typeof(emitDelay) == "number" then
+				task.delay(emitDelay, function()
+					Emit(emitter :: ParticleEmitter)
 				end)
+			else
+				Emit(emitter :: ParticleEmitter)
 			end
 		end
-
-		local EmitDelay: number? = PE:GetAttribute("EmitDelay") :: any
-		if typeof(EmitDelay) == "number" then
-			task.delay(EmitDelay, Emit)
-		else
-			Emit()
-		end
-	end
-	for _, child in pairs(parent:GetChildren()) do
-		InstanceUtil.emitParticles(child)
 	end
 end
 
