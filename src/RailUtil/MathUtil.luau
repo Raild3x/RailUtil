@@ -191,9 +191,6 @@ end
 	@return boolean -- Whether or not the number is between the two bounds.
 ]=]
 function MathUtil.isBetween(numToCheck: number, bound1: number, bound2: number): boolean
-	assert(typeof(numToCheck) == "number", "numToCheck must be a number.")
-	assert(typeof(bound1) == "number", "bound1 must be a number.")
-	assert(typeof(bound2) == "number", "bound2 must be a number.")
 	return (numToCheck >= bound1 and numToCheck <= bound2) or (numToCheck >= bound2 and numToCheck <= bound1)
 end
 
