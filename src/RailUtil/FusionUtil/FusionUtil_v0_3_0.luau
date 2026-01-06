@@ -781,8 +781,6 @@ end
 	@within FusionUtil
 
 	Observes an attribute of an instance and returns a state that is updated with the attribute's value.
-	
-	:::caution Does not memoize the state
 ]=]
 function FusionUtil.outAttribute(scope: Scope<any>, instance: Instance, attributeName: string, valueToBindTo: Value<any>?): (Value<any>, RBXScriptConnection)
 	local attributeState: Value<any> = valueToBindTo or Fusion.Value(scope, nil)

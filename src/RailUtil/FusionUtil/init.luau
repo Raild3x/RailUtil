@@ -4,73 +4,73 @@ local v0_3_0 : typeof(require(script.FusionUtil_v0_3_0)) = nil
 
 local LatestVersion = "0.3.0"
 local VersionsMap = {
-    ["0.2.0"] = "0_2_0",
-    ["0.2.5"] = "0_2_5",
-    ["0.3.0"] = "0_3_0",
-    ["0_2_0"] = "0_2_0",
-    ["0_2_5"] = "0_2_5",
-    ["0_3_0"] = "0_3_0",
+	["0.2.0"] = "0_2_0",
+	["0.2.5"] = "0_2_5",
+	["0.3.0"] = "0_3_0",
+	["0_2_0"] = "0_2_0",
+	["0_2_5"] = "0_2_5",
+	["0_3_0"] = "0_3_0",
 }
 
 local Util = {
-    ["0.2.0"] = v0_2_0,
-    ["0.2.5"] = v0_2_5,
-    ["0.3.0"] = v0_3_0,
+	["0.2.0"] = v0_2_0,
+	["0.2.5"] = v0_2_5,
+	["0.3.0"] = v0_3_0,
 }
 
 -- set the metatable here to generate typing
 setmetatable(Util, {
-    __index = Util[LatestVersion] :: typeof(v0_3_0),
+	__index = Util[LatestVersion] :: typeof(v0_3_0),
 })
 
 export type FusionUtil = typeof(Util)
 
 do -- Module redirection for lazy loading
-    local mt = {
-        __index = function(t, index: string)
-            local v = VersionsMap[index]
-            if v then
-                local module = require(script["FusionUtil_v" .. v])
-                rawset(t, index, module)
-                return module
-            end
-            return Util[LatestVersion][index]
-        end
-    }
-    setmetatable(Util :: any, mt)
+	local mt = {
+		__index = function(t, index: string)
+			local v = VersionsMap[index]
+			if v then
+				local module = require(script["FusionUtil_v" .. v])
+				rawset(t, index, module)
+				return module
+			end
+			return Util[LatestVersion][index]
+		end
+	}
+	setmetatable(Util :: any, mt)
 end
 
 --[=[
-    @within FusionUtil
-	@deprecated
+	@within FusionUtil
+	@deprecated 1.15.0
 	@private
-    @prop 0.2.0 table
-    [Util for Fusion 0.2.0]([0.2.0]%20FusionUtil)
-    ```lua
-    local fUtil = RailUtil.Fusion["0.2.0"]
-    ```
+	@prop 0.2.0 table
+	[Util for Fusion 0.2.0]([0.2.0]%20FusionUtil)
+	```lua
+	local fUtil = RailUtil.Fusion["0.2.0"]
+	```
 ]=]
 
 --[=[
-    @within FusionUtil
-	@deprecated
+	@within FusionUtil
+	@deprecated 1.15.0
 	@private
-    @prop 0.2.5 table
-    [Util for my forked version of Fusion 0.2.0]([0.2.5]%20FusionUtil)
-    ```lua
-    local fUtil = RailUtil.Fusion["0.2.5"]
-    ```
+	@prop 0.2.5 table
+	[Util for my forked version of Fusion 0.2.0]([0.2.5]%20FusionUtil)
+	```lua
+	local fUtil = RailUtil.Fusion["0.2.5"]
+	```
 ]=]
 
 --[=[
-    @within FusionUtil
+	@within FusionUtil
 	@private
-    @prop 0.3.0 table
-    @tag Latest Version
-    [Util for Fusion 0.3.0]([0.3.0]%20FusionUtil)
-    ```lua
-    local fUtil = RailUtil.Fusion["0.3.0"]
-    ```
+	@prop 0.3.0 table
+	@tag Latest Version
+	[Util for Fusion 0.3.0]([0.3.0]%20FusionUtil)
+	```lua
+	local fUtil = RailUtil.Fusion["0.3.0"]
+	```
 ]=]
 
 return Util :: FusionUtil
