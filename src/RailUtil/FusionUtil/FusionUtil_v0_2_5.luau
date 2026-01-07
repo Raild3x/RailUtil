@@ -3,6 +3,8 @@
 -- March 23, 2023
 --[=[
 	@class [0.2.5] FusionUtil
+	@deprecated 1.16.0
+	@ignore
 
 	A collection of utility functions for Fusion 0.2.5, this is a custom version of Fusion forked by me.
 

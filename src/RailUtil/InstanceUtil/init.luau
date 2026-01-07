@@ -106,8 +106,8 @@ end
 	```lua
 	local model = InstanceUtil.findFirstChildThatMatches(workspace, "^Part", true)
 	```
-]=]
-function InstanceUtil.findFirstChildThatMatches(parent: Instance, matchString: string, recurse: boolean?): Instance?
+	]=]
+	function InstanceUtil.findFirstChildThatMatches(parent: Instance, matchString: string, recurse: boolean?): Instance?
 	assert(parent and typeof(parent) == "Instance", "Parent argument of findFirstChildThatMatches must be an Instance.")
 
 	return InstanceUtil.findFirstChildFromPredicate(parent, function(child)
@@ -389,8 +389,8 @@ end
 	```
 ]=]
 function InstanceUtil.getAttachmentsAlignedCFrame(partAttachment: Attachment, targetAttachment: Attachment): CFrame
-    assert(partAttachment:IsA("Attachment") or not targetAttachment:IsA("Attachment"), "Both inputs must be attachments")
-    return targetAttachment.WorldCFrame * partAttachment.CFrame:Inverse()
+	assert(partAttachment:IsA("Attachment") or not targetAttachment:IsA("Attachment"), "Both inputs must be attachments")
+	return targetAttachment.WorldCFrame * partAttachment.CFrame:Inverse()
 end
 
 --[=[
@@ -405,7 +405,7 @@ end
 	```
 ]=]
 function InstanceUtil.getModelFitDistance(model: Model | BasePart, vpf: ViewportFrame, camera: Camera?): number
-    local _, modelSize
+	local _, modelSize
 	if model:IsA("Model") then
 		_, modelSize = model:GetBoundingBox()
 	else
@@ -652,33 +652,38 @@ end
 
 	@param parent	 -- The Instance to search Particles for
 	@param emitCount -- The number of particles to emit
+	@return () -> () -- A function that when called will cancel any delayed emissions
 	```lua
 	InstanceUtil.emitParticles(workspace.Effect)
 	```
 ]=]
-function InstanceUtil.emitParticles(parent: Instance, emitCount: number?)
-	if parent:IsA("ParticleEmitter") then
-		local PE: ParticleEmitter = parent
-		local function Emit()
-			PE:Emit(emitCount or PE:GetAttribute("EmitCount") :: number? or 10)
-			local EmitDuration: number? = PE:GetAttribute("EmitDuration") :: any
-			if typeof(EmitDuration) == "number" then
-				PE.Enabled = true
-				task.delay(EmitDuration, function()
-					PE.Enabled = false
-				end)
-			end
-		end
-
-		local EmitDelay: number? = PE:GetAttribute("EmitDelay") :: any
-		if typeof(EmitDelay) == "number" then
-			task.delay(EmitDelay, Emit)
+function InstanceUtil.emitParticles(parent: Instance, emitCount: number?): () -> ()
+	local delayedThreads: {thread} = {}
+	local function Emit(emitter: ParticleEmitter)
+		local emitDelay: number? = emitter:GetAttribute("EmitDelay") :: number
+		local emitCount: number? = emitCount or emitter:GetAttribute("EmitCount") :: number? or emitter.Rate
+		if emitDelay and typeof(emitDelay) == "number" then
+			local delayedThread = task.delay(emitDelay, function()
+				emitter:Emit(emitCount)
+			end)
+			table.insert(delayedThreads, delayedThread)
 		else
-			Emit()
+			emitter:Emit(emitCount)
 		end
 	end
-	for _, child in pairs(parent:GetChildren()) do
-		InstanceUtil.emitParticles(child)
+
+	if parent:IsA("ParticleEmitter") then
+		Emit(parent :: ParticleEmitter)
+	else
+		for _, emitter in parent:QueryDescendants("ParticleEmitter") do
+			Emit(emitter :: ParticleEmitter)
+		end
+	end
+
+	return function()
+		for _, delayedThread in delayedThreads do
+			task.cancel(delayedThread)
+		end
 	end
 end
 

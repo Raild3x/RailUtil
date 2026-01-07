@@ -2,7 +2,7 @@
 -- Authors: Logan Hunt [Raildex];
 -- March 23, 2023
 --[=[
-	@class [0.3.0] FusionUtil
+	@class FusionUtil
 
 	A collection of utility functions for Fusion 0.3.0.
 
@@ -33,19 +33,23 @@ local peek = Fusion.peek
 local Value = Fusion.Value
 local Observer = Fusion.Observer
 local Computed = Fusion.Computed
+local doCleanup = Fusion.doCleanup
+local innerScope = Fusion.innerScope
 
 --// Types //--
 type Promise = Types.Promise
 type Use = Fusion.Use
 type Scope<T> = Fusion.Scope<T>
+type Value<T> = Fusion.Value<T, T>
 type State<T> = Fusion.StateObject<T>
-type UsedAs<T> = State<T> | T
+type UsedAs<T> = Fusion.UsedAs<T>
 type Computed<T> = Fusion.Computed<T>
 type Observer = Fusion.Observer
-type Value<T> = Fusion.Value<T, T>
 type Spring<T> = Fusion.Spring<T>
 type Tween<T> = Fusion.Tween<T>
 type For<K, V> = Fusion.For<K, V>
+
+type DisconnectFn = () -> ()
 
 type Props = { [any]: any }
 
@@ -63,7 +67,7 @@ end
 local FusionUtil = {}
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 	@function isState
 	@param arg any
 	@return boolean
@@ -72,7 +76,7 @@ local FusionUtil = {}
 FusionUtil.isState = isState;
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 	@function isValue
 	@param arg any
 	@return boolean
@@ -81,16 +85,15 @@ FusionUtil.isState = isState;
 FusionUtil.isValue = isValue;
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 	@prop scope Scope<FusionUtil>
 	
 	The global scope for FusionUtil.
 ]=]
-FusionUtil.scope = nil :: Scope<typeof(Fusion) & typeof(FusionUtil)>
-
+FusionUtil.scope = (nil :: any) :: Scope<typeof(Fusion) & typeof(FusionUtil)>
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 	@prop scopeless table
 	
 	A table of convenience functions for creating Fusion objects.
@@ -104,7 +107,7 @@ FusionUtil.scope = nil :: Scope<typeof(Fusion) & typeof(FusionUtil)>
 	```
 ]=]
 FusionUtil.scopeless = table.freeze {
-	Value = function<T>(value: T): Value<T, T>
+	Value = function<T>(value: T): Value<T>
 		return FusionUtil.scope:Value(value)
 	end;
 	Computed = function<T>(fn: (use: Use) -> T): Computed<T>
@@ -113,37 +116,28 @@ FusionUtil.scopeless = table.freeze {
 	Observer = function<T>(watching: unknown): Observer
 		return FusionUtil.scope:Observer(watching)
 	end;
-	Spring = function<T>(value: UsedAs<T>, speed: UsedAs<number>, damping: UsedAs<T>): Spring<T>
-		return FusionUtil.scope:Spring(value)
+	Spring = function<T>(value: UsedAs<T>, speed: UsedAs<number>?, damping: UsedAs<number>?): Spring<T>
+		return FusionUtil.scope:Spring(value, speed, damping)
 	end;
-	Tween = function<T>(goal: UsedAs<T>, tweenInfo: UsedAs<TweenInfo>): Tween<T>
+	Tween = function<T>(goal: UsedAs<T>, tweenInfo: UsedAs<TweenInfo>?): Tween<T>
 		return FusionUtil.scope:Tween(goal, tweenInfo)
 	end;
 	New = function(className: string): (props: Props) -> Instance
 		return FusionUtil.scope:New(className)
 	end;
 	Hydrate = function<T>(instance: T & Instance): (props: Props) -> T
-		return FusionUtil.scope:Hydrate(instance)
+		return FusionUtil.scope:Hydrate(instance) :: any
 	end;
-	-- For = function<KI, VI, KO, VO>(
-	-- 	inputTable: UsedAs<{[KI]: VI}>,
-	-- 	processor: (
-	-- 		scope: FUS, 
-	-- 		value: State<{key: KI, value: VI}>
-	-- 	) -> State<{key: KO, value: VO}>
-	-- ): Fusion.For<KO, VO>
-	-- 	return FusionUtil.scope:For(inputTable)
-	-- end;
+
 	ForKeys = function<KI, KO, V>(
 		inputTable: UsedAs<{[KI]: V}>,
 		processor: (
 			use: Use,
 			scope: FUS, 
 			key: KI
-		) -> KO,
-		destructor: unknown
+		) -> KO
 	): For<KO, V>
-		return FusionUtil.scope:ForKeys(inputTable)
+		return FusionUtil.scope:ForKeys(inputTable, processor)
 	end;
 	ForValues = function<K, VI, VO>(
 		inputTable: UsedAs<{[K]: VI}>,
@@ -151,10 +145,9 @@ FusionUtil.scopeless = table.freeze {
 			use: Use,
 			scope: FUS, 
 			value: VI
-		) -> VO,
-		destructor: unknown
+		) -> VO
 	): For<K, VO>
-		return FusionUtil.scope:ForValues(inputTable)
+		return FusionUtil.scope:ForValues(inputTable, processor)
 	end;
 	ForPairs = function<KI, VI, KO, VO>(
 		inputTable: UsedAs<{[KI]: VI}>,
@@ -163,12 +156,10 @@ FusionUtil.scopeless = table.freeze {
 			scope: FUS, 
 			key: KI,
 			value: VI
-		) -> {key: KO, value: VO},
-		destructor: unknown
+		) -> (KO, VO)
 	): For<KO, VO>
-		return FusionUtil.scope:ForPairs(inputTable)
+		return FusionUtil.scope:ForPairs(inputTable, processor)
 	end;
-
 }
 
 --------------------------------------------------------------------------------
@@ -179,7 +170,7 @@ type Task = Instance | () -> () | { [any]: any } | any
 local TASK_SYMBOL = newproxy(false)
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Removes a task from a scope by its taskId.
 
@@ -211,7 +202,7 @@ end
 FusionUtil.RemoveTask = FusionUtil.removeTask
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Adds a task to a scope. If a taskId is provided, it will remove any existing task with that taskId.
 
@@ -259,7 +250,7 @@ end
 FusionUtil.AddTask = FusionUtil.addTask
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Gets a task from a scope by its taskId.
 
@@ -293,7 +284,7 @@ FusionUtil.GetTask = FusionUtil.getTask
 --------------------------------------------------------------------------------
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Creates a promise that resolves when the given state changes. If a predicate is given then the promise will only resolve if the predicate returns true.
 	If the third argument `canResolveImmediately` is true, the promise will will check the predicate immediately.
@@ -312,19 +303,25 @@ FusionUtil.GetTask = FusionUtil.getTask
 function FusionUtil.promiseState<T>(scope: Scope<any>, state: State<T>, predicate: ((value: T) -> boolean)?, canResolveImmediately: boolean?): Promise
 	local prom = Promise.new(function(resolve, _, onCancel)
 		local disconnect = nil
+		local resolved = false
 		local function Check()
+			if resolved then return end
 			local value = peek(state)
 			if not predicate or predicate(value) then
-				disconnect()
+				resolved = true
+				if disconnect then
+					disconnect()
+				end
 				resolve(value)
 			end
 		end
 
 		disconnect = Observer(scope, state):onChange(Check)
+		onCancel(disconnect)
+		
 		if canResolveImmediately then
 			Check()
 		end
-		onCancel(disconnect) 
 	end)
 
 	if scope then
@@ -337,7 +334,7 @@ function FusionUtil.promiseState<T>(scope: Scope<any>, state: State<T>, predicat
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Binds a scope to the lifecycle of an instance. When the instance is destroyed, the scope will be cleaned up.
 	Also applies vice versa; when the scope is cleaned up, the instance will be destroyed.
@@ -368,9 +365,9 @@ function FusionUtil.bindTo(scope: Scope<any>, obj: Instance): Instance
 end
 
 --[=[
-    @within [0.3.0] FusionUtil
+    @within FusionUtil
 
-    Ensures a passed data is a StateObject. If it is not, it will be converted to one.
+    Ensures a passed data is a StateObject. If it is not, it will wrap the given value in a Value StateObject.
 
     @param scope        -- The scope in which to create the new state object
     @param data         -- The potential state object
@@ -415,7 +412,7 @@ function FusionUtil.ensureIsState<T>(scope: Scope<any>, data: UsedAs<T>?, defaul
 end
 
 --[=[
-    @within [0.3.0] FusionUtil
+    @within FusionUtil
 
     Ensures a passed data is a Value. If it is not, it will be converted to one.
 
@@ -454,7 +451,7 @@ function FusionUtil.ensureIsValue<T>(scope: Scope<any>, data: UsedAs<T>, default
 
 	-- Check if data is already a state object
 	if isValue(data) then
-		return data
+		return data :: Value<T>
 	else
 		if isState(data) then
 			warn("FusionUtil.ensureIsValue: Expected a Value, got a State. ", data, "\n", debug.traceback())
@@ -464,7 +461,7 @@ function FusionUtil.ensureIsValue<T>(scope: Scope<any>, data: UsedAs<T>, default
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Takes an AssetId and formats it to a valid string.
 
@@ -499,7 +496,7 @@ function FusionUtil.formatAssetId(scope: Scope<any>, id: UsedAs<string | number>
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Generates a computed that calculates the ratio of two numbers as a State<number>.
 
@@ -542,7 +539,7 @@ function FusionUtil.ratio<T>(
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Wraps FusionUtil.ratio with a handler for UDim2s
 
@@ -567,13 +564,13 @@ function FusionUtil.ratioUDim2(
 	v: UsedAs<UDim2>
 ): State<UDim2>
 	return FusionUtil.ratio(scope, numerator, denominator, function(ratio, use)
-		v = use(v) :: UDim2
-		return UDim2.new(v.X.Scale * ratio, v.X.Offset * ratio, v.Y.Scale * ratio, v.Y.Offset * ratio)
+		local rawV = use(v) :: UDim2
+		return UDim2.new(rawV.X.Scale * ratio, rawV.X.Offset * ratio, rawV.Y.Scale * ratio, rawV.Y.Offset * ratio)
 	end) :: any -- silence warning
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 	@unreleased
 	@client
 
@@ -602,12 +599,12 @@ end
 ]=]
 function FusionUtil.screenRatio<T>(scope: Scope<any>, mutator: (UsedAs<T> | (ratio: number, use: Use) -> T)?, ratioFn)
 	ratioFn = ratioFn or FusionUtil.ratio
-	local CameraUtil = require(Util.CameraUtil)
+	local CameraUtil = require(Util.CameraUtil) :: any
 	return ratioFn(scope, CameraUtil.ViewportSizeY :: any, 1080, mutator)
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Lerps between two number states. If no use function is given then it returns a state
 
@@ -636,7 +633,7 @@ function FusionUtil.lerpNumber(scope: Scope<any>, n1: UsedAs<number>, n2: UsedAs
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	A method to simplify Computeds that return simple UDims. If neither the scale nor offset are states
 	then it will just return a raw UDim.
@@ -648,7 +645,7 @@ end
 ]=]
 function FusionUtil.UDim(scope: Scope<any>, scale: UsedAs<number>, offset: UsedAs<number>): UsedAs<UDim>
 	if not isState(scale) and not isState(offset) then
-		return UDim.new(scale, offset)
+		return UDim.new(scale :: number, offset :: number)
 	end
 	return Computed(scope, function(use)
 		return UDim.new(use(scale), use(offset))
@@ -657,7 +654,7 @@ end
 
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	A simple equality function that returns true if the two states are equal.
 	
@@ -686,7 +683,7 @@ FusionUtil.Equal = FusionUtil.eq
 FusionUtil.Equals = FusionUtil.eq
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Checks if a given state is truthy. If it is, the state will resolve to 
 	the second arg, otherwise it will resolve to the third arg.
@@ -697,8 +694,6 @@ FusionUtil.Equals = FusionUtil.eq
 	@param falseValue -- The value to resolve to if the state is falsey
 
 	```lua
-	local s = RailUtil.Fusion.scoped()
-
 	local a = s:Value(false)
 	local b = s:Value(20)
 	local c = s:If(a, b, 0)
@@ -716,7 +711,7 @@ function FusionUtil.If<U, V>(scope: Scope<any>, state: UsedAs<any>, trueValue: U
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Flips the Truthiness of the given state.
 
@@ -737,7 +732,7 @@ function FusionUtil.Not(scope: Scope<any>, state: UsedAs<any>): State<boolean>
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Runs an `or` operation on two states and returns the result.
 ]=]
@@ -748,27 +743,29 @@ function FusionUtil.Or<U, V>(scope: Scope<any>, state1: UsedAs<U>, state2: UsedA
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Runs an `and` operation on two states and returns the result.
 ]=]
 function FusionUtil.And<U, V>(scope: Scope<any>, state1: UsedAs<U>, state2: UsedAs<V>): State<U | V>
 	return Computed(scope, function(use)
 		return use(state1) and use(state2)
-	end)
+	end) :: any
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Calls the provided callback immediately with the initial state and then again anytime the state updates.
+	Just a simpler version of `scope:Observer(state):onBind(fn)`.
+	Kept for backwards compatability.
 
 	@param scope
 	@param fusionState  -- The state object to observe
 	@param callback     -- The callback to call when the fusionState is updated
 	@return () -> ()    -- A function that will disconnect the observer
 ]=]
-function FusionUtil.observeState<T>(scope: Scope<any>, fusionState: UsedAs<T>, callback: (stateValue: T) -> ()): () -> ()
+function FusionUtil.observeState<T>(scope: Scope<any>, fusionState: UsedAs<T>, callback: (stateValue: T) -> ()): DisconnectFn
 	local function onStateChange()
 		callback(peek(fusionState))
 	end
@@ -781,7 +778,203 @@ function FusionUtil.observeState<T>(scope: Scope<any>, fusionState: UsedAs<T>, c
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
+
+	Observes an attribute of an instance and returns a state that is updated with the attribute's value.
+]=]
+function FusionUtil.outAttribute(scope: Scope<any>, instance: Instance, attributeName: string, valueToBindTo: Value<any>?): (Value<any>, RBXScriptConnection)
+	local attributeState: Value<any> = valueToBindTo or Fusion.Value(scope, nil)
+	attributeState:set(instance:GetAttribute(attributeName))
+	local conn = instance:GetAttributeChangedSignal(attributeName):Connect(function()
+		attributeState:set(instance:GetAttribute(attributeName))
+	end)
+	table.insert(scope, conn)
+	return attributeState, conn
+end
+
+--[=[
+	@within FusionUtil
+
+	Observes a raw property of an instance and returns a state that is updated with the property's value.
+
+	:::caution Does not memoize the state
+]=]
+function FusionUtil.outProperty(scope: Scope<any>, instance: Instance, propertyName: string, valueToBindTo: Value<any>?): (Value<any>, RBXScriptConnection)
+	local propertyState: Value<any> = valueToBindTo or Fusion.Value(scope, nil)
+	propertyState:set((instance :: any)[propertyName])
+	local conn = instance:GetPropertyChangedSignal(propertyName):Connect(function()
+		propertyState:set((instance :: any)[propertyName])
+	end)
+	table.insert(scope, conn)
+	return propertyState, conn
+end
+
+--[=[
+	@within FusionUtil
+
+	Observes a styled property on an instance and returns a state that is updated whenever the property changes.
+
+	:::caution Does not memoize the state
+]=]
+function FusionUtil.outStyledProperty(scope: Scope<any>, instance: Instance, propertyName: string, valueToBindTo: Value<any>?): (Value<any>, RBXScriptConnection)
+	local propertyState: Value<any> = valueToBindTo or Fusion.Value(scope, nil)
+	propertyState:set(instance:GetStyled(propertyName))
+	local conn = instance:GetStyledPropertyChangedSignal(propertyName):Connect(function()
+		propertyState:set(instance:GetStyled(propertyName))
+	end)
+	table.insert(scope, conn)
+	return propertyState, conn
+end
+
+--[=[
+	@within FusionUtil
+
+	Binds an attribute of an instance to a state object. Whenever the state changes, the attribute will be updated.
+	This is an alternative to hydrating an instance with a state object.
+
+	@param scope
+	@param instance -- The instance to bind the attribute to
+	@param attributeName -- The name of the attribute to bind
+	@param state -- The state object to bind to the attribute
+	@return () -> () -- A function that will disconnect the observer
+
+	```lua
+	local s = RailUtil.Fusion.scoped()
+
+	local a = s:Value(10)
+	local part = Instance.new("Part")
+
+	s:bindAttributeToState(part, "MyAttribute", a)
+
+	print( part:GetAttribute("MyAttribute") ) -- 10
+	a:set(20)
+	print( part:GetAttribute("MyAttribute") ) -- 20
+	```
+]=]
+function FusionUtil.bindAttributeToState(
+	scope: Scope<any>,
+	instance: Instance,
+	attributeName: string,
+	state: UsedAs<any>,
+	twoWayBind: boolean?
+): DisconnectFn
+	local disconnects:{() -> () | RBXScriptConnection} = {}
+
+	local function onStateChange()
+		instance:SetAttribute(attributeName, peek(state))
+	end
+
+	onStateChange()
+	if isState(state) then
+		table.insert(disconnects, Fusion.Observer(scope, state):onChange(onStateChange))
+	else
+		warn("FusionUtil.bindAttributeToState: Expected a State object, got " .. typeof(state))
+	end
+
+	if twoWayBind then
+		if isValue(state) then
+			local function onAttributeChange()
+				state:set(instance:GetAttribute(attributeName))
+			end
+			table.insert(disconnects, instance:GetAttributeChangedSignal(attributeName):Connect(onAttributeChange))
+		else
+			warn("FusionUtil.bindAttributeToState: Expected a Value object for two-way binding, got " .. typeof(state))
+		end
+	end
+
+	local didClean = false
+	local function cleanup()
+		if didClean then return end
+		didClean = true
+		for _, disconnect in ipairs(disconnects) do
+			if typeof(disconnect) == "function" then
+				disconnect()
+			else
+				disconnect:Disconnect()
+			end
+		end
+	end
+	table.insert(scope, cleanup)
+
+	return cleanup
+end
+
+--[=[
+	@within FusionUtil
+
+	Binds a property of an instance to a state object. Whenever the state changes, the property will be updated.
+	This is an alternative to hydrating an instance with a state object.
+
+	@param scope
+	@param instance -- The instance to bind the property to
+	@param propertyName -- The name of the property to bind
+	@param state -- The state object to bind to the property
+	@param twoWayBind -- Whether or not to bind the property back to the value state (default: false)
+	@return () -> () -- A function that will disconnect the observer
+
+	```lua
+	local s = RailUtil.Fusion.scoped()
+
+	local a = s:Value(10)
+	local part = Instance.new("Part")
+
+	s:bindPropertyToState(part, "Size", a)
+
+	print( part.Size ) -- Vector3.new(10, 10, 10)
+	a:set(Vector3.new(20, 20, 20))
+	print( part.Size ) -- Vector3.new(20, 20, 20)
+	```
+]=]
+function FusionUtil.bindPropertyToState(
+	scope: Scope<any>,
+	instance: Instance,
+	propertyName: string,
+	state: UsedAs<any>,
+	twoWayBind: boolean?
+): DisconnectFn
+	local disconnects:{() -> () | RBXScriptConnection} = {}
+
+	local function onStateChange()
+		(instance :: any)[propertyName] = peek(state)
+	end
+
+	onStateChange()
+	if isState(state) then
+		table.insert(disconnects, Fusion.Observer(scope, state):onChange(onStateChange))
+	else
+		warn("FusionUtil.bindPropertyToState: Expected a State object, got " .. typeof(state))
+	end
+
+	if twoWayBind then
+		if isValue(state) then
+			local function onPropertyChange()
+				state:set((instance :: any)[propertyName])
+			end
+			table.insert(disconnects, instance:GetPropertyChangedSignal(propertyName):Connect(onPropertyChange))
+		else
+			warn("FusionUtil.bindPropertyToState: Expected a Value object for two-way binding, got " .. typeof(state))
+		end
+	end
+
+	local didClean = false
+	local function cleanup()
+		if didClean then return end
+		didClean = true
+		for _, disconnect in ipairs(disconnects) do
+			if typeof(disconnect) == "function" then
+				disconnect()
+			else
+				disconnect:Disconnect()
+			end
+		end
+	end
+	table.insert(scope, cleanup)
+
+	return cleanup
+end
+
+--[=[
+	@within FusionUtil
 
 	Copies the state of a state object to a new state object. If the state object is updated, the new state object will be updated as well.
 
@@ -801,7 +994,7 @@ end
 	print( peek(b) ) -- 20
 	```
 ]=]
-function FusionUtil.copyState<T>(scope: Scope<any>, state: UsedAs<T>): (State<T>, () -> ())
+function FusionUtil.copyState<T>(scope: Scope<any>, state: UsedAs<T>): (State<T>, DisconnectFn)
 	local stateCopy = Fusion.Value(scope, peek(state))
 	if not isState(state) then
 		return stateCopy, function() end
@@ -812,7 +1005,7 @@ function FusionUtil.copyState<T>(scope: Scope<any>, state: UsedAs<T>): (State<T>
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Syncronizes a StateObject to a Value. The Value will be set to the StateObject's value any time it changes.
 	Functions similarly to FusionUtil.copyState but requires you to give it the Value StateObject to update.
@@ -835,7 +1028,7 @@ end
 	disconnect()
 	```
 ]=]
-function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any>): () -> ()
+function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valueToSet: Value<any>): DisconnectFn
 	valueToSet:set(peek(stateToWatch))
 	return Observer(scope, stateToWatch):onChange(function()
 		valueToSet:set(peek(stateToWatch))
@@ -843,7 +1036,7 @@ function FusionUtil.syncValues(scope: Scope<any>, stateToWatch: State<any>, valu
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Creates a State that is updated on RenderStepped.
 	The value of the State will contain a number representing the amount of time
@@ -878,59 +1071,190 @@ function FusionUtil.clock(scope: Scope<any>, paused: State<boolean>?): Value<num
     return clockTime
 end
 
--- --[=[
--- 	@within [0.3.0] FusionUtil
--- 	@unreleased
+--[=[
+	@within FusionUtil
+	@unreleased
 
--- 	:::caution Unreleased
--- 	:::
+	:::caution Unreleased
+	This method is not finalized for release and may change in the future. Lock your version if you utilize it.
+	:::
 
--- 	Converts a state containing a dictionary into a similar dictionary where the values are states.
--- 	This enables easier listening to changes in the dictionary values when using Fusion For objects.
--- ]=]
--- function FusionUtil.mapValuesToStates<K, V, V2=V>(scope: Scope<any>, state: UsedAs<{[K]: V}>, mutator: ((key: K, value: V) -> (V2))?): State<{[K]: State<V2>}>
--- 	warn("FusionUtil.mapValuesToStates is not yet released")
--- 	-- TODO: Finish this method!!!!
--- 	local mappedDict = Fusion.Value(scope, {})
--- 	mutator = mutator or function(_, v) return v end
+	:::warning Performance Consideration
+	This function creates a new scope for each key in the input table. For large tables or frequently
+	changing tables, this could lead to performance issues. Consider memoization strategies.
+	:::
+
+	Converts a state containing a dictionary into a similar dictionary where the values are states.
+	This enables easier listening to changes in the dictionary values when using Fusion `For` objects.
+	It can be used to prevent re-creating entire UI elements when all you actually need is to update
+	some aspect of it.
+
+	**How it works:**
+	1. Observes the input table for changes
+	2. For each key-value pair, creates a Value state that tracks that specific value
+	3. If a mutator function is provided, wraps each Value in a Computed that applies the mutation
+	4. Returns a State containing a dictionary where each value is itself a State
+	5. When values in the input table change, only the corresponding Value states are updated
+	6. When keys are added/removed, the output dictionary is regenerated
+
+	**Parameters:**
+	- `scope`: The parent scope for lifecycle management
+	- `inputTable`: A State containing a dictionary, or a raw dictionary
+	- `_mutator`: Optional function to transform each value. Receives (use, scope, key, value) and returns transformed value
+
+	**Known Issues:**
+	- Type system struggles with Value<VI> vs Value<VO> conversion
+	- No cleanup verification when scope is destroyed before table changes
+	- Mutator can't be changed after creation (state is captured once)
+	- Keys being removed and re-added quickly may cause memory churn
+
+	```lua
+	-- Basic usage: Wrap values in states
+	local map = s:Value({A = 1, B = 2, C = 3})
+	local mappedStates = s:mapValuesToStates(map)
+
+	s:ForPairs(mappedStates, function(_, fs, key: string, value: State<number>)
+		return key, fs:New "TextLabel" {
+			Name = key,
+			Text = fs:Computed(function(use)
+				return "Current Value:" .. use(value)
+			end)
+		}
+	end)
+
+	-- When you update the source map, only the affected state updates
+	FusionUtil.tableSet(map, "A", 10) -- Only the "A" state updates
+	```
+
+	```lua
+	-- With mutator: Transform values
+	local positions = s:Value({
+		Player1 = Vector3.new(0, 5, 0),
+		Player2 = Vector3.new(10, 5, 0)
+	})
 	
--- 	Fusion.Observer(scope, state):onBind(function()
--- 		local refDict = peek(state)
--- 		local valuesDict = peek(mappedDict)
--- 		local dictKeysChanged = false
+	local mappedPositions = s:mapValuesToStates(positions, function(use, scope, key, value)
+		-- Add offset to each position
+		return value + Vector3.new(0, 10, 0)
+	end)
+	```
+]=]
+function FusionUtil.mapValuesToStates<K, VI, VO>(
+	scope: Scope<any>,
+	inputTable: UsedAs<{[K]: VI?}>,
+	_mutator: UsedAs<(
+		(use: Use, scope: Scope<any>, key: K, value: VI) -> (VO)
+	)>?
+): State<{[K]: State<VO>?}>
+	warn("FusionUtil.mapValuesToStates is not yet released")
+	
+	-- Output: A Value state containing a dictionary where each value is a State
+	-- This allows consumers to observe individual value changes without recreating
+	-- the entire structure
+	local outputMap: Value<{[K]: State<VO>?}> = Fusion.Value(scope, {})
+	
+	-- Internal tracking map: For each key, we store:
+	-- - Scope: An inner scope for cleanup when the key is removed
+	-- - Value: The Value state that tracks this specific value
+	-- This enables us to update individual values without recreating the entire map
+	local internalMap: {
+		[K]: {
+			Scope: Scope<any>,
+			Value: Value<VO>
+		}?
+	} = {}
+	
+	-- Watch the input table for any changes using onBind (fires immediately + on changes)
+	Fusion.Observer(scope, inputTable):onBind(function()
+		-- Validate input type
+		if typeof(peek(inputTable)) ~= "table" then
+			warn("FusionUtil.mapValuesToStates: Expected a table, got " .. typeof(peek(inputTable)))
+			return
+		end
 
--- 		for key, value in refDict do
--- 			if not valuesDict[key] then
--- 				valuesDict[key] = Fusion.Value(s, mutator(key, value))
--- 				dictKeysChanged = true
--- 			else
--- 				lastValue:set(mutator(value, key))
--- 				newDict[key] = lastValue
--- 			end
--- 		end
+		-- Get the current state of both input and output tables
+		local refDict: {[K]: VI?} = peek(inputTable)
+		local outputMapRaw = peek(outputMap) :: {[K]: State<VO>?}
+		local dictKeysChanged = false -- Track if we need to trigger an update
 
--- 		-- for key, value in valuesDict do
--- 		-- 	local mutatedKey = mutator(refDict[key], key)
--- 		-- 	if not refDict[key] then
--- 		-- 		valuesDict[key] = nil
--- 		-- 		dictKeysChanged = true
--- 		-- 	end
--- 		-- end
+		-- PHASE 1: ADD OR UPDATE KEYS
+		-- Iterate through all keys in the input table
+		for key: K, refValue: VI? in refDict do
+			if internalMap[key] == nil then
+				-- NEW KEY: This key doesn't exist in our internal tracking
+				-- Create a new inner scope for this key's lifecycle
+				local innerScope = innerScope(scope)
+				
+				-- Create a Value state to hold this specific value
+				-- Cast to Value<any> to work around type system limitations
+				local valueState = Fusion.Value(innerScope, refValue) :: Value<any>
 
--- 		if dictKeysChanged then
--- 			mappedDict:set(newDict)
--- 		end
--- 	end)
+				-- Store the scope for cleanup and value state for future updates
+				internalMap[key] = {
+					Scope = innerScope,
+					Value = valueState
+				}
 
--- 	return mappedDict
--- end
+				-- Create the output state for this key
+				-- If a mutator is provided, wrap in a Computed to apply transformation
+				-- Otherwise, just use the raw value state
+				outputMapRaw[key] = Fusion.Computed(innerScope, function(use, cScope)
+					if use(_mutator) then
+						-- Apply the mutator function
+						return use(_mutator)(use, cScope, key, use(valueState))
+					end
+					-- No mutator, return raw value
+					return use(valueState)
+				end) :: State<VO>
+
+				-- Mark that we added a key
+				dictKeysChanged = true
+			else
+				-- EXISTING KEY: Update the value in the existing Value state
+				-- This triggers any observers of this specific value state
+				(internalMap[key] :: any).Value:set(refValue)
+				-- Note: We don't set dictKeysChanged here because the key structure didn't change,
+				-- only the value within an existing state changed
+			end
+		end
+
+		-- PHASE 2: REMOVE KEYS
+		-- Check for keys that exist in output but not in input (keys that were removed)
+		for key in outputMapRaw do
+			if refDict[key] == nil then
+				-- KEY REMOVED: Clean up the inner scope and remove from tracking
+				-- This will cleanup all Fusion objects created in that scope
+				doCleanup((internalMap[key] :: any).Scope)
+				
+				-- Remove from internal tracking
+				internalMap[key] = nil
+				
+				-- Remove from output map
+				outputMapRaw[key] = nil
+				
+				-- Mark that we removed a key
+				dictKeysChanged = true
+			end
+		end
+
+		-- PHASE 3: UPDATE OUTPUT IF STRUCTURE CHANGED
+		-- Only trigger the output state update if keys were added or removed
+		-- Value updates within existing keys don't require this because they
+		-- update their own Value states directly
+		if dictKeysChanged then
+			outputMap:set(outputMapRaw)
+		end
+	end)
+
+	return outputMap
+end
 
 --------------------------------------------------------------------------------
 	--// Array Util //--
 --------------------------------------------------------------------------------
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Inserts a value into a container state object.
 	Follows the structure of `table.insert` so giving an extra arg for the index will insert the value at that index.
@@ -950,6 +1274,9 @@ end
 ]=]
 function FusionUtil.arrayInsert<T>(valueState: Value<{T}>, ...)
 	local containerArray = peek(valueState)
+	if typeof(containerArray) ~= "table" then
+		error("FusionUtil.arrayInsert: Expected a table, got " .. typeof(containerArray))
+	end
 	table.insert(containerArray, ...)
 	if isValue(valueState) then
 		valueState:set(containerArray)
@@ -959,7 +1286,7 @@ function FusionUtil.arrayInsert<T>(valueState: Value<{T}>, ...)
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Removes a value from a container state object.
 
@@ -967,7 +1294,7 @@ end
 	@param index      -- The index of the value to remove
 	@param swapRemove -- Whether to swap the value with the last value before removing it. This is faster than a regular remove but does not maintain the order of the array.
 
-	@return T -- The removed value
+	@return T? -- The removed value if the index is valid
 
 	```lua
 	local myArr = s:Value({"A", "B", "C"})
@@ -977,12 +1304,15 @@ end
 	print( removedValue ) -- "B"
 	```
 ]=]
-function FusionUtil.arrayRemove<T>(valueState: Value<{T}>, index: number?, swapRemove: boolean?): T
+function FusionUtil.arrayRemove<T>(valueState: Value<{T}>, index: number?, swapRemove: boolean?): T?
 	if swapRemove then
 		assert(index, "Expected an index to swap remove")
 		return FusionUtil.arraySwapRemove(valueState, index)
 	end
-	local containerArray = peek(valueState)
+	local containerArray: {T} = peek(valueState)
+	if typeof(containerArray) ~= "table" then
+		error("FusionUtil.arrayRemove: Expected a table, got " .. typeof(containerArray))
+	end
 	local v = table.remove(containerArray, index)
 	if isValue(valueState) then
 		valueState:set(containerArray)
@@ -993,7 +1323,7 @@ function FusionUtil.arrayRemove<T>(valueState: Value<{T}>, index: number?, swapR
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Swaps two values in a container state object.
 
@@ -1012,6 +1342,9 @@ end
 ]=]
 function FusionUtil.arraySwapRemove<T>(valueState: Value<{T}>, index: number): T
 	local containerArray = peek(valueState)
+	if typeof(containerArray) ~= "table" then
+		error("FusionUtil.arraySwapRemove: Expected a table, got " .. typeof(containerArray))
+	end
 	local v = containerArray[index]
 	containerArray[index] = containerArray[#containerArray]
 	table.remove(containerArray)
@@ -1024,7 +1357,7 @@ function FusionUtil.arraySwapRemove<T>(valueState: Value<{T}>, index: number): T
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Removes the first instance of a value from a container state object.
 
@@ -1052,7 +1385,7 @@ function FusionUtil.arrayRemoveFirstValue<T>(valueState: Value<{T}>, value: T, s
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Removes the first instance of a value from a container state object via swap replacement.
 	Faster than normal removal but does not maintain order.
@@ -1074,11 +1407,52 @@ function FusionUtil.arraySwapRemoveFirstValue<T>(valueState: Value<{T}>, value: 
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
-	Sets a value in a container state object.
+	Sets the key in a table (State) to a given value and returns the previous value.
+	`tableSet` is a more general version of `arraySet`.
 
-	@param valueState -- The container state object
+	@param tableState -- The container state object
+	@param key -- The index of the value to change
+	@param newValue -- The new value to change index to
+	@param updateInsteadOfReplace -- Whether to update the value at the index if it is a ValueState instead of overwriting it
+
+	```lua
+	local myTable = s:Value({A = 1, B = 2, C = 3})
+
+	FusionUtil.tableSet(myTable, "B", 10)
+	print( peek(myTable) ) -- {A = 1, B = 10, C = 3}
+	```
+]=]
+function FusionUtil.tableSet<K, V>(tableState: Value<{[K]: V}> | {[K]: V}, key: K, newValue: V, updateInsteadOfReplace: boolean?): V?
+	local containerTable = peek(tableState)
+	local currentValue = containerTable[key]
+	if updateInsteadOfReplace then
+		if isValue(currentValue) then
+			currentValue:set(newValue)
+			return currentValue
+		else
+			error("FusionUtil.tableSet: Expected a Fusion.Value, got a " .. typeof(currentValue))
+		end
+	end
+
+	containerTable[key] = newValue
+	if isValue(tableState) then
+		(tableState :: any):set(containerTable)
+	else
+		assert(not isState(tableState), "Expected a Value, got a State")
+	end
+	return currentValue
+end
+
+
+--[=[
+	@within FusionUtil
+
+	Sets the index in an array (State) to a given value and returns the previous value.
+	`arraySet` is a more specific version of `tableSet` meant to be used only with array types.
+
+	@param arrayState -- The container state object
 	@param index      -- The index of the value to change
 	@param newValue   -- The new value to change index to
 	@param updateInsteadOfReplace -- Whether to update the value at the index if it is a ValueState instead of overwriting it
@@ -1090,27 +1464,33 @@ end
 	print( peek(myArr) ) -- {"A", "X", "C"}
 	```
 ]=]
-function FusionUtil.arraySet<T>(valueState: Value<{T}>, index: number, newValue: T, updateInsteadOfReplace: boolean?): T
-	local containerArray = peek(valueState)
+function FusionUtil.arraySet<V>(arrayState: Value<{V}> | {V}, index: number, newValue: V, updateInsteadOfReplace: boolean?): V?
+	if typeof(index) ~= "number" then
+		error("[FusionUtil.arraySet] Expected typeof 'number' for the index, got " .. typeof(index)..". Did you mean to use [FusionUtil.tableSet]?")
+	end
+
+	local containerArray = peek(arrayState)
+	local currentValue = containerArray[index]
 	if updateInsteadOfReplace then
-		if isValue(containerArray[index]) then
-			containerArray[index]:set(newValue)
-			return newValue
+		if isValue(currentValue) then
+			currentValue:set(newValue)
+			return currentValue
 		else
-			warn("FusionUtil.arraySet: Expected a Value, got a " .. typeof(containerArray[index]))
+			error("FusionUtil.arraySet: Expected a Fusion.Value, got a " .. typeof(currentValue))
 		end
 	end
+
 	containerArray[index] = newValue
-	if isValue(valueState) then
-		valueState:set(containerArray)
+	if isValue(arrayState) then
+		(arrayState :: any):set(containerArray)
 	else
-		assert(not isState(valueState), "Expected a Value, got a State")
+		assert(not isState(arrayState), "Expected a Value, got a State")
 	end
-	return newValue
+	return currentValue
 end
 
 --[=[
-	@within [0.3.0] FusionUtil
+	@within FusionUtil
 
 	Sets the first instance of a value in a container state object.
 
@@ -1130,19 +1510,15 @@ function FusionUtil.arraySetFirstValue<T>(valueState: Value<{T}>, valueToFind: T
 	local containerArray = peek(valueState)
 	local idx = table.find(containerArray, valueToFind)
 	if idx then
-		return FusionUtil.arraySet(valueState, idx, valueToReplaceWith)
+		return FusionUtil.arraySet(valueState, idx, valueToReplaceWith, updateInsteadOfReplace)
 	end
 	return nil
 end
 
+
 --------------------------------------------------------------------------------
 	--// SPECIAL //--
 --------------------------------------------------------------------------------
-
--- This is an alias to allow for janitors to inherently clean up scopes without needing to specify doCleanup
-function FusionUtil.destroy(scope: Scope<any>)
-	Fusion.doCleanup(scope)
-end
 
 FusionUtil.scope = Fusion:scoped(FusionUtil)
 export type FUS = typeof(FusionUtil.scope)
@@ -1159,18 +1535,14 @@ local function getComboTbl()
 	return comboTbl
 end
 
-FusionUtil.Scoped = function(...)
-	return Fusion.scoped(getComboTbl(), ...)
-end
-
 setmetatable(FusionUtil, {
-	__index = function(t, k)
-		if k == "scoped" then
-			return FusionUtil.Scoped
-		end
-		return Fusion[k]
-	end;
+	__index = Fusion,
 })
 
+
+FusionUtil.Scoped = function(...)
+	return (Fusion.scoped(getComboTbl(), ...) :: any) :: Fusion.Scope<typeof(FusionUtil)>
+end
+FusionUtil.scoped = FusionUtil.Scoped
 
 return table.freeze(FusionUtil)

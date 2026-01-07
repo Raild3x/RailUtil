@@ -6,12 +6,13 @@
 
     DebugUtil is a collection of functions that help with debugging.
 
-    Look for the debug controls under ReplicatedStorage.
+    :::important
+    Make sure you have `TestService` visible in your studio explorer!
+    This is where the debug attributes are stored.
+    :::
 ]=]
-
-local RunService = game:GetService("RunService")
-
 local Fusion = require(script.Parent.Parent:FindFirstChild("Fusion_v0_3_0"))
+local Promise = require(script.Parent.Parent:FindFirstChild("Promise"))
 
 type UsedAs<T> = Fusion.UsedAs<T>
 type State<T> = Fusion.StateObject<T>
@@ -19,22 +20,26 @@ type State<T> = Fusion.StateObject<T>
 local peek = Fusion.peek
 local scope = Fusion:scoped()
 
-local DEBUG_FOLDER_PARENT = game:GetService("ReplicatedStorage")
-local DEBUG_FOLDER_NAME = "[RAILUTIL DEBUG CONTROL]"
+-- local DEBUG_FOLDER_PARENT = game:GetService("ReplicatedStorage")
+-- local DEBUG_FOLDER_NAME = "[RAILUTIL DEBUG CONTROL]"
+
+local DEBUG_INSTANCE = game:GetService("TestService")
+
+local STEP_ATTRIBUTE_NAME = "Breakpoint_Step"
+local PAUSE_ATTRIBUTE_NAME = "Breakpoint_Pause"
 
 --------------------------------------------------------------------------------
     --// Initialization //--
 --------------------------------------------------------------------------------
 
-local DebugFolder = DEBUG_FOLDER_PARENT:FindFirstChild(DEBUG_FOLDER_NAME)
-if not DebugFolder then
-    if RunService:IsServer() then
-        DebugFolder = Instance.new("Configuration")
-        DebugFolder.Name = DEBUG_FOLDER_NAME
-        DebugFolder.Parent = DEBUG_FOLDER_PARENT 
-        --print("Created Debug Folder")
-    end
+DEBUG_INSTANCE:SetAttribute(STEP_ATTRIBUTE_NAME, false)
+DEBUG_INSTANCE:SetAttribute(PAUSE_ATTRIBUTE_NAME, false)
+
+local function getDebugAttributeInstance(): Instance
+    return DEBUG_INSTANCE --DebugFolder or DEBUG_FOLDER_PARENT:WaitForChild(DEBUG_FOLDER_NAME)
 end
+
+----------------------------------------------------------------------------------
 
 local DebugFlagValues = {}
 
@@ -44,7 +49,7 @@ local function upsertFlagState(flagName: string)
         DebugFlagValues[flagName] = v
 
         task.defer(function()
-            local debugFolder = DebugFolder or DEBUG_FOLDER_PARENT:WaitForChild(DEBUG_FOLDER_NAME)
+            local debugFolder = getDebugAttributeInstance()
 
             if debugFolder:GetAttribute(flagName) == nil then
                 debugFolder:SetAttribute(flagName, peek(v))
@@ -61,10 +66,91 @@ local function upsertFlagState(flagName: string)
     return DebugFlagValues[flagName]
 end
 
+
+
 --------------------------------------------------------------------------------
     --// Class //--
 --------------------------------------------------------------------------------
 local DebugUtil = {}
+
+--[=[
+    @yields
+
+    Add this to your code to mark it as a breakpoint. If the debug is marked as 'paused',
+    then the system will yield at this point until the debug is 'stepped' or 'resumed'.
+
+    You can pass arguments to the breakpoint function, which will be printed to the output
+    when the breakpoint is hit.
+    
+    You can step by calling `DebugUtil.step()` or toggling the `Breakpoint_Step` attribute on `TestService`. 
+    You can resume by calling `DebugUtil.resume()` or toggling the `Breakpoint_Pause` attribute off on `TestService`.
+
+    ```lua
+    local x = 0
+    while true do
+        x += 1
+        DebugUtil.breakpoint(x)
+        task.wait()
+    end
+    ```
+]=]
+function DebugUtil.breakpoint(...: any)
+    local debugFolder = getDebugAttributeInstance()
+
+    if debugFolder:GetAttribute(PAUSE_ATTRIBUTE_NAME) then
+        local LINE =             "\n------------------------------------------------------------"
+        local ARGS_HEADER =      "\n [BREAKPOINT ARGS]"
+        local TRACEBACK_HEADER = "\n [BREAKPOINT TRACEBACK]"
+        ARGS_HEADER = LINE .. ARGS_HEADER .. LINE .. "\n"
+        TRACEBACK_HEADER = LINE .. TRACEBACK_HEADER .. LINE
+
+        local args = {...}
+        if #args > 0 then
+            table.insert(args, 1, ARGS_HEADER)
+            table.insert(args, "\n")
+        end
+        local traceback = debug.traceback(TRACEBACK_HEADER, 2)
+        local lastLine = traceback:match("([^\n]*)\n$")
+        if lastLine then -- Remove last line of the traceback to make it a bit cleaner
+            traceback = traceback:gsub(lastLine, "", 1)
+        end
+        table.insert(args, traceback)
+        warn("[HIT DEBUG BREAKPOINT] Waiting for resume...", table.unpack(args))
+        debugFolder:SetAttribute(STEP_ATTRIBUTE_NAME, false)
+        Promise.any({
+            Promise.fromEvent(debugFolder:GetAttributeChangedSignal(PAUSE_ATTRIBUTE_NAME)),
+            Promise.fromEvent(debugFolder:GetAttributeChangedSignal(STEP_ATTRIBUTE_NAME))
+        }):await()
+        debugFolder:SetAttribute(STEP_ATTRIBUTE_NAME, false)
+        print("Resuming Debug...")
+    end
+end
+
+--[=[
+    Steps the debug once to the next step if it is paused.
+]=]
+function DebugUtil.step()
+    local debugFolder = getDebugAttributeInstance()
+    debugFolder:SetAttribute(STEP_ATTRIBUTE_NAME, true)
+    debugFolder:SetAttribute(STEP_ATTRIBUTE_NAME, false)
+end
+
+--[=[
+    Pauses the debug if it is not already paused.
+]=]
+function DebugUtil.pause()
+    local debugFolder = getDebugAttributeInstance()
+    debugFolder:SetAttribute(PAUSE_ATTRIBUTE_NAME, true)
+end
+
+--[=[
+    Resumes the debug if it is paused.
+]=]
+function DebugUtil.resume()
+    local debugFolder = getDebugAttributeInstance()
+    debugFolder:SetAttribute(PAUSE_ATTRIBUTE_NAME, false)
+end
+
 
 -- Function to measure the average runtime of a given function
 function DebugUtil.measureAvgRuntime<T...>(func: (T...) -> (...any), numRuns: number?, ...: T...): number
@@ -142,8 +228,7 @@ end
     Initializes the DebugUtil module.
 ]=]
 function DebugUtil.setup()
-    -- doesnt do anything other than ensure the debug folder is created
-    --print("DebugUtil setup")
+    -- Doesnt do anything other than ensure the DebugModule is required at some point
 end
 
 return table.freeze(DebugUtil)

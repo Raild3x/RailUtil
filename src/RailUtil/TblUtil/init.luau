@@ -1083,9 +1083,11 @@ end
 
 
 --[=[
-	@wihin TableUtil
+	@within TableUtil
 
-	Performs a binary search on a sorted array. The array is expected to be sorted in ascending order.
+	Performs a generic binary search on a sorted array.
+	The array is expected to be sorted in ascending order by default; use a custom comparator if otherwise.
+
 	@param array {T} -- The array to search
 	@param value any -- The value to search for
 	@param _comparator ((a: T, b: T) -> boolean)? -- An optional comparator function. Defaults to a simple less-than comparison.
@@ -1122,4 +1124,6 @@ function TableUtil.BinarySearch<T>(array: { T }, value: any, _comparator: ((a: T
 
 	return nil
 end
+
+
 return TableUtil
